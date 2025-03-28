@@ -1,3 +1,0 @@
-/Users/9638206/Documents/GitHub/CppGroup/Minecraft/build/CMakeFiles/out.dir
-/Users/9638206/Documents/GitHub/CppGroup/Minecraft/build/CMakeFiles/edit_cache.dir
-/Users/9638206/Documents/GitHub/CppGroup/Minecraft/build/CMakeFiles/rebuild_cache.dir

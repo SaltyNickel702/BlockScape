@@ -1,1 +1,3 @@
-Download the glfw3 for windows
+Download glfw3
+
+compile glad.c into library

@@ -3,7 +3,8 @@
 #include <map>
 
 #include "Block.h"
-#include "chunk.h"
+#include "Chunk.h"
+#include "Model.h"
 
 using namespace std;
 
@@ -16,9 +17,11 @@ namespace World { //world data
     static vector<float*> joinChunkMeshes (int x, int y, Chunk chunks[]);
 
     extern map<int,Block> blockTypes;
+
+    extern vector<Model*> models;
     
-    int* setBlock (int x, int y, int z, int block); //int[3], make sure to delete array after use. No memory leakage
-    int* getBlock (int x, int y, int z);
+    void setBlock (int x, int y, int z, int block);
+    int getBlock (int x, int y, int z);
     
     namespace Camera {
         extern float pos[3];

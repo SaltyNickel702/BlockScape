@@ -1,2 +1,5 @@
 build/*
 !build/README.md
+
+**/.DS_STORE
+.DS_STORE

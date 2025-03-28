@@ -1,6 +1,6 @@
 @echo off
 
 cd build
-cmake ..
+cmake -G Ninja ..
 
 cd ..

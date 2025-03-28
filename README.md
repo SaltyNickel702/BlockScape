@@ -1,4 +1,4 @@
-# Minecraft Clone Game
+# Blockscape
 ## Contributors
 - Niko: Handle OpenGL rendering + Chunk mesh gen
 - Dallin: GUI

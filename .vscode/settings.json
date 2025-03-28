@@ -1,0 +1,7 @@
+{
+	"files.associations": {
+		"*.task": "json",
+		"*.pde": "java",
+		"iostream": "cpp"
+	}
+}

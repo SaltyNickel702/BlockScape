@@ -1,3 +1,3 @@
-./include/* linguist-vendored
-./statLib/* linguist-vendored
+./include/** linguist-vendored
+./statLib/** linguist-vendored
 ./src/lib/glad.c linguist-vendored

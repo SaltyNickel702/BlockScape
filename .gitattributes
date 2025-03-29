@@ -1,2 +1,2 @@
-./include/* linguist-vendored
-./statLib/* linguist-vendored
+./include/** linguist-vendored
+./statLib/** linguist-vendored

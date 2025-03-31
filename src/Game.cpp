@@ -91,13 +91,6 @@ namespace Game {
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns callback function
 
 
-
-		//Shader Compilation + triangle test
-
-		
-		Shader shaderProgram("basicVert.glsl","basicFrag.glsl");
-
-
 		//Create Model
 		vector<float> vertices {
 			-0.5f,-0.5f,0.0f,	1.0f,0.0f,0.0f,	0.0f,1.0f,		//bottom left
@@ -114,10 +107,18 @@ namespace Game {
 		};
 		Model m1(vertices, indices, attr);
 
+		
+		Shader shaderProgram("basicVert.glsl","basicFrag.glsl");
+		shaderProgram.uniforms = [&]() {
+			float timeValue = glfwGetTime();
+			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
+		};
 
-		//Create Textures
 		glActiveTexture(GL_TEXTURE0);
 		unsigned int texture1 = Game::genTexture("GrassSide.png");
+		
+		m1.textures.push_back(texture1);
+		m1.shader = &shaderProgram;
 
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -129,19 +130,8 @@ namespace Game {
 			//RENDERING
 			glClearColor(.1f,.5f,.4f,1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-			
-			glUseProgram(shaderProgram.ID);
-			float timeValue = glfwGetTime();
-			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
-	
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D,texture1);
-			
-			glBindVertexArray(m1.VAO);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+			m1.draw();
 	
 			glfwSwapBuffers(window); //updates screen buffer
 			glfwPollEvents(); //Check for inputs

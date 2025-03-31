@@ -154,6 +154,7 @@ namespace Game {
 			glfwPollEvents(); //Check for inputs
 		}
 		running = false;
+		tickFunc.detach();
 		glfwTerminate();
 
 		return 0;

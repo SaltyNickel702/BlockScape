@@ -1,2 +1,7 @@
-/include/** linguist-vendored=true
-/statLib/** linguist-vendored=true
+include/** linguist-vendored=true
+statLib/** linguist-vendored=true
+build/** linguist-generated=true
+
+buildFiles.sh linguist-ignored=true
+compile.sh linguist-ignored=true
+CMakeLists.txt linguist-ignored=true

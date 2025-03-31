@@ -20,6 +20,7 @@
 #include "World.h"
 #include "Block.h"
 #include "Model.h"
+#include "Logic.h"
 
 
 using namespace std;
@@ -28,6 +29,7 @@ using namespace std;
 namespace Game {
 	extern GLFWwindow* window;
 	unsigned int genTexture (string ImgName);
+	extern float deltaTick;
 	
 	int init(int w, int h);
 	bool keyDown(int GLFWkey); //is key held Down

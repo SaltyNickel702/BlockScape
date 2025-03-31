@@ -1,13 +1,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <FastNoise/FastNoiseLite.h>
 
 #ifndef CHUNK_H
 #define CHUNK_H
 
 class Chunk {
     public:
-        // Chunk(){};
+        Chunk();
 
         glm::vec2 pos;
 

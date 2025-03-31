@@ -31,11 +31,27 @@ namespace {
 			} else keysDown[i-33] = false;
 		}
 	}
+
+	bool running = true;
+	float lastDeltaTick = 0;
+	void tick () {
+		while (running) {
+			float tNew = glfwGetTime() - lastDeltaTick;
+			lastDeltaTick = deltaTick;
+			deltaTick = tNew;
+
+			for (LObject* o: World::LogicObjects) {
+				o->onTick();
+			}
+		}
+	}
 }
 
 //Exported Game namespace
 namespace Game {
 	GLFWwindow* window = nullptr;
+
+	float deltaTick = 0;
 
 	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
 		unsigned int texture;
@@ -71,7 +87,7 @@ namespace Game {
 
 
 		//Create GLFW window
-		window = glfwCreateWindow(w, h, "Craftmine", NULL, NULL); //Size, title, monitor, shared recourses
+		window = glfwCreateWindow(w, h, "Block Scape", NULL, NULL); //Size, title, monitor, shared recourses
 		if (window == NULL) {
 			cout << "Failed to create GLFW window" << endl;
 			glfwTerminate();
@@ -123,6 +139,7 @@ namespace Game {
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		//Render loop
+		thread tickFunc(tick);
 		glEnable(GL_DEPTH_TEST);
 		while(!glfwWindowShouldClose(window)) {
 			processInput(window);
@@ -136,6 +153,8 @@ namespace Game {
 			glfwSwapBuffers(window); //updates screen buffer
 			glfwPollEvents(); //Check for inputs
 		}
+		running = false;
+		tickFunc.detach();
 		glfwTerminate();
 
 		return 0;

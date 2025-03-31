@@ -1,3 +1,2 @@
-./include/** linguist-vendored=true
-./statLib/** linguist-vendored=true
-./src/lib/glad.c linguist-vendored=true
+/include/** linguist-vendored=true
+/statLib/** linguist-vendored=true

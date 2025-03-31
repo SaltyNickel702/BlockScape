@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <functional>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ class Shader {
 	public:
 		unsigned int ID;
 
-		Shader(const string vertexPath, const string fragmentPath) {
+		Shader (const string vertexPath, const string fragmentPath) {
 			string vertexCode;
 			string fragmentCode;
 
@@ -90,6 +91,12 @@ class Shader {
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
 		};
+		void bind () {
+			glUseProgram(ID);
+			uniforms();
+		}
+
+		function<void()> uniforms = [](){};
 };
 
 #endif

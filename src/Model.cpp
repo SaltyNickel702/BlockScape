@@ -52,3 +52,14 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+void Model::draw () {
+    shader->bind();
+
+    for (int i = 0; i < textures.size(); i++) {
+        glActiveTexture(0x84C0+i);
+        glBindTexture(GL_TEXTURE_2D, textures.at(i));
+    }
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
+}

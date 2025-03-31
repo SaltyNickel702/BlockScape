@@ -16,8 +16,8 @@
 
 //Project Classes
 #include "Shader.h"
-#include "chunk.h"
-#include "world.h"
+#include "Chunk.h"
+#include "World.h"
 #include "Block.h"
 #include "Model.h"
 

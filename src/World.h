@@ -6,6 +6,7 @@
 #include "Block.h"
 #include "Chunk.h"
 #include "Model.h"
+#include "Logic.h"
 
 using namespace std;
 
@@ -20,6 +21,8 @@ namespace World { //world data
     extern map<int,Block> blockTypes;
 
     extern vector<Model*> models;
+
+    extern vector<LObject*> LogicObjects;
     
     Chunk* getChunk (int x, int y);
     int* getBlock (int x, int y, int z);

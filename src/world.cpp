@@ -3,6 +3,7 @@
 map<int, map<int, Chunk>> World::chunks;
 map<int, Block> World::blockTypes;
 vector<Model*> World::models;
+vector<LObject*> World::LogicObjects;
 
 Chunk* World::getChunk (int x, int y) {
 	int cx = x/16;

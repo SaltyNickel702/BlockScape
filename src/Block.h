@@ -8,9 +8,9 @@ using namespace std;
 
 class Block {
     public:
-        Block(string name, float type) {displayName = name; blockType = type;}
+        Block(string name, float type) {displayName = name; blockID = type;}
         string displayName;
-        float blockType;
+        int blockID;
 };
 
 

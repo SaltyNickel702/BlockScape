@@ -1,4 +1,5 @@
-#include <iostream>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -7,13 +8,10 @@ using namespace std;
 
 class Block {
     public:
-        Block ();
+        Block(string name, float type) {displayName = name; blockType = type;}
         string displayName;
         float blockType;
 };
 
 
-
-
-
-#endif 
+#endif

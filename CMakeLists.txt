@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp" "${SRC_DIR}/*.c")
+file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
 
 add_executable(out ${SOURCES})
 
@@ -22,3 +22,4 @@ target_link_libraries(out
     "-framework Cocoa"
 )
 target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglfw3.a")
+target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglad.a")

@@ -22,7 +22,48 @@ void DefineBlocks() {
     World::blockTypes[5] = leavesBlock;
 }
 
-int main () {
-    Game::init(800,800);
+void DefineLogicObjects() {
+    World::Player.onTick = [&](){
 
+    };
+    // World::LogicObjects.push_back(&World::Player);
+
+    World::Camera.onTick = [&](){
+        LObject* c = &World::Camera;
+
+        //Temp Camera Rotation
+        float rotSpeed = 45*Game::deltaTick;
+        if (Game::keyDown(GLFW_KEY_LEFT)) c->rot.x-=rotSpeed;
+        if (Game::keyDown(GLFW_KEY_RIGHT)) c->rot.x+=rotSpeed;
+        if (Game::keyDown(GLFW_KEY_UP)) c->rot.y+=rotSpeed;
+        if (Game::keyDown(GLFW_KEY_DOWN)) c->rot.y-=rotSpeed;
+        if (c->rot.y > 90) c->rot.y = 90;
+        if (c->rot.y < -90) c->rot.y = -90;
+
+        //Temp Rotation matrix
+        glm::mat4 rotMatrix(1.0f);
+        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.x),glm::vec3(0,0,1)); //left right
+        rotMatrix = glm::rotate(rotMatrix,glm::radians(-c->rot.y),glm::vec3(0,1,0)); //up down
+        glm::vec3 moveVec = rotMatrix * glm::vec4(1,0,0,1);
+
+        //Temp Camera Movement
+        float speed = 1.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*moveVec;
+        if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*moveVec;
+
+
+        cout << c->rot.x << " " << c->rot.y << " -- ";
+        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+    };
+    World::Camera.rot.x = 90;
+    World::Camera.rot.y = 0;
+    World::LogicObjects.push_back(&World::Camera);
+
+}
+
+int main () {
+    DefineBlocks();
+    DefineLogicObjects();
+
+    Game::init(800,800);    
 }

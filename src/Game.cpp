@@ -33,12 +33,14 @@ namespace {
 	}
 
 	bool running = true;
-	float lastDeltaTick = 0;
+	float lastFrame = 0;
+	float currentFrame = 0;
 	void tick () {
 		while (running) {
-			float tNew = glfwGetTime() - lastDeltaTick;
-			lastDeltaTick = deltaTick;
-			deltaTick = tNew;
+			lastFrame = currentFrame;
+			currentFrame = glfwGetTime();
+			deltaTick =  currentFrame - lastFrame;
+
 
 			for (LObject* o: World::LogicObjects) {
 				o->onTick();

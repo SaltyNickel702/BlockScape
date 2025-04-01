@@ -24,12 +24,12 @@ void DefineBlocks() {
 
 void DefineLogicObjects() {
     World::Player.onTick = [&](){
+        LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
     };
-    // World::LogicObjects.push_back(&World::Player);
 
     World::Camera.onTick = [&](){
-        LObject* c = &World::Camera;
+        LObject* c = &World::Camera; //shortcut for not having to write World::Camera each time
 
         //Temp Camera Rotation
         float rotSpeed = 45*Game::deltaTick;
@@ -55,9 +55,6 @@ void DefineLogicObjects() {
         cout << c->rot.x << " " << c->rot.y << " -- ";
         cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
-    World::Camera.rot.x = 90;
-    World::Camera.rot.y = 0;
-    World::LogicObjects.push_back(&World::Camera);
 
 }
 

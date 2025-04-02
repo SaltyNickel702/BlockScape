@@ -7,7 +7,7 @@ Chunk Chunk::genChunk (int cx, int cy) {
 
 	int seed = 495804; // Change this int to change the seed
 	float x,y,z;
-	bool generateTerrain = false;
+	bool generateChunk = false;
 
 	FastNoiseLite noise;  // Create noise generator
 	//Fast Noise settings
@@ -19,14 +19,13 @@ Chunk Chunk::genChunk (int cx, int cy) {
 	noise.SetFractalOctaves(3);
 	noise.SetFractalLacunarity(2.76f); 
  
-	while (generateTerrain == true) {
+	
 		// Generates terrain
 		for (int x = 0; x < 16; x++) {
 			for (int y = 0; y < 16; y++) {
 				// Get height value and scale it to terrain height
-				float heightValue = noise.GetNoise((float)x, (float)z);
+				float heightValue = noise.GetNoise((float)(x + cx*16), (float)(y + cy*16));
 				int terrainHeight = (int)((heightValue + 1) * 0.5 * (64 / 2)) + (64 / 4);
-	
 				for (int z = 0; z < 64; z++) {
 					// Assign blocks based on Z level
 					if (z > terrainHeight) {
@@ -48,8 +47,6 @@ Chunk Chunk::genChunk (int cx, int cy) {
 			}
 		}
 	}
-	
-}
 
 
 

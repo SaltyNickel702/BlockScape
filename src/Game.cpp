@@ -203,6 +203,7 @@ namespace Game {
 	}
 	void allowCursor (bool b) {
 		cursorEnabled = b;
+		if (!b) Game::cursorPos = glm::vec2(0.0f);
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 	}
 }

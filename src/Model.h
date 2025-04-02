@@ -1,4 +1,7 @@
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 
 #ifndef MODEL_H
@@ -22,6 +25,9 @@ class Model {
 
         std::vector<unsigned int> textures;
         Shader* shader;
+
+        glm::vec3 position;
+        glm::vec2 rot;
 
 
         static Model joinModels (Model models[]);

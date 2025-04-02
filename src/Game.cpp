@@ -145,9 +145,11 @@ namespace Game {
 
 			//Matrices
 			glm::mat4 model(1.0f);
-			model = glm::rotate(model,glm::radians(-(fmod(10*timeValue,90.0f))), glm::vec3(1.0f,0.0f,0.0f));
+			// model = glm::rotate(model,glm::radians(-(fmod(10*timeValue,90.0f))), glm::vec3(1.0f,0.0f,0.0f));
 
 			glm::mat4 view(1.0f);
+			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(0.0f,1.0f,0.0f));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0.0f,0.0f,1.0f));
 			view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
 
 			glm::mat4 project;

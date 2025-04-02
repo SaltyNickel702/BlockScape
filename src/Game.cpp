@@ -122,13 +122,13 @@ namespace Game {
 
 		//Create Model
 		vector<float> vertices {
-			-0.5f,-0.5f,0.0f,	1.0f,0.0f,0.0f,	0.0f,1.0f,		//bottom left
-			-0.5f,0.5f,0.0f, 	0.0f,1.0f,0.0f,	0.0f,0.0f,		//Top Left
-			0.5f,-0.5f,0.0f,	0.0f,0.0f,1.0f,	1.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,0.0f,		1.0f,1.0f,1.0f,	1.0f,0.0f		//Top Right
+			-0.5f,-0.5f,0.0f,	0.0f,1.0f,		//bottom left
+			-0.5f,0.5f,0.0f, 	0.0f,0.0f,		//Top Left
+			0.5f,-0.5f,0.0f,	1.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,0.0f,		1.0f,0.0f		//Top Right
 		};
 		vector<unsigned int> attr {
-			3,3,2
+			3,2
 		};
 		vector<unsigned int> indices {
 			0, 2, 1,
@@ -141,6 +141,22 @@ namespace Game {
 		shaderProgram.uniforms = [&]() {
 			float timeValue = glfwGetTime();
 			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
+
+
+			//Matrices
+			glm::mat4 model(1.0f);
+			model = glm::rotate(model,glm::radians(-55.0f), glm::vec3(1.0f,0.0f,0.0f));
+
+			glm::mat4 view(1.0f);
+			view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+
+			glm::mat4 project;
+			project = glm::perspective(glm::radians(45.0f), (float)w/h, 0.1f, 100.0f);
+
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
+
 		};
 
 		glActiveTexture(GL_TEXTURE0);

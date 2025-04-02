@@ -28,6 +28,9 @@ namespace World { //world data
     int* getBlock (int x, int y, int z);
     void setBlock (int x, int y, int z, int block);
     
+    namespace CameraConfig {
+        extern float FOV;
+    }
     extern LObject Camera;
     extern LObject Player;
 }

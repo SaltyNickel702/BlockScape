@@ -12,11 +12,11 @@ class Chunk {
 
         glm::vec2 pos;
 
-        static int chunkCoordToWorld (int cx, int cy, float x, float y, float z); //chunk x and y, and chunk coords x y z
+        static int chunkCoordToWorld (int cx, int cz, float x, float y, float z); //chunk x and z, and chunk coords x y z
 
-        int blocks[16][16][64]; //xyz
+        int blocks[16][64][16]; //xyz
 
-        static Chunk genChunk (int cx, int cy);
+        static Chunk genChunk (int cx, int cz);
 
         void setBlock (float x, float y, float z, int blockID); //in chunk coords
         int getBlock (float x, float y, float z);

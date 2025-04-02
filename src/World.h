@@ -28,18 +28,8 @@ namespace World { //world data
     int* getBlock (int x, int y, int z);
     void setBlock (int x, int y, int z, int block);
     
-    namespace Camera {
-        extern float pos[3];
-        extern float rot[2]; //pitch, yaw
-        extern float FOV;
-    }
-    namespace Player {
-        extern float pos[3];
-        extern float rot[2]; //pitch, yaw
-        extern int inventory[10];
-
-        int* getRayTrace (float distance);
-    }
+    extern LObject Camera;
+    extern LObject Player;
 }
 
 #endif

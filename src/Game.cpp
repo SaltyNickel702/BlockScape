@@ -13,7 +13,7 @@ namespace {
 	vector<function<void()>> functionCalls[GLFW_KEY_LAST-GLFW_KEY_SPACE];
 	void processInput(GLFWwindow* window) {
 		//esc key closes app (temporary)
-		if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
 
 		//Adding/removing keys to keysDown | If new key is added, call callback functions
@@ -31,18 +31,30 @@ namespace {
 			} else keysDown[i-33] = false;
 		}
 	}
+	//last input stuff
+	void mouseMoveCallback (GLFWwindow* window, double xpos, double ypos) {
+		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : Game::cursorPos);
+		Game::cursorPos = fin;
+		
+		if (!Game::cursorEnabled) glfwSetCursorPos(window,0,0);
+	}
 
 	bool running = true;
-	float lastDeltaTick = 0;
+	float lastFrame = 0;
+	float currentFrame = 0;
 	void tick () {
 		while (running) {
-			float tNew = glfwGetTime() - lastDeltaTick;
-			lastDeltaTick = deltaTick;
-			deltaTick = tNew;
+			lastFrame = currentFrame;
+			currentFrame = glfwGetTime();
+			deltaTick =  currentFrame - lastFrame;
+
 
 			for (LObject* o: World::LogicObjects) {
 				o->onTick();
 			}
+
+			//reset Mouse Position if disabled;
+			if (!Game::cursorEnabled) Game::cursorPos/=2;
 		}
 	}
 }
@@ -104,7 +116,8 @@ namespace Game {
 
 		//Sets GL Viewport (camera)
 		glViewport(0, 0, w, h);
-		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns callback function
+		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
+		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 
 		//Create Model
@@ -160,10 +173,18 @@ namespace Game {
 		return 0;
 	}
 
+
+	bool cursorEnabled = true;
+	glm::vec2 cursorPos;
+
 	bool keyDown (int key) {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	}
 	void addKeydownCallback(int key, const function<void()>& func) {
 		functionCalls[key-33].push_back(func);
+	}
+	void allowCursor (bool b) {
+		cursorEnabled = b;
+		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 	}
 }

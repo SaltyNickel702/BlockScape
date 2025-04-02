@@ -8,7 +8,7 @@
 
 class Chunk {
     public:
-        Chunk();
+        Chunk() {};
 
         glm::vec2 pos;
 

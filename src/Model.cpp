@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "World.h"
 #include <glad/glad.h>
 
 #include <iostream>
@@ -51,6 +52,8 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    World::models.push_back(this);
 }
 void Model::draw () {
     shader->bind();

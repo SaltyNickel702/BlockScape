@@ -13,6 +13,7 @@
 #include <vector>
 #include <FastNoise/FastNoiseLite.h>
 #include <stbi/stb_image.h>
+#include <cmath>
 
 //Project Classes
 #include "Shader.h"
@@ -32,9 +33,17 @@ namespace Game {
 	extern float deltaTick;
 	
 	int init(int w, int h);
+	
+
+	extern bool cursorEnabled;
+	extern glm::vec2 cursorPos; //cursor position when cursor is enable, else is mouse movement
+
 	bool keyDown(int GLFWkey); //is key held Down
 	void addKeydownCallback(int GLFWkey, const function<void()>& func); //triggers passed in function when key is pressed
+	void allowCursor(bool boolean); //lock cursor or not
 	
+
+	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 }
 
 #endif

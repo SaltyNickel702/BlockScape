@@ -153,7 +153,7 @@ namespace Game {
 			view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
 
 			glm::mat4 project;
-			project = glm::perspective(glm::radians(45.0f), (float)w/h, 0.1f, 100.0f);
+			project = glm::perspective(glm::radians(World::CameraConfig::FOV), (float)w/h, 0.1f, 100.0f);
 
 			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));

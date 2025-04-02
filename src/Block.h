@@ -8,7 +8,11 @@ using namespace std;
 
 class Block {
     public:
-        Block(string name, float type) {displayName = name; blockID = type;}
+        Block() {};
+        Block(string name, int type) {
+            displayName = name;
+            blockID = type;
+        }
         string displayName;
         int blockID;
 };

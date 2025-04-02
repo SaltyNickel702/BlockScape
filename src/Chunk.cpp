@@ -5,7 +5,7 @@ Chunk Chunk::genChunk (int cx, int cy) {
 	c.pos = glm::vec2(cx,cy);
 
 	//VVV do perlin noise stuff here VVV
-	FastNoise noise;
+	FastNoiseLite noise;
 	for (int x = 0; x < 16; x++) {
 		for (int y = 0; y < 16; y++) {
 			//2d noise map value

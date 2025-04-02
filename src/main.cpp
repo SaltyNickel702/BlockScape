@@ -49,8 +49,8 @@ void DefineLogicObjects() {
 
         //Temp Rotation matrix
         glm::mat4 rotMatrix(1.0f);
-        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.x),glm::vec3(0,0,1)); //left right
-        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.y),glm::vec3(0,1,0)); //up down -- First transformations applied are coded last
+        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.x),glm::vec3(0,1,0)); //left right
+        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.y),glm::vec3(0,0,1)); //up down -- First transformations applied are coded last
         glm::vec3 moveVec = rotMatrix * glm::vec4(1,0,0,1);
 
         //Temp Camera Movement

@@ -20,6 +20,5 @@ void main()
 
 	texCoord = texIn;
 	normal = normIn;
-	modelFrag = model;
 	textureID = textureIDin;
 }

@@ -24,12 +24,12 @@ Chunk Chunk::genChunk (int cx, int cz) {
  
 	
 	// Generates terrain
-	for (int x = 0; x < 16; x++) {
-		for (int z = 0; z < 16; y++) {
+	for (int x = 0; x < 16; (float)x++) {
+		for (int z = 0; z < 16; (float)y++) {
 			// Get height value and scale it to terrain height
 			float heightValue = noise.GetNoise((float)(x + cx*16), (float)(z + cz*16));
 			int terrainHeight = (int)((heightValue + 1) * 0.5 * (64 / 2)) + (64 / 4);
-			for (int y = 0; y < 64; y++) {
+			for (int y = 0; y < 64; (float)y++) {
 				// Assign blocks based on Z level
 				if (y > terrainHeight) {
 					c.blocks[x][y][z] = 0;  
@@ -59,9 +59,9 @@ Model Chunk::genMesh() {
 	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 
 	int faces = 0;
-	for (int x = 0; x < 16; x++) {
-		for (int y = 0; y < 64; y++) {
-			for (int z = 0; z < 16; z++) {
+	for (int x = 0; x < 16; (float)x++) {
+		for (int y = 0; y < 64; (float)y++) {
+			for (int z = 0; z < 16; (float)z++) {
 				int ths = blocks[x][y][z];
 				if (ths == 0) continue;
 				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block
@@ -76,68 +76,68 @@ Model Chunk::genMesh() {
 				int back = (z > 0 ? blocks[x][y][z-1] : -1);
 
 				if (left == 0) {
-					vertices.push_back(x+1,y+0,z+0,	1,0,0,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z+1,	1,0,0,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+1,	1,0,0,	0,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+0,	1,0,0,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	1,0,0,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	1,0,0,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	1,0,0,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
 				if (right == 0) {
-					vertices.push_back(x-1,y+0,z+0,	-1,0,0,	1,0,	blck->textureSide);
-					vertices.push_back(x-1,y+0,z+1,	-1,0,0,	1,1,	blck->textureSide);
-					vertices.push_back(x-1,y+1,z+1,	-1,0,0,	0,1,	blck->textureSide);
-					vertices.push_back(x-1,y+1,z+0,	-1,0,0,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{(float)x-1,(float)y+0,(float)z+0,	-1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x-1,(float)y+0,(float)z+1,	-1,0,0,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x-1,(float)y+1,(float)z+1,	-1,0,0,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x-1,(float)y+1,(float)z+0,	-1,0,0,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
 				if (up == 0) {
-					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureTop);
-					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureTop);
-					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureTop);
-					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureTop);
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,1,0,	1,0,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	0,1,0,	1,1,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,1,0,	0,1,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	0,1,0,	0,0,	(float)blck->textureTop});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
 				if (down == 0) {
-					vertices.push_back(x+0,y-1,z+0,	0,-1,0,	1,0,	blck->textureBottom);
-					vertices.push_back(x+1,y-1,z+0,	0,-1,0,	1,1,	blck->textureBottom);
-					vertices.push_back(x+1,y-1,z+1,	0,-1,0,	0,1,	blck->textureBottom);
-					vertices.push_back(x+0,y-1,z+1,	0,-1,0,	0,0,	blck->textureBottom);
+					vertices.insert(vertices.end(),{(float)x+0,(float)y-1,(float)z+0,	0,-1,0,	1,0,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y-1,(float)z+0,	0,-1,0,	1,1,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y-1,(float)z+1,	0,-1,0,	0,1,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y-1,(float)z+1,	0,-1,0,	0,0,	(float)blck->textureBottom});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
 				if (front == 0) {
-					vertices.push_back(x+0,y+0,z+1,	0,0,1,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z+1,	0,0,1,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
-					vertices.push_back(x+0,y+1,z+1,	0,0,1,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,0,1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,0,1,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,0,1,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	0,0,1,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
 				if (back == 0) {
-					vertices.push_back(x+0,y+0,z-1,	0,0,-1,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z-1,	0,0,-1,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z-1,	0,0,-1,	0,1,	blck->textureSide);
-					vertices.push_back(x+0,y+1,z-1,	0,0,-1,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z-1,	0,0,-1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z-1,	0,0,-1,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z-1,	0,0,-1,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z-1,	0,0,-1,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
+					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
 					
 					faces++;
 				}
@@ -145,8 +145,8 @@ Model Chunk::genMesh() {
 		}
 	}
 
-	Model c(&vertices, &indices, &attrib);
-	c.pos = pos;
+	Model c(vertices, indices, attrib);
+	c.pos = glm::vec3(pos.x,0,pos.y);
 	
 	mesh = &c;
 	return c;

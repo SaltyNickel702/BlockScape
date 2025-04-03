@@ -12,7 +12,7 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
 
     // World::models.push_back(this); //Do this manually bc alway rebinds shader + want to do manually sometimes
 }
-void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+void Model::setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
     //Put vectors into arrays
     float v[vVert.size()];
     copy(vVert.begin(),vVert.end(), v);
@@ -64,7 +64,7 @@ void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
 }
 void Model::draw () {
     if (!dataFormatted) return;
-    shader->bind(*this);
+    shader->bind();
 
     for (int i = 0; i < textures.size(); i++) {
         glActiveTexture(0x84C0+i);

@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <FastNoise/FastNoiseLite.h>
-#include "Model"
+#include "Model.h"
 
 #ifndef CHUNK_H
 #define CHUNK_H

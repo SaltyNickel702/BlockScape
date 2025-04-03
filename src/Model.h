@@ -11,7 +11,7 @@ class Model {
     public:
         Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
-        void setData();
+        void setData(const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths);
 
         bool dataFormatted = false;
         void draw ();
@@ -30,7 +30,7 @@ class Model {
         std::vector<unsigned int> textures;
         Shader* shader;
 
-        glm::vec3 position;
+        glm::vec3 pos;
         glm::vec2 rot;
 
 

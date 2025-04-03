@@ -51,5 +51,5 @@ Chunk Chunk::genChunk (int cx, int cz) {
 }
 
 Model Chunk::genMesh() {
-
+	
 }

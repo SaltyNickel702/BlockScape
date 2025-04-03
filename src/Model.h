@@ -34,7 +34,7 @@ class Model {
         glm::vec2 rot;
 
 
-        static Model joinModels (Model models[]);
+        static Model joinModels (Model* models);
 };
 
 #endif

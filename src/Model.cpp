@@ -72,3 +72,6 @@ void Model::draw () {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
 }
+Model Model::joinModels(Model* models) {
+    
+}

@@ -203,6 +203,11 @@ namespace Game {
 		//Render loop
 		thread tickFunc(tick);
 		glEnable(GL_DEPTH_TEST);
+		
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+			
 		while(!glfwWindowShouldClose(window)) {
 			processInput(window);
 

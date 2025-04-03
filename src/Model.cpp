@@ -64,7 +64,7 @@ void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
 }
 void Model::draw () {
     if (!dataFormatted) return;
-    shader->bind();
+    shader->bind(*this);
 
     for (int i = 0; i < textures.size(); i++) {
         glActiveTexture(0x84C0+i);

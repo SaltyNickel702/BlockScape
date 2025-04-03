@@ -44,7 +44,8 @@ namespace Game {
 	void addKeydownCallback(int GLFWkey, const function<void()>& func); //triggers passed in function when key is pressed
 	void allowCursor(bool boolean); //lock cursor or not
 	
-
+	extern unsigned int textureAtlas;
+	void genTextureAtlas (string* imgNames);
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
 	extern vector<function<void()>> tickQueue;

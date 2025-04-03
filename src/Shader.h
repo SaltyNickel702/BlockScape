@@ -6,6 +6,8 @@
 #include <string>
 #include <functional>
 
+#include "Model.h"
+
 using namespace std;
 
 
@@ -91,7 +93,7 @@ class Shader {
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
 		};
-		void bind () {
+		void bind (Model m) {
 			glUseProgram(ID);
 			uniforms();
 		}

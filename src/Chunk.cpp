@@ -1,9 +1,12 @@
-#include "Chunk.h"
 #include <FastNoise/FastNoiseLite.h>
+#include "Chunk.h"
+#include "World.h"
 
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
-	c.pos = glm::vec2(cx,cz);
+	c.pos = glm::vec2(cx,cz); //assign position for reference
+
+
 
 	int seed = 495804; // Change this int to change the seed
 	float x,y,z;
@@ -50,6 +53,110 @@ Chunk Chunk::genChunk (int cx, int cz) {
 	return c;
 }
 
+Model Chunk::genMesh() {
+	vector<float> vertices;
+	vector<unsigned int> indices;
+	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 
+	int faces = 0;
+	for (int x = 0; x < 16; x++) {
+		for (int y = 0; y < 64; y++) {
+			for (int z = 0; z < 16; z++) {
+				int ths = blocks[x][y][z];
+				if (ths == 0) continue;
+				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block
 
+				int left = (x < 15 ? blocks[x+1][y][z] : -1); //-1 means not present | replace -1 with other side chunk block for x and z
+				int right = (x > 0 ? blocks[x-1][y][z] : -1);
+
+				int up = (y < 63 ? blocks[x][y+1][z] : -1);
+				int down = (y > 0 ? blocks[x][y-1][z] : -1);
+
+				int front = (z < 15 ? blocks[x][y][z+1] : -1);
+				int back = (z > 0 ? blocks[x][y][z-1] : -1);
+
+				if (left == 0) {
+					vertices.push_back(x+1,y+0,z+0,	1,0,0,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z+1,	1,0,0,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+1,	1,0,0,	0,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+0,	1,0,0,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+				if (right == 0) {
+					vertices.push_back(x-1,y+0,z+0,	-1,0,0,	1,0,	blck->textureSide);
+					vertices.push_back(x-1,y+0,z+1,	-1,0,0,	1,1,	blck->textureSide);
+					vertices.push_back(x-1,y+1,z+1,	-1,0,0,	0,1,	blck->textureSide);
+					vertices.push_back(x-1,y+1,z+0,	-1,0,0,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+				if (up == 0) {
+					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureTop);
+					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureTop);
+					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureTop);
+					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureTop);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+				if (down == 0) {
+					vertices.push_back(x+0,y-1,z+0,	0,-1,0,	1,0,	blck->textureBottom);
+					vertices.push_back(x+1,y-1,z+0,	0,-1,0,	1,1,	blck->textureBottom);
+					vertices.push_back(x+1,y-1,z+1,	0,-1,0,	0,1,	blck->textureBottom);
+					vertices.push_back(x+0,y-1,z+1,	0,-1,0,	0,0,	blck->textureBottom);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+				if (front == 0) {
+					vertices.push_back(x+0,y+0,z+1,	0,0,1,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z+1,	0,0,1,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
+					vertices.push_back(x+0,y+1,z+1,	0,0,1,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+				if (back == 0) {
+					vertices.push_back(x+0,y+0,z-1,	0,0,-1,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z-1,	0,0,-1,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z-1,	0,0,-1,	0,1,	blck->textureSide);
+					vertices.push_back(x+0,y+1,z-1,	0,0,-1,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					
+					faces++;
+				}
+			}
+		}
+	}
+
+	Model c(&vertices, &indices, &attrib);
+	c.pos = pos;
 	
+	mesh = &c;
+	return c;
+}
+
+
+int* Chunk::getBlock (int x, int y, int z) {
+	return &blocks[x][y][z];
+}
+void Chunk::setBlock (int x, int y, int z, int blockID) {
+	int* b = getBlock(x,y,z);
+	*b = blockID;
+}

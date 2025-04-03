@@ -1,11 +1,18 @@
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Model.h"
 #include "World.h"
-#include <glad/glad.h>
 
 #include <iostream>
 using namespace std;
 
-Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) : pos(glm::vec3(0)),rot(glm::vec2(0)) {
+    setData(vVert, vIndices, vAttribLengths);
+
+    // World::models.push_back(this); //Do this manually bc alway rebinds shader + want to do manually sometimes
+}
+void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
     //Put vectors into arrays
     float v[vVert.size()];
     copy(vVert.begin(),vVert.end(), v);
@@ -53,10 +60,11 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    World::models.push_back(this);
+    dataFormatted = true;
 }
 void Model::draw () {
-    shader->bind();
+    if (!dataFormatted) return;
+    shader->bind(*this);
 
     for (int i = 0; i < textures.size(); i++) {
         glActiveTexture(0x84C0+i);
@@ -65,4 +73,7 @@ void Model::draw () {
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
+}
+Model Model::joinModels(Model* models) {
+    return models[0];
 }

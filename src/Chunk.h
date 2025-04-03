@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <FastNoise/FastNoiseLite.h>
+#include "Model"
 
 #ifndef CHUNK_H
 #define CHUNK_H
@@ -18,10 +19,14 @@ class Chunk {
 
         static Chunk genChunk (int cx, int cz);
 
-        void setBlock (float x, float y, float z, int blockID); //in chunk coords
-        int getBlock (float x, float y, float z);
+        void setBlock (int x, int y, int z, int blockID); //in chunk coords
+        int* getBlock (int x, int y, int z);
 
         bool loaded;
+
+        Model* mesh;
+        Model genMesh();
+
 };
 
 

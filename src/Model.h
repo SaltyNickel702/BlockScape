@@ -9,7 +9,11 @@
 
 class Model {
     public:
+        Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
+        void setData();
+
+        bool dataFormatted = false;
         void draw ();
 
         float* vertices;
@@ -30,7 +34,7 @@ class Model {
         glm::vec2 rot;
 
 
-        static Model joinModels (Model models[]);
+        static Model joinModels (Model* models);
 };
 
 #endif

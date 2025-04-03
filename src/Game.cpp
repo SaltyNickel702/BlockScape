@@ -73,6 +73,9 @@ namespace Game {
 
 	float deltaTick = 0;
 
+	unsigned int textureAtlas;
+	void textureAtlas (string* imgNames);
+
 	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
 		unsigned int texture;
 		glGenTextures(1, &texture);
@@ -80,7 +83,7 @@ namespace Game {
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //use closest pixel color, not mixed
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		string ImgRel = "./assets/textures/" + ImgName;
@@ -168,15 +171,16 @@ namespace Game {
 		Model m1(vertices, indices, attr);
 
 		
-		Shader shaderProgram("basicVert.glsl","basicFrag.glsl");
-		shaderProgram.uniforms = [&]() {
+		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
+		shaderProgram.uniforms = [&](Model m) {
 			float timeValue = glfwGetTime();
 			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
 
 
 			//Matrices
 			glm::mat4 model(1.0f);
-			// model = glm::rotate(model,glm::radians(-(fmod(10*timeValue,90.0f))), glm::vec3(1.0f,0.0f,0.0f));
+			model = glm::rotate(model, glm::radians(m.rot.x),glm::vec3(0,1,0));
+			model = glm::rotate(model, glm::radians(m.rot.y),glm::vec3(1,0,0));
 
 			glm::mat4 view(1.0f);
 			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
@@ -203,6 +207,11 @@ namespace Game {
 		//Render loop
 		thread tickFunc(tick);
 		glEnable(GL_DEPTH_TEST);
+		
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+			
 		while(!glfwWindowShouldClose(window)) {
 			processInput(window);
 

@@ -58,6 +58,7 @@ void DefineLogicObjects() {
 
         //Temp Camera Movement
         float speed = 3.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=3;
         if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_A)) c->pos = c->pos + speed*sideVec;

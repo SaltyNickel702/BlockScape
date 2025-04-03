@@ -133,18 +133,18 @@ namespace Game {
 
 		//Create Model
 		vector<float> vertices {
-			-0.5f,-0.5f,-0.5f,	0.0f,1.0f,		//bottom left
-			-0.5f,0.5f,-0.5f, 	0.0f,0.0f,		//Top Left
-			0.5f,-0.5f,-0.5f,	1.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,-0.5f,	1.0f,0.0f,		//Top Right
+			-0.5f,-0.5f,-0.5f,	-1.0f,-1.0f,-1.0f,	0.0f,1.0f,		//bottom left
+			-0.5f,0.5f,-0.5f, 	-1.0f, 1.0f, -1.0f,	0.0f,0.0f,		//Top Left
+			0.5f,-0.5f,-0.5f,	1.0f, -1.0f, -1.0f,	1.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,-0.5f,	1.0f, 1.0f, -1.0f,	1.0f,0.0f,		//Top Right
 
-			-0.5f,-0.5f,0.5f,	1.0f,1.0f,		//bottom left
-			-0.5f,0.5f,0.5f, 	1.0f,0.0f,		//Top Left
-			0.5f,-0.5f,0.5f,	0.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,0.5f,		0.0f,0.0f		//Top Right
+			-0.5f,-0.5f,0.5f,	-1.0f,-1.0f,1.0f,	1.0f,1.0f,		//bottom left
+			-0.5f,0.5f,0.5f, 	-1.0f, 1.0f, 1.0f,	1.0f,0.0f,		//Top Left
+			0.5f,-0.5f,0.5f,	1.0f, -1.0f, 1.0f,	0.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,0.5f,		1.0f, 1.0f, 1.0f,	0.0f,0.0f		//Top Right
 		};
 		vector<unsigned int> attr {
-			3,2
+			3,3,2
 		};
 		vector<unsigned int> indices {
 			0, 2, 1,

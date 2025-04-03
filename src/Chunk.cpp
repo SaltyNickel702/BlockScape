@@ -1,9 +1,12 @@
-#include "Chunk.h"
 #include <FastNoise/FastNoiseLite.h>
+#include "Chunk.h"
+#include "World.h"
 
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
-	c.pos = glm::vec2(cx,cz);
+	c.pos = glm::vec2(cx,cz); //assign position for reference
+
+
 
 	int seed = 495804; // Change this int to change the seed
 	float x,y,z;
@@ -61,7 +64,7 @@ Model Chunk::genMesh() {
 			for (int z = 0; z < 16; z++) {
 				int ths = blocks[x][y][z];
 				if (ths == 0) continue;
-				Block* blck = getBlock(x,y,z);
+				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block
 
 				int left = (x < 15 ? blocks[x+1][y][z] : -1);
 				int right = (x > 0 ? blocks[x-1][y][z] : -1);
@@ -117,7 +120,6 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (front == 0) {
-
 					vertices.push_back(x+0,y+0,z+1,	0,0,1,	1,0,	blck->textureSide);
 					vertices.push_back(x+1,y+0,z+1,	0,0,1,	1,1,	blck->textureSide);
 					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
@@ -142,4 +144,19 @@ Model Chunk::genMesh() {
 			}
 		}
 	}
+
+	Model c(&vertices, &indices, &attrib);
+	c.pos = pos;
+	
+	mesh = &c;
+	return c;
+}
+
+
+int* Chunk::getBlock (int x, int y, int z) {
+	return &blocks[x][y][z];
+}
+void Chunk::setBlock (int x, int y, int z, int blockID) {
+	int* b = getBlock(x,y,z);
+	*b = blockID;
 }

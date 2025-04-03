@@ -73,6 +73,9 @@ namespace Game {
 
 	float deltaTick = 0;
 
+	unsigned int textureAtlas;
+	void textureAtlas (string* imgNames);
+
 	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
 		unsigned int texture;
 		glGenTextures(1, &texture);
@@ -80,7 +83,7 @@ namespace Game {
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //use closest pixel color, not mixed
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		string ImgRel = "./assets/textures/" + ImgName;

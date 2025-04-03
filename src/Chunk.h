@@ -19,12 +19,12 @@ class Chunk {
 
         static Chunk genChunk (int cx, int cz);
 
-        void setBlock (float x, float y, float z, int blockID); //in chunk coords
-        Block* getBlock (float x, float y, float z);
+        void setBlock (int x, int y, int z, int blockID); //in chunk coords
+        int* getBlock (int x, int y, int z);
 
         bool loaded;
 
-        Model mesh;
+        Model* mesh;
         Model genMesh();
 
 };

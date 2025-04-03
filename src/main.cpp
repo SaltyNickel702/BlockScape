@@ -71,8 +71,8 @@ void DefineLogicObjects() {
         if (Game::keyDown(GLFW_KEY_SPACE)) c->pos = c->pos + speed*upVec;
 
 
-        cout << c->rot.x << " " << c->rot.y << " -- ";
-        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+        // cout << c->rot.x << " " << c->rot.y << " -- ";
+        // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
 }

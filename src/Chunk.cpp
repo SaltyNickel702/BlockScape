@@ -74,10 +74,10 @@ Model Chunk::genMesh() {
 				int back = (z > 0 ? blocks[x][y][z-1] : -1);
 
 				if (left == 0) {
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	1,0,0,	1,0,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	1,0,0,	1,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	1,0,0,	0,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	1,0,0,	0,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	1,0,0,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	1,0,0,	0,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	1,0,0,	0,1,	(float)blck->textureSide});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
@@ -85,9 +85,9 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (right == 0) {
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	-1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	-1,0,0,	0,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	-1,0,0,	1,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	-1,0,0,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	-1,0,0,	1,0,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	-1,0,0,	0,0,	(float)blck->textureSide});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
@@ -96,9 +96,9 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (up == 0) {
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,1,0,	1,0,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,1,0,	0,1,	(float)blck->textureTop});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	0,1,0,	1,1,	(float)blck->textureTop});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,1,0,	0,1,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,1,0,	1,0,	(float)blck->textureTop});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	0,1,0,	0,0,	(float)blck->textureTop});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
@@ -107,10 +107,10 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (down == 0) {
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,-1,0,	1,0,	(float)blck->textureBottom});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	0,-1,0,	1,1,	(float)blck->textureBottom});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,-1,0,	0,1,	(float)blck->textureBottom});
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,-1,0,	0,0,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,-1,0,	1,1,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	0,-1,0,	1,0,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,-1,0,	0,0,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,-1,0,	0,1,	(float)blck->textureBottom});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});
@@ -118,9 +118,9 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (front == 0) {
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,0,1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,0,1,	0,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,0,1,	1,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,0,1,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,0,1,	1,0,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	0,0,1,	0,0,	(float)blck->textureSide});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
@@ -129,10 +129,10 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (back == 0) {
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,0,-1,	1,0,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,0,-1,	1,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	0,0,-1,	0,1,	(float)blck->textureSide});
-					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	0,0,-1,	0,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,0,-1,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,0,-1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	0,0,-1,	0,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	0,0,-1,	0,1,	(float)blck->textureSide});
 
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 0), static_cast<unsigned int>(faces*4 + 1), static_cast<unsigned int>(faces*4 + 2)});
 					indices.insert(indices.end(),{static_cast<unsigned int>(faces*4 + 2), static_cast<unsigned int>(faces*4 + 3), static_cast<unsigned int>(faces*4 + 0)});

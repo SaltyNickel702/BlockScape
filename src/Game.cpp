@@ -170,8 +170,8 @@ namespace Game {
 		};
 		// Model m1(vertices, indices, attr);
 		Chunk c = Chunk::genChunk(0,0);
+		c.blocks[3][36][3] = 1;
 		Model m1 = c.genMesh();
-		cout << c.blocks[0][31][1] << endl;
 
 		
 		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");

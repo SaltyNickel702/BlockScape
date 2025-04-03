@@ -11,9 +11,9 @@ in float textureID;
 
 void main ()
 {
-	vec3 sun = vec3(2,3,1);
+	vec3 sun = vec3(-2,5,-1);
 	
 
 	float dotProd = (dot(normalize(normal),normalize(sun))+1)/2;
-	gl_FragColor = texture(texture1, texCoord);
+	gl_FragColor = (dotProd+.5)*texture(texture1, texCoord);
 }

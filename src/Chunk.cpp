@@ -66,7 +66,7 @@ Model Chunk::genMesh() {
 				if (ths == 0) continue;
 				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block
 
-				int left = (x < 15 ? blocks[x+1][y][z] : -1);
+				int left = (x < 15 ? blocks[x+1][y][z] : -1); //-1 means not present | replace -1 with other side chunk block for x and z
 				int right = (x > 0 ? blocks[x-1][y][z] : -1);
 
 				int up = (y < 63 ? blocks[x][y+1][z] : -1);

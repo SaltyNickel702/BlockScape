@@ -35,12 +35,9 @@ Chunk Chunk::genChunk (int cx, int cz) {
 				else if (y == terrainHeight) {
 					c.blocks[x][y][z] = 1;  
 				} 
-				else if (y > terrainHeight - 1) {
+				else if (y >= terrainHeight - 4) {
 					c.blocks[x][y][z] = 2;  
-				} 
-				else if (y > 20) {
-					c.blocks[x][y][z] = 3;  
-				} 
+				}
 				else {
 					c.blocks[x][y][z] = 3;  
 				}
@@ -144,7 +141,7 @@ Model Chunk::genMesh() {
 	}
 
 	Model c(vertices, indices, attrib);
-	// c.pos = 16.0f*glm::vec3(pos.x,0,pos.y);
+	c.pos = 16.0f*glm::vec3(pos.x,0,pos.y);
 	
 	// for (int i = 0; i < vertices.size(); i++) {
 	// 	cout << vertices.at(i) << " ";

@@ -73,8 +73,37 @@ namespace Game {
 
 	float deltaTick = 0;
 
-	unsigned int textureAtlas;
-	void genTextureAtlas (string* imgNames) {};
+	unsigned int genTextureAtlas (const vector<string>& imgNames) {
+		GLuint atlasTex;
+		glGenTextures(1, &atlasTex);
+		glBindTexture(GL_TEXTURE_2D, atlasTex);
+		
+		// Allocate empty texture space
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 16*imgNames.size(), 16, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		
+		// Set texture parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		// Load and copy each texture into the atlas
+		for (size_t i = 0; i < imgNames.size(); i++) {
+			int width, height, channels;
+			string path = "./assets/textures/" + imgNames.at(i);
+			unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 4);
+			
+			if (data) {
+				glTexSubImage2D(GL_TEXTURE_2D, 0, i * 16, 0, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+			} else {
+				std::cerr << "Failed to load texture: " << path << std::endl;
+			}
+		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return atlasTex;
+	};
 
 	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
 		unsigned int texture;
@@ -173,6 +202,9 @@ namespace Game {
 		c.blocks[3][36][3] = 1;
 		Model m1 = c.genMesh();
 
+		glActiveTexture(GL_TEXTURE0);
+		vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png"};
+		unsigned int texture1 = Game::genTextureAtlas(textures);
 		
 		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
 		shaderProgram.uniforms = [&]() {
@@ -197,10 +229,9 @@ namespace Game {
 			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
 
-		};
+			glUniform1i(glGetUniformLocation(shaderProgram.ID,"totalTextures"),textures.size());
 
-		glActiveTexture(GL_TEXTURE0);
-		unsigned int texture1 = Game::genTexture("GrassSide.png");
+		};
 		
 		m1.textures.push_back(texture1);
 		m1.shader = &shaderProgram;

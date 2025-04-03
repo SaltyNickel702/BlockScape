@@ -7,15 +7,21 @@ void DefineBlocks() {
     World::blockTypes[0] = airBlock;
 
     Block grassBlock("Grass", 1);
+    grassBlock.textureSide = 0;
     grassBlock.textureTop = 1;
-    grassBlock.textureSide = 1;
-    grassBlock.textureBottom = 1;
+    grassBlock.textureBottom = 2;
     World::blockTypes[1] = grassBlock;
 
     Block dirtBlock("Dirt", 2);
+    dirtBlock.textureSide = 2;
+    dirtBlock.textureTop = 2;
+    dirtBlock.textureBottom = 2;
     World::blockTypes[2] = dirtBlock;
     
     Block stoneBlock("Stone", 3);
+    stoneBlock.textureSide = 3;
+    stoneBlock.textureTop = 3;
+    stoneBlock.textureBottom = 3;
     World::blockTypes[3] = stoneBlock;
 
     Block woodBlock("Wood", 4);
@@ -85,6 +91,8 @@ int main () {
     DefineBlocks();
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
+
+    cout << World::blockTypes[2].textureSide << endl;
 
     Game::init(1200,800);
 }

@@ -20,7 +20,7 @@ class Chunk {
         static Chunk genChunk (int cx, int cz);
 
         void setBlock (float x, float y, float z, int blockID); //in chunk coords
-        int getBlock (float x, float y, float z);
+        Block* getBlock (float x, float y, float z);
 
         bool loaded;
 

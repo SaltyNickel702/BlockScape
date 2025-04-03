@@ -9,7 +9,7 @@
 
 class Model {
     public:
-        Model () {};
+        Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
         void setData();
 

@@ -53,7 +53,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 Model Chunk::genMesh() {
 	vector<float> vertices;
 	vector<unsigned int> indices;
-	vector<unsigned int> attrib {3,3,2};
+	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 
 	int faces = 0;
 	for (int x = 0; x < 16; x++) {
@@ -61,33 +61,83 @@ Model Chunk::genMesh() {
 			for (int z = 0; z < 16; z++) {
 				int ths = blocks[x][y][z];
 				if (ths == 0) continue;
+				Block* blck = getBlock(x,y,z);
 
-				int left = (x > 0 ? blocks[x-1][y][z] : -1);
-				int right = (x < 15 ? blocks[x+1][y][z] : -1);
+				int left = (x < 15 ? blocks[x+1][y][z] : -1);
+				int right = (x > 0 ? blocks[x-1][y][z] : -1);
 
-				int down = (y > 0 ? blocks[x][y-1][z] : -1);
 				int up = (y < 63 ? blocks[x][y+1][z] : -1);
+				int down = (y > 0 ? blocks[x][y-1][z] : -1);
 
-				int back = (z > 0 ? blocks[x][y][z-1] : -1);
 				int front = (z < 15 ? blocks[x][y][z+1] : -1);
+				int back = (z > 0 ? blocks[x][y][z-1] : -1);
 
 				if (left == 0) {
+					vertices.push_back(x+1,y+0,z+0,	1,0,0,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z+1,	1,0,0,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+1,	1,0,0,	0,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+0,	1,0,0,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
 					
+					faces++;
 				}
 				if (right == 0) {
+					vertices.push_back(x-1,y+0,z+0,	-1,0,0,	1,0,	blck->textureSide);
+					vertices.push_back(x-1,y+0,z+1,	-1,0,0,	1,1,	blck->textureSide);
+					vertices.push_back(x-1,y+1,z+1,	-1,0,0,	0,1,	blck->textureSide);
+					vertices.push_back(x-1,y+1,z+0,	-1,0,0,	0,0,	blck->textureSide);
 
-				}
-				if (down == 0) {
-
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					
+					faces++;
 				}
 				if (up == 0) {
+					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureBottom);
+					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureBottom);
+					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureBottom);
+					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureBottom);
 
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					
+					faces++;
 				}
-				if (back == 0) {
+				if (down == 0) {
+					vertices.push_back(x+0,y-1,z+0,	0,-1,0,	1,0,	blck->textureBottom);
+					vertices.push_back(x+1,y-1,z+0,	0,-1,0,	1,1,	blck->textureBottom);
+					vertices.push_back(x+1,y-1,z+1,	0,-1,0,	0,1,	blck->textureBottom);
+					vertices.push_back(x+0,y-1,z+1,	0,-1,0,	0,0,	blck->textureBottom);
 
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					
+					faces++;
 				}
 				if (front == 0) {
 
+					vertices.push_back(x+0,y+0,z+1,	0,0,1,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z+1,	0,0,1,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
+					vertices.push_back(x+0,y+1,z+1,	0,0,1,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					
+					faces++;
+				}
+				if (back == 0) {
+					vertices.push_back(x+0,y+0,z-1,	0,0,-1,	1,0,	blck->textureSide);
+					vertices.push_back(x+1,y+0,z-1,	0,0,-1,	1,1,	blck->textureSide);
+					vertices.push_back(x+1,y+1,z-1,	0,0,-1,	0,1,	blck->textureSide);
+					vertices.push_back(x+0,y+1,z-1,	0,0,-1,	0,0,	blck->textureSide);
+
+					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
+					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					
+					faces++;
 				}
 			}
 		}

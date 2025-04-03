@@ -7,10 +7,10 @@
 #include <iostream>
 using namespace std;
 
-Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) : pos(glm::vec3(0)),rot(glm::vec2(0)) {
     setData(vVert, vIndices, vAttribLengths);
 
-    World::models.push_back(this);
+    // World::models.push_back(this); //Do this manually bc alway rebinds shader + want to do manually sometimes
 }
 void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
     //Put vectors into arrays

@@ -11,7 +11,7 @@ in float textureID;
 
 void main ()
 {
-	vec3 sun = vec3(-2,5,-1);
+	vec3 sun = vec3(-0.25,1,-0.5);
 	
 
 	float dotProd = (dot(normalize(normal),normalize(sun))+1)/2;

@@ -17,18 +17,18 @@ namespace {
 
 
 		//Adding/removing keys to keysDown | If new key is added, call callback functions
-		for (int i = GLFW_KEY_SPACE; i < GLFW_KEY_LAST; i++) {
+		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) {
 			bool isDown = keyDown(i);
 			if (isDown) {
-				bool previous = keysDown[i-33]; //
+				bool previous = keysDown[i-GLFW_KEY_SPACE]; //
 				if (!previous) {
-					vector<function<void()>> funcs = functionCalls[i-33];
+					vector<function<void()>> funcs = functionCalls[i-GLFW_KEY_SPACE];
 					for (const function<void()> func : funcs) {
 						func();
 					}
 				}
-				keysDown[i-33] = true;
-			} else keysDown[i-33] = false;
+				keysDown[i-GLFW_KEY_SPACE] = true;
+			} else keysDown[i-GLFW_KEY_SPACE] = false;
 		}
 	}
 	//last input stuff
@@ -148,9 +148,9 @@ namespace Game {
 			// model = glm::rotate(model,glm::radians(-(fmod(10*timeValue,90.0f))), glm::vec3(1.0f,0.0f,0.0f));
 
 			glm::mat4 view(1.0f);
-			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(0.0f,1.0f,0.0f));
-			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0.0f,0.0f,1.0f));
-			view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
+			view = glm::translate(view, World::Camera.pos*glm::vec3(1,-1,1));
 
 			glm::mat4 project;
 			project = glm::perspective(glm::radians(World::CameraConfig::FOV), (float)w/h, 0.1f, 100.0f);
@@ -199,7 +199,7 @@ namespace Game {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	}
 	void addKeydownCallback(int key, const function<void()>& func) {
-		functionCalls[key-33].push_back(func);
+		functionCalls[key-GLFW_KEY_SPACE].push_back(func);
 	}
 	void allowCursor (bool b) {
 		cursorEnabled = b;

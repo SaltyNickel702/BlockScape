@@ -28,16 +28,17 @@ void DefineLogicObjects() {
 
     };
 
+    World::Camera.pos = glm::vec3(0,0,-3);
     World::Camera.onTick = [&](){
         LObject* c = &World::Camera; //shortcut for not having to write World::Camera each time
 
         //Temp Camera Rotation
-        float rotSpeed = 45*Game::deltaTick;
+        float rotSpeed = 90*Game::deltaTick;
         if (Game::cursorEnabled) {
             if (Game::keyDown(GLFW_KEY_LEFT)) c->rot.x-= rotSpeed;
             if (Game::keyDown(GLFW_KEY_RIGHT)) c->rot.x+= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_UP)) c->rot.y+= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_DOWN)) c->rot.y-= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_UP)) c->rot.y-= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_DOWN)) c->rot.y+= rotSpeed;
         } else {
             c->rot+= 0.06f*Game::cursorPos; //floating point coefficient determines sensitivity
         }
@@ -49,17 +50,24 @@ void DefineLogicObjects() {
 
         //Temp Rotation matrix
         glm::mat4 rotMatrix(1.0f);
-        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.x),glm::vec3(0,1,0)); //left right
-        rotMatrix = glm::rotate(rotMatrix,glm::radians(c->rot.y),glm::vec3(0,0,1)); //up down -- First transformations applied are coded last
-        glm::vec3 moveVec = rotMatrix * glm::vec4(1,0,0,1);
+        rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
+        rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
+        glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
+        glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
+        glm::vec3 upVec(0,1,0);
 
         //Temp Camera Movement
-        float speed = 1.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*moveVec;
-        if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*moveVec;
+        float speed = 3.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*forwardVec;
+        if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*forwardVec;
+        if (Game::keyDown(GLFW_KEY_A)) c->pos = c->pos + speed*sideVec;
+        if (Game::keyDown(GLFW_KEY_D)) c->pos = c->pos - speed*sideVec;
+        if (Game::keyDown(GLFW_KEY_LEFT_SHIFT)) c->pos = c->pos - speed*upVec;
+        if (Game::keyDown(GLFW_KEY_SPACE)) c->pos = c->pos + speed*upVec;
 
 
         cout << c->rot.x << " " << c->rot.y << " -- ";
+        // cout << forwardVec.x << " " << forwardVec.y << " " << forwardVec.z << endl;
         cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
@@ -74,5 +82,5 @@ int main () {
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
 
-    Game::init(800,800);    
+    Game::init(800,800);
 }

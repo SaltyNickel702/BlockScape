@@ -6,6 +6,8 @@ using namespace Game;
 namespace {
 	void windowResizeCallback(GLFWwindow* window, int width, int height) { //for when the window gets resized
 		glViewport(0, 0, width, height);
+		Game::width = width;
+		Game::height = height;
 	}
 
 	//Input Handeling
@@ -17,25 +19,25 @@ namespace {
 
 
 		//Adding/removing keys to keysDown | If new key is added, call callback functions
-		for (int i = GLFW_KEY_SPACE; i < GLFW_KEY_LAST; i++) {
+		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) {
 			bool isDown = keyDown(i);
 			if (isDown) {
-				bool previous = keysDown[i-33]; //
+				bool previous = keysDown[i-GLFW_KEY_SPACE]; //
 				if (!previous) {
-					vector<function<void()>> funcs = functionCalls[i-33];
+					vector<function<void()>> funcs = functionCalls[i-GLFW_KEY_SPACE];
 					for (const function<void()> func : funcs) {
 						func();
 					}
 				}
-				keysDown[i-33] = true;
-			} else keysDown[i-33] = false;
+				keysDown[i-GLFW_KEY_SPACE] = true;
+			} else keysDown[i-GLFW_KEY_SPACE] = false;
 		}
 	}
 	//last input stuff
+	glm::vec2 mouseCapturePos(0);
 	void mouseMoveCallback (GLFWwindow* window, double xpos, double ypos) {
-		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : Game::cursorPos);
-		Game::cursorPos = fin;
-		
+		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : mouseCapturePos);
+		mouseCapturePos = fin;
 		if (!Game::cursorEnabled) glfwSetCursorPos(window,0,0);
 	}
 
@@ -48,13 +50,18 @@ namespace {
 			currentFrame = glfwGetTime();
 			deltaTick =  currentFrame - lastFrame;
 
+			while (tickQueue.size() > 0) {
+				tickQueue[0]();
+				tickQueue.erase(tickQueue.begin());
+			}
+
+			Game::cursorPos = mouseCapturePos;
+			if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
+
 
 			for (LObject* o: World::LogicObjects) {
 				o->onTick();
 			}
-
-			//reset Mouse Position if disabled;
-			if (!Game::cursorEnabled) Game::cursorPos/=2;
 		}
 	}
 }
@@ -62,8 +69,12 @@ namespace {
 //Exported Game namespace
 namespace Game {
 	GLFWwindow* window = nullptr;
+	int width, height;
 
 	float deltaTick = 0;
+
+	unsigned int textureAtlas;
+	void textureAtlas (string* imgNames);
 
 	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
 		unsigned int texture;
@@ -72,7 +83,7 @@ namespace Game {
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //use closest pixel color, not mixed
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		string ImgRel = "./assets/textures/" + ImgName;
@@ -97,6 +108,7 @@ namespace Game {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //Use core version of OpenGL
 		// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //FOR MACOS
 
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		//Create GLFW window
 		window = glfwCreateWindow(w, h, "Block Scape", NULL, NULL); //Size, title, monitor, shared recourses
@@ -116,41 +128,64 @@ namespace Game {
 
 		//Sets GL Viewport (camera)
 		glViewport(0, 0, w, h);
+		Game::width = w;
+		Game::height = h;
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 
 		//Create Model
 		vector<float> vertices {
-			-0.5f,-0.5f,0.0f,	0.0f,1.0f,		//bottom left
-			-0.5f,0.5f,0.0f, 	0.0f,0.0f,		//Top Left
-			0.5f,-0.5f,0.0f,	1.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,0.0f,		1.0f,0.0f		//Top Right
+			-0.5f,-0.5f,-0.5f,	-1.0f,-1.0f,-1.0f,	0.0f,1.0f,		//bottom left
+			-0.5f,0.5f,-0.5f, 	-1.0f, 1.0f, -1.0f,	0.0f,0.0f,		//Top Left
+			0.5f,-0.5f,-0.5f,	1.0f, -1.0f, -1.0f,	1.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,-0.5f,	1.0f, 1.0f, -1.0f,	1.0f,0.0f,		//Top Right
+
+			-0.5f,-0.5f,0.5f,	-1.0f,-1.0f,1.0f,	1.0f,1.0f,		//bottom left
+			-0.5f,0.5f,0.5f, 	-1.0f, 1.0f, 1.0f,	1.0f,0.0f,		//Top Left
+			0.5f,-0.5f,0.5f,	1.0f, -1.0f, 1.0f,	0.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,0.5f,		1.0f, 1.0f, 1.0f,	0.0f,0.0f		//Top Right
 		};
 		vector<unsigned int> attr {
-			3,2
+			3,3,2
 		};
 		vector<unsigned int> indices {
 			0, 2, 1,
-			1, 2, 3
+			1, 2, 3,
+
+			4, 5, 6,
+			5, 6, 7,
+
+			0, 4, 5,
+			0, 1, 5,
+
+			2, 6, 7,
+			2, 3, 7,
+
+			1, 3, 7,
+			1, 5, 7,
+
+			0, 2, 6,
+			0, 4, 6
 		};
 		Model m1(vertices, indices, attr);
 
 		
-		Shader shaderProgram("basicVert.glsl","basicFrag.glsl");
-		shaderProgram.uniforms = [&]() {
+		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
+		shaderProgram.uniforms = [&](Model m) {
 			float timeValue = glfwGetTime();
 			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
 
 
 			//Matrices
 			glm::mat4 model(1.0f);
-			// model = glm::rotate(model,glm::radians(-(fmod(10*timeValue,90.0f))), glm::vec3(1.0f,0.0f,0.0f));
+			model = glm::rotate(model, glm::radians(m.rot.x),glm::vec3(0,1,0));
+			model = glm::rotate(model, glm::radians(m.rot.y),glm::vec3(1,0,0));
 
 			glm::mat4 view(1.0f);
-			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(0.0f,1.0f,0.0f));
-			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0.0f,0.0f,1.0f));
-			view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
+			view = glm::translate(view, World::Camera.pos*glm::vec3(1,-1,1));
 
 			glm::mat4 project;
 			project = glm::perspective(glm::radians(World::CameraConfig::FOV), (float)w/h, 0.1f, 100.0f);
@@ -172,6 +207,11 @@ namespace Game {
 		//Render loop
 		thread tickFunc(tick);
 		glEnable(GL_DEPTH_TEST);
+		
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+			
 		while(!glfwWindowShouldClose(window)) {
 			processInput(window);
 
@@ -199,11 +239,22 @@ namespace Game {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	}
 	void addKeydownCallback(int key, const function<void()>& func) {
-		functionCalls[key-33].push_back(func);
+		functionCalls[key-GLFW_KEY_SPACE].push_back(func);
 	}
 	void allowCursor (bool b) {
 		cursorEnabled = b;
-		if (!b) Game::cursorPos = glm::vec2(0.0f);
+		if (!b) {
+			Game::cursorPos = glm::vec2(0.0f);
+			mouseCapturePos = glm::vec2(0.0f);
+			glfwSetCursorPos(window,0,0);
+		}
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+		if (b) {
+			Game::cursorPos = glm::vec2(Game::width/2, Game::height/2);
+			mouseCapturePos = glm::vec2(Game::width/2, Game::height/2);
+			glfwSetCursorPos(window,400,400);
+		}
 	}
+
+	vector<function<void()>> tickQueue;
 }

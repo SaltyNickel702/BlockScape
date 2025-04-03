@@ -15,8 +15,6 @@ using namespace std;
 
 namespace World { //world data
     extern map<int, map<int,Chunk>> chunks;
-    const Model getChunkMesh (int cx, int cy); //two float arrays, one for vertices, one for indices
-    static Model joinChunkMeshes (Chunk chunks[]);
 
     extern map<int,Block> blockTypes;
 

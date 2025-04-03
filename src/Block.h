@@ -15,6 +15,10 @@ class Block {
         }
         string displayName;
         int blockID;
+
+        unsigned int textureSide;
+        unsigned int textureTop;
+        unsigned int textureBottom;
 };
 
 

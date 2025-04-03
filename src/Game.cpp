@@ -6,6 +6,8 @@ using namespace Game;
 namespace {
 	void windowResizeCallback(GLFWwindow* window, int width, int height) { //for when the window gets resized
 		glViewport(0, 0, width, height);
+		Game::width = width;
+		Game::height = height;
 	}
 
 	//Input Handeling
@@ -32,10 +34,10 @@ namespace {
 		}
 	}
 	//last input stuff
+	glm::vec2 mouseCapturePos(0);
 	void mouseMoveCallback (GLFWwindow* window, double xpos, double ypos) {
-		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : Game::cursorPos);
-		Game::cursorPos = fin;
-		
+		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : mouseCapturePos);
+		mouseCapturePos = fin;
 		if (!Game::cursorEnabled) glfwSetCursorPos(window,0,0);
 	}
 
@@ -48,13 +50,18 @@ namespace {
 			currentFrame = glfwGetTime();
 			deltaTick =  currentFrame - lastFrame;
 
+			while (tickQueue.size() > 0) {
+				tickQueue[0]();
+				tickQueue.erase(tickQueue.begin());
+			}
+
+			Game::cursorPos = mouseCapturePos;
+			if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
+
 
 			for (LObject* o: World::LogicObjects) {
 				o->onTick();
 			}
-
-			//reset Mouse Position if disabled;
-			if (!Game::cursorEnabled) Game::cursorPos/=2;
 		}
 	}
 }
@@ -62,6 +69,7 @@ namespace {
 //Exported Game namespace
 namespace Game {
 	GLFWwindow* window = nullptr;
+	int width, height;
 
 	float deltaTick = 0;
 
@@ -97,6 +105,7 @@ namespace Game {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //Use core version of OpenGL
 		// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //FOR MACOS
 
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		//Create GLFW window
 		window = glfwCreateWindow(w, h, "Block Scape", NULL, NULL); //Size, title, monitor, shared recourses
@@ -116,23 +125,45 @@ namespace Game {
 
 		//Sets GL Viewport (camera)
 		glViewport(0, 0, w, h);
+		Game::width = w;
+		Game::height = h;
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 
 		//Create Model
 		vector<float> vertices {
-			-0.5f,-0.5f,0.0f,	0.0f,1.0f,		//bottom left
-			-0.5f,0.5f,0.0f, 	0.0f,0.0f,		//Top Left
-			0.5f,-0.5f,0.0f,	1.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,0.0f,		1.0f,0.0f		//Top Right
+			-0.5f,-0.5f,-0.5f,	0.0f,1.0f,		//bottom left
+			-0.5f,0.5f,-0.5f, 	0.0f,0.0f,		//Top Left
+			0.5f,-0.5f,-0.5f,	1.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,-0.5f,	1.0f,0.0f,		//Top Right
+
+			-0.5f,-0.5f,0.5f,	1.0f,1.0f,		//bottom left
+			-0.5f,0.5f,0.5f, 	1.0f,0.0f,		//Top Left
+			0.5f,-0.5f,0.5f,	0.0f,1.0f,		//Bottom Right
+			0.5f,0.5f,0.5f,		0.0f,0.0f		//Top Right
 		};
 		vector<unsigned int> attr {
 			3,2
 		};
 		vector<unsigned int> indices {
 			0, 2, 1,
-			1, 2, 3
+			1, 2, 3,
+
+			4, 5, 6,
+			5, 6, 7,
+
+			0, 4, 5,
+			0, 1, 5,
+
+			2, 6, 7,
+			2, 3, 7,
+
+			1, 3, 7,
+			1, 5, 7,
+
+			0, 2, 6,
+			0, 4, 6
 		};
 		Model m1(vertices, indices, attr);
 
@@ -203,7 +234,18 @@ namespace Game {
 	}
 	void allowCursor (bool b) {
 		cursorEnabled = b;
-		if (!b) Game::cursorPos = glm::vec2(0.0f);
+		if (!b) {
+			Game::cursorPos = glm::vec2(0.0f);
+			mouseCapturePos = glm::vec2(0.0f);
+			glfwSetCursorPos(window,0,0);
+		}
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+		if (b) {
+			Game::cursorPos = glm::vec2(Game::width/2, Game::height/2);
+			mouseCapturePos = glm::vec2(Game::width/2, Game::height/2);
+			glfwSetCursorPos(window,400,400);
+		}
 	}
+
+	vector<function<void()>> tickQueue;
 }

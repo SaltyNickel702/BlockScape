@@ -29,10 +29,12 @@ using namespace std;
 
 namespace Game {
 	extern GLFWwindow* window;
-	unsigned int genTexture (string ImgName);
+	extern int width, height;
 	extern float deltaTick;
 	
 	int init(int w, int h);
+
+	unsigned int genTexture (string ImgName);
 	
 
 	extern bool cursorEnabled;
@@ -44,6 +46,8 @@ namespace Game {
 	
 
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
+
+	extern vector<function<void()>> tickQueue;
 }
 
 #endif

@@ -6,7 +6,7 @@ vector<Model*> World::models;
 vector<LObject*> World::LogicObjects;
 LObject World::Camera;
 LObject World::Player;
-float World::CameraConfig::FOV = 45;
+float World::CameraConfig::FOV = 72;
 
 Chunk* World::getChunk (int x, int y) {
 	int cx = x/16;

@@ -40,7 +40,7 @@ void DefineLogicObjects() {
             if (Game::keyDown(GLFW_KEY_UP)) c->rot.y-= rotSpeed;
             if (Game::keyDown(GLFW_KEY_DOWN)) c->rot.y+= rotSpeed;
         } else {
-            c->rot+= 0.06f*Game::cursorPos; //floating point coefficient determines sensitivity
+            c->rot+= 0.1f*Game::cursorPos; //floating point coefficient determines sensitivity
         }
         // cout << Game::cursorPos.x << " " << Game::cursorPos.y << " -- ";
         
@@ -51,7 +51,7 @@ void DefineLogicObjects() {
         //Temp Rotation matrix
         glm::mat4 rotMatrix(1.0f);
         rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
-        rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
+        // rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
         glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
         glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
         glm::vec3 upVec(0,1,0);
@@ -66,9 +66,8 @@ void DefineLogicObjects() {
         if (Game::keyDown(GLFW_KEY_SPACE)) c->pos = c->pos + speed*upVec;
 
 
-        cout << c->rot.x << " " << c->rot.y << " -- ";
-        // cout << forwardVec.x << " " << forwardVec.y << " " << forwardVec.z << endl;
-        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+        // cout << c->rot.x << " " << c->rot.y << " -- " << endl;
+        // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
 }
@@ -82,5 +81,5 @@ int main () {
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
 
-    Game::init(800,800);
+    Game::init(1200,800);
 }

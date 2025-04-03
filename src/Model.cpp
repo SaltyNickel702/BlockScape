@@ -1,6 +1,8 @@
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Model.h"
 #include "World.h"
-#include <glad/glad.h>
 
 #include <iostream>
 using namespace std;
@@ -73,5 +75,5 @@ void Model::draw () {
     glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
 }
 Model Model::joinModels(Model* models) {
-    
+    return models[0];
 }

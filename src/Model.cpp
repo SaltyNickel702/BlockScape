@@ -6,6 +6,11 @@
 using namespace std;
 
 Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+    setData(vVert, vIndices, vAttribLengths);
+
+    World::models.push_back(this);
+}
+void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
     //Put vectors into arrays
     float v[vVert.size()];
     copy(vVert.begin(),vVert.end(), v);
@@ -53,9 +58,10 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    World::models.push_back(this);
+    dataFormatted = true;
 }
 void Model::draw () {
+    if (!dataFormatted) return;
     shader->bind();
 
     for (int i = 0; i < textures.size(); i++) {

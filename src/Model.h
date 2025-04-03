@@ -9,7 +9,11 @@
 
 class Model {
     public:
+        Model () {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
+        void setData();
+
+        bool dataFormatted = false;
         void draw ();
 
         float* vertices;

@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <FastNoise/FastNoiseLite.h>
+#include "Model"
 
 #ifndef CHUNK_H
 #define CHUNK_H
@@ -22,6 +23,10 @@ class Chunk {
         int getBlock (float x, float y, float z);
 
         bool loaded;
+
+        Model mesh;
+        Model genMesh();
+
 };
 
 

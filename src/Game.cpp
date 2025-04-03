@@ -172,15 +172,15 @@ namespace Game {
 
 		
 		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
-		shaderProgram.uniforms = [&](Model m) {
+		shaderProgram.uniforms = [&]() {
 			float timeValue = glfwGetTime();
 			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
 
 
 			//Matrices
 			glm::mat4 model(1.0f);
-			model = glm::rotate(model, glm::radians(m.rot.x),glm::vec3(0,1,0));
-			model = glm::rotate(model, glm::radians(m.rot.y),glm::vec3(1,0,0));
+			model = glm::rotate(model, glm::radians(0.0f),glm::vec3(0,1,0));
+			model = glm::rotate(model, glm::radians(0.0f),glm::vec3(1,0,0));
 
 			glm::mat4 view(1.0f);
 			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));

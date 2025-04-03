@@ -58,7 +58,7 @@ Model Chunk::genMesh() {
 	vector<unsigned int> indices;
 	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 
-	int faces = 0;
+	float faces = 0;
 	for (int x = 0; x < 16; x++) {
 		for (int y = 0; y < 64; y++) {
 			for (int z = 0; z < 16; z++) {
@@ -76,68 +76,68 @@ Model Chunk::genMesh() {
 				int back = (z > 0 ? blocks[x][y][z-1] : -1);
 
 				if (left == 0) {
-					vertices.push_back(x+1,y+0,z+0,	1,0,0,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z+1,	1,0,0,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+1,	1,0,0,	0,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+0,	1,0,0,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{x+1.0f,y+0.0f,z+0.0f,	1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+0.0f,z+1.0f,	1,0,0,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z+1.0f,	1,0,0,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z+0.0f,	1,0,0,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.push_back((float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f);
+					indices.push_back((float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f);
 					
 					faces++;
 				}
 				if (right == 0) {
-					vertices.push_back(x-1,y+0,z+0,	-1,0,0,	1,0,	blck->textureSide);
-					vertices.push_back(x-1,y+0,z+1,	-1,0,0,	1,1,	blck->textureSide);
-					vertices.push_back(x-1,y+1,z+1,	-1,0,0,	0,1,	blck->textureSide);
-					vertices.push_back(x-1,y+1,z+0,	-1,0,0,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{x-1.0f,y+0.0f,z+0.0f,	-1,0,0,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x-1.0f,y+0.0f,z+1.0f,	-1,0,0,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x-1.0f,y+1.0f,z+1.0f,	-1,0,0,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x-1.0f,y+1.0f,z+0.0f,	-1,0,0,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.push_back((float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f);
+					indices.push_back((float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f);
 					
 					faces++;
 				}
 				if (up == 0) {
-					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureTop);
-					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureTop);
-					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureTop);
-					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureTop);
+					vertices.insert(vertices.end(),{x+0.0f,y+1.0f,z+0.0f,	0,1,0,	1,0,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z+0.0f,	0,1,0,	1,1,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z+1.0f,	0,1,0,	0,1,	(float)blck->textureTop});
+					vertices.insert(vertices.end(),{x+0.0f,y+1.0f,z+1.0f,	0,1,0,	0,0,	(float)blck->textureTop});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{(float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f});
+					indices.insert(indices.end(),{(float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f});
 					
 					faces++;
 				}
 				if (down == 0) {
-					vertices.push_back(x+0,y-1,z+0,	0,-1,0,	1,0,	blck->textureBottom);
-					vertices.push_back(x+1,y-1,z+0,	0,-1,0,	1,1,	blck->textureBottom);
-					vertices.push_back(x+1,y-1,z+1,	0,-1,0,	0,1,	blck->textureBottom);
-					vertices.push_back(x+0,y-1,z+1,	0,-1,0,	0,0,	blck->textureBottom);
+					vertices.insert(vertices.end(),{x+0.0f,y-1.0f,z+0.0f,	0,-1,0,	1,0,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{x+1.0f,y-1.0f,z+0.0f,	0,-1,0,	1,1,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{x+1.0f,y-1.0f,z+1.0f,	0,-1,0,	0,1,	(float)blck->textureBottom});
+					vertices.insert(vertices.end(),{x+0.0f,y-1.0f,z+1.0f,	0,-1,0,	0,0,	(float)blck->textureBottom});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{(float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f});
+					indices.insert(indices.end(),{(float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f});
 					
 					faces++;
 				}
 				if (front == 0) {
-					vertices.push_back(x+0,y+0,z+1,	0,0,1,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z+1,	0,0,1,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
-					vertices.push_back(x+0,y+1,z+1,	0,0,1,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{x+0.0f,y+0.0f,z+1.0f,	0,0,1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+0.0f,z+1.0f,	0,0,1,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z+1.0f,	0,0,1,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+0.0f,y+1.0f,z+1.0f,	0,0,1,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{(float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f});
+					indices.insert(indices.end(),{(float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f});
 					
 					faces++;
 				}
 				if (back == 0) {
-					vertices.push_back(x+0,y+0,z-1,	0,0,-1,	1,0,	blck->textureSide);
-					vertices.push_back(x+1,y+0,z-1,	0,0,-1,	1,1,	blck->textureSide);
-					vertices.push_back(x+1,y+1,z-1,	0,0,-1,	0,1,	blck->textureSide);
-					vertices.push_back(x+0,y+1,z-1,	0,0,-1,	0,0,	blck->textureSide);
+					vertices.insert(vertices.end(),{x+0.0f,y+0.0f,z-1.0f,	0,0,-1,	1,0,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+0.0f,z-1.0f,	0,0,-1,	1,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+1.0f,y+1.0f,z-1.0f,	0,0,-1,	0,1,	(float)blck->textureSide});
+					vertices.insert(vertices.end(),{x+0.0f,y+1.0f,z-1.0f,	0,0,-1,	0,0,	(float)blck->textureSide});
 
-					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
-					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
+					indices.insert(indices.end(),{(float)faces*4.0f + 0.0f, (float)faces*4.0f + 1.0f, (float)faces*4.0f + 2.0f});
+					indices.insert(indices.end(),{(float)faces*4.0f + 2.0f, (float)faces*4.0f + 3.0f, (float)faces*4.0f + 0.0f});
 					
 					faces++;
 				}

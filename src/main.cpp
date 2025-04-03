@@ -7,6 +7,9 @@ void DefineBlocks() {
     World::blockTypes[0] = airBlock;
 
     Block grassBlock("Grass", 1);
+    grassBlock.textureTop = 1;
+    grassBlock.textureSide = 1;
+    grassBlock.textureBottom = 1;
     World::blockTypes[1] = grassBlock;
 
     Block dirtBlock("Dirt", 2);
@@ -28,7 +31,8 @@ void DefineLogicObjects() {
 
     };
 
-    World::Camera.pos = glm::vec3(0,0,-3);
+    World::Camera.pos = glm::vec3(0,34,0);
+    World::Camera.rot = glm::vec2(0,0);
     World::Camera.onTick = [&](){
         LObject* c = &World::Camera; //shortcut for not having to write World::Camera each time
 
@@ -57,8 +61,8 @@ void DefineLogicObjects() {
         glm::vec3 upVec(0,1,0);
 
         //Temp Camera Movement
-        float speed = 3.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=3;
+        float speed = 6.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=2.5;
         if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_A)) c->pos = c->pos + speed*sideVec;
@@ -67,8 +71,8 @@ void DefineLogicObjects() {
         if (Game::keyDown(GLFW_KEY_SPACE)) c->pos = c->pos + speed*upVec;
 
 
-        // cout << c->rot.x << " " << c->rot.y << " -- " << endl;
-        // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+        cout << c->rot.x << " " << c->rot.y << " -- ";
+        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
 }

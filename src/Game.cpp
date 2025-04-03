@@ -134,7 +134,7 @@ namespace Game {
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 
-		//Create Model
+		// Create Model
 		vector<float> vertices {
 			-0.5f,-0.5f,-0.5f,	-1.0f,-1.0f,-1.0f,	0.0f,1.0f,		//bottom left
 			-0.5f,0.5f,-0.5f, 	-1.0f, 1.0f, -1.0f,	0.0f,0.0f,		//Top Left
@@ -168,7 +168,10 @@ namespace Game {
 			0, 2, 6,
 			0, 4, 6
 		};
-		Model m1(vertices, indices, attr);
+		// Model m1(vertices, indices, attr);
+		Chunk c = Chunk::genChunk(0,0);
+		Model m1 = c.genMesh();
+		cout << c.blocks[0][31][1] << endl;
 
 		
 		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
@@ -179,13 +182,13 @@ namespace Game {
 
 			//Matrices
 			glm::mat4 model(1.0f);
-			model = glm::rotate(model, glm::radians(m1.rot.x),glm::vec3(0,1,0));
-			model = glm::rotate(model, glm::radians(m1.rot.y),glm::vec3(1,0,0));
+			// model = glm::rotate(model, glm::radians(m1.rot.x),glm::vec3(0,1,0));
+			// model = glm::rotate(model, glm::radians(m1.rot.y),glm::vec3(1,0,0));
 
 			glm::mat4 view(1.0f);
 			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
-			view = glm::rotate(view, glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
-			view = glm::translate(view, World::Camera.pos*glm::vec3(1,-1,1));
+			view = glm::rotate(view, glm::radians(World::Camera.rot.x+180), glm::vec3(0,1,0));
+			view = glm::translate(view, World::Camera.pos*glm::vec3(-1));
 
 			glm::mat4 project;
 			project = glm::perspective(glm::radians(World::CameraConfig::FOV), (float)w/h, 0.1f, 100.0f);
@@ -211,7 +214,7 @@ namespace Game {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
-			
+		
 		while(!glfwWindowShouldClose(window)) {
 			processInput(window);
 

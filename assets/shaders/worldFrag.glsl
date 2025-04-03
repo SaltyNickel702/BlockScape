@@ -15,5 +15,5 @@ void main ()
 	
 
 	float dotProd = (dot(normalize(normal),normalize(sun))+1)/2;
-	gl_FragColor = (dotProd + .2) * texture(texture1, texCoord);
+	gl_FragColor = texture(texture1, texCoord);
 }

@@ -98,10 +98,10 @@ Model Chunk::genMesh() {
 					faces++;
 				}
 				if (up == 0) {
-					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureBottom);
-					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureBottom);
-					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureBottom);
-					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureBottom);
+					vertices.push_back(x+0,y+1,z+0,	0,1,0,	1,0,	blck->textureTop);
+					vertices.push_back(x+1,y+1,z+0,	0,1,0,	1,1,	blck->textureTop);
+					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureTop);
+					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureTop);
 
 					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
 					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);

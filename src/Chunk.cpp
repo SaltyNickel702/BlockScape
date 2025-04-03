@@ -81,8 +81,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x+1,y+1,z+1,	1,0,0,	0,1,	blck->textureSide);
 					vertices.push_back(x+1,y+1,z+0,	1,0,0,	0,0,	blck->textureSide);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}
@@ -92,8 +92,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x-1,y+1,z+1,	-1,0,0,	0,1,	blck->textureSide);
 					vertices.push_back(x-1,y+1,z+0,	-1,0,0,	0,0,	blck->textureSide);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}
@@ -103,8 +103,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x+1,y+1,z+1,	0,1,0,	0,1,	blck->textureTop);
 					vertices.push_back(x+0,y+1,z+1,	0,1,0,	0,0,	blck->textureTop);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}
@@ -114,8 +114,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x+1,y-1,z+1,	0,-1,0,	0,1,	blck->textureBottom);
 					vertices.push_back(x+0,y-1,z+1,	0,-1,0,	0,0,	blck->textureBottom);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}
@@ -125,8 +125,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x+1,y+1,z+1,	0,0,1,	0,1,	blck->textureSide);
 					vertices.push_back(x+0,y+1,z+1,	0,0,1,	0,0,	blck->textureSide);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}
@@ -136,8 +136,8 @@ Model Chunk::genMesh() {
 					vertices.push_back(x+1,y+1,z-1,	0,0,-1,	0,1,	blck->textureSide);
 					vertices.push_back(x+0,y+1,z-1,	0,0,-1,	0,0,	blck->textureSide);
 
-					indices.push_back(faces*3 + 0, faces*3 + 1, faces*3 + 2);
-					indices.push_back(faces*3 + 1, faces*3 + 2, faces*3 + 0);
+					indices.push_back(faces*4 + 0, faces*4 + 1, faces*4 + 2);
+					indices.push_back(faces*4 + 2, faces*4 + 3, faces*4 + 0);
 					
 					faces++;
 				}

@@ -171,7 +171,7 @@ namespace Game {
 		Model m1(vertices, indices, attr);
 
 		
-		Shader shaderProgram("basicVert.glsl","basicFrag.glsl");
+		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
 		shaderProgram.uniforms = [&]() {
 			float timeValue = glfwGetTime();
 			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);

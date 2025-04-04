@@ -15,7 +15,7 @@ class Chunk {
 
         static int chunkCoordToWorld (int cx, int cz, float x, float y, float z); //chunk x and z, and chunk coords x y z
 
-        int blocks[16][64][16]; //xyz
+        int blocks[16][128][16]; //xyz
 
         static Chunk genChunk (int cx, int cz);
 

@@ -14,7 +14,7 @@ LObject World::Camera;
 LObject World::Player;
 
 float World::Settings::FOV = 72;
-float World::Settings::renderDistance = 5;
+float World::Settings::renderDistance = 10;
 
 
 Chunk* World::getChunk (float x, float z) { //In world coords
@@ -23,12 +23,11 @@ Chunk* World::getChunk (float x, float z) { //In world coords
 	return getChunkByCC(cx,cz);
 }
 Chunk* World::getChunkByCC (int cx, int cz) {
-	map<int, Chunk> xMap = chunks[cx];
-	auto cTest = xMap.find(cz);
-	if (cTest != xMap.end()) {
-		return &xMap[cz];
+	map<int, Chunk>* xMap = &chunks[cx];
+	auto cTest = xMap->find(cz);
+	if (cTest != xMap->end()) {
+		return &chunks[cx][cz];
 	};
-	cout << "Didn't find Chunk" << endl;
 	return nullptr;
 }
 int* World::getBlock (int x, int y, int z) {
@@ -55,6 +54,7 @@ void chunkLoader () {
 			}
 		}
 	}
+
 	for (auto& [key, cx] : World::chunks) { //load/unload chunks already in memory
 		for (auto& [key2, cMem] : cx) {
 			Chunk* c = &cMem;
@@ -106,9 +106,9 @@ void World::loadNew (int seed) {
 	World::seed = seed;
 	chunkLoader();
 	Chunk spawnC = World::chunks[0][0];
-	for (int y = 0; y < 64; y++) {
-		if (spawnC.blocks[8][y+2][8] == 0) {
-			World::Camera.pos = glm::vec3(8,y,8); //change this after everything works
+	for (int y = 0; y < 128; y++) {
+		if (spawnC.blocks[8][y][8] == 0) {
+			World::Camera.pos = glm::vec3(8,y+2,8); //change this after everything works
 			break;
 		}
 	}

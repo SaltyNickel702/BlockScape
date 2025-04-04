@@ -12,12 +12,16 @@ Chunk Chunk::genChunk (int cx, int cz) {
 
 	FastNoiseLite noise;  // Create noise generator
 	//Fast Noise settings
-    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2); 
-	noise.SetFrequency(0.01f);
+    noise.SetNoiseType(FastNoiseLite::NoiseType_ValueCubic); 
+	noise.SetFrequency(-0.002f);
 	noise.SetSeed(seed); 
-	noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+	noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
 	noise.SetFractalOctaves(3);
-	noise.SetFractalLacunarity(2.76f); 
+	noise.SetFractalLacunarity(2.76f);
+	noise.SetFractalGain(9.820f);
+	noise.SetFractalWeightedStrength(1.880f);
+	noise.SetDomainWarpType(FractalNoiseLite::DomainWarpType_OpenSimplex2);
+	noise.SetDomainWarpAmp(-39.5);
  
 	
 	// Generates terrain

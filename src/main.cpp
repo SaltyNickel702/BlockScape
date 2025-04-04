@@ -100,11 +100,13 @@ int main () {
 
 
     //Compile Assets
+    cout << "Generating Textures" << endl;
     vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png"};
     unsigned int atlas = Game::genTextureAtlas(textures);
     World::textures["atlas"] = &atlas;
-    cout << "Generating Texture" << endl;
 
+
+    cout << "Generating Shaders" << endl;
     Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
     shaderProgram.uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
         float timeValue = glfwGetTime();
@@ -133,11 +135,14 @@ int main () {
 
     };
     World::shaders["world"] = &shaderProgram;
-    cout << "Generating Shader" << endl;
 
 
     //Add menu stuff here
     World::loadNew(495804);
+
+    // Chunk* myChunk = World::getChunkByCC(0,0);
+    // cout << *myChunk->getBlock(5,30,5) << endl;
+    // cout << World::chunks[0][0].blocks[5][30][5] << endl;
 
 
     Game::loop();

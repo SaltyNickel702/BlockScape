@@ -17,10 +17,19 @@ float World::Settings::FOV = 72;
 float World::Settings::renderDistance = 5;
 
 
-Chunk* World::getChunk (int x, int y) {
-	int cx = x/16;
-	int cy = y/16;
-	return &chunks[cx][cy];
+Chunk* World::getChunk (float x, float z) { //In world coords
+	int cx = (int)x/16.0f;
+	int cz = (int)z/16.0f;
+	return getChunkByCC(cx,cz);
+}
+Chunk* World::getChunkByCC (int cx, int cz) {
+	map<int, Chunk> xMap = chunks[cx];
+	auto cTest = xMap.find(cz);
+	if (cTest != xMap.end()) {
+		return &xMap[cz];
+	};
+	cout << "Didn't find Chunk" << endl;
+	return nullptr;
 }
 int* World::getBlock (int x, int y, int z) {
 	Chunk* c = getChunk(x,y);
@@ -59,7 +68,7 @@ void chunkLoader () {
 				}
 			} else {
 				//load
-				if (!c->loaded) {
+				if (!c->loaded ) {
 					*c->mesh = c->genMesh();
 					c->mesh->shader = World::shaders["world"];
 					c->mesh->textures.push_back(*World::textures["atlas"]);
@@ -68,19 +77,6 @@ void chunkLoader () {
 			}
 		}
 	}
-
-	// auto c1 = World::chunks[0].find(0);
-	// if (c1 == World::chunks[0].end()) {
-	// 	World::chunks[0][0] = Chunk::genChunk(0,0);
-	// }
-
-	// Chunk* c = &World::chunks[0][0];
-	// if (!c->loaded) {
-	// 	*c->mesh = c->genMesh();
-	// 	c->mesh->shader = World::shaders["world"];
-	// 	c->mesh->textures.push_back(*World::textures["atlas"]);
-	// 	c->loaded = true;
-	// }
 }
 void worldSetup () { //called by the loading functions
 	//Chunk Rendering

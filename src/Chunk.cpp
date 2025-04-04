@@ -52,6 +52,11 @@ Model Chunk::genMesh() {
 	vector<unsigned int> indices;
 	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 
+	Chunk* leftC = World::getChunkByCC(pos.x+1,pos.y);
+	Chunk* rightC = World::getChunkByCC(pos.x-1,pos.y);
+	Chunk* frontC = World::getChunkByCC(pos.x,pos.y-1);
+	Chunk* backC = World::getChunkByCC(pos.x,pos.y-1);
+
 	int faces = 0;
 	for (int x = 0; x < 16; (float)x++) {
 		for (int y = 0; y < 64; (float)y++) {
@@ -60,14 +65,14 @@ Model Chunk::genMesh() {
 				if (ths == 0) continue;
 				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block
 
-				int left = (x < 15 ? blocks[x+1][y][z] : -1); //-1 means not present | replace -1 with other side chunk block for x and z
-				int right = (x > 0 ? blocks[x-1][y][z] : -1);
+				int left = (x < 15 ? blocks[x+1][y][z] : -1);//(leftC == nullptr ? -1 : *leftC->getBlock(0,y,z))); //-1 means not present | replace -1 with other side chunk block for x and z
+				int right = (x > 0 ? blocks[x-1][y][z] : -1);//(rightC == nullptr ? -1 : *rightC->getBlock(15,y,z)));
 
-				int up = (y < 63 ? blocks[x][y+1][z] : -1);
-				int down = (y > 0 ? blocks[x][y-1][z] : -1);
+				int up = (y < 63 ? blocks[x][y+1][z] : 0); //assume air is above y:63
+				int down = (y > 0 ? blocks[x][y-1][z] : 0); //assume air is below y:0
 
-				int front = (z < 15 ? blocks[x][y][z+1] : -1);
-				int back = (z > 0 ? blocks[x][y][z-1] : -1);
+				int front = (z < 15 ? blocks[x][y][z+1] : -1);//(frontC == nullptr ? -1 : *frontC->getBlock(x,y,0)));
+				int back = (z > 0 ? blocks[x][y][z-1] : -1);//(backC == nullptr ? -1 : *backC->getBlock(x,y,15)));
 
 				if (left == 0) {
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	1,0,0,	1,1,	(float)blck->textureSide});

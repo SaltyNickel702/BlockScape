@@ -29,7 +29,8 @@ namespace World { //world data
     extern vector<Model*> models;
     extern vector<LObject*> LogicObjects;
     
-    Chunk* getChunk (int x, int y);
+    Chunk* getChunk (float x, float z); //world coords
+    Chunk* getChunkByCC (int cx, int cy); //chunk coords;
     int* getBlock (int x, int y, int z);
     void setBlock (int x, int y, int z, int block);
     

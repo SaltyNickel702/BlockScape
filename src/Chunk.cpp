@@ -16,12 +16,12 @@ Chunk Chunk::genChunk (int cx, int cz) {
 	noise.SetFrequency(-0.002f);
 	noise.SetSeed(seed); 
 	noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
-	noise.SetFractalOctaves(3);
+	noise.SetFractalOctaves(3.0f);
 	noise.SetFractalLacunarity(2.76f);
 	noise.SetFractalGain(9.820f);
 	noise.SetFractalWeightedStrength(1.880f);
 	noise.SetDomainWarpType(FractalNoiseLite::DomainWarpType_OpenSimplex2);
-	noise.SetDomainWarpAmp(-39.5);
+	noise.SetDomainWarpAmp(-39.5f);
  
 	
 	// Generates terrain

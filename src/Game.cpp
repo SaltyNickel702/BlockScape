@@ -45,23 +45,21 @@ namespace {
 	float lastFrame = 0;
 	float currentFrame = 0;
 	void tick () {
-		while (running) {
-			lastFrame = currentFrame;
-			currentFrame = glfwGetTime();
-			deltaTick =  currentFrame - lastFrame;
+		lastFrame = currentFrame;
+		currentFrame = glfwGetTime();
+		deltaTick =  currentFrame - lastFrame;
 
-			while (tickQueue.size() > 0) {
-				tickQueue[0]();
-				tickQueue.erase(tickQueue.begin());
-			}
+		while (tickQueue.size() > 0) {
+			tickQueue[0]();
+			tickQueue.erase(tickQueue.begin());
+		}
 
-			Game::cursorPos = mouseCapturePos;
-			if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
+		Game::cursorPos = mouseCapturePos;
+		if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
 
 
-			for (LObject* o: World::LogicObjects) {
-				o->onTick();
-			}
+		for (LObject* o: World::LogicObjects) {
+			o->onTick();
 		}
 	}
 }
@@ -162,105 +160,7 @@ namespace Game {
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
-
-		// Create Model
-		vector<float> vertices {
-			-0.5f,-0.5f,-0.5f,	-1.0f,-1.0f,-1.0f,	0.0f,1.0f,		//bottom left
-			-0.5f,0.5f,-0.5f, 	-1.0f, 1.0f, -1.0f,	0.0f,0.0f,		//Top Left
-			0.5f,-0.5f,-0.5f,	1.0f, -1.0f, -1.0f,	1.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,-0.5f,	1.0f, 1.0f, -1.0f,	1.0f,0.0f,		//Top Right
-
-			-0.5f,-0.5f,0.5f,	-1.0f,-1.0f,1.0f,	1.0f,1.0f,		//bottom left
-			-0.5f,0.5f,0.5f, 	-1.0f, 1.0f, 1.0f,	1.0f,0.0f,		//Top Left
-			0.5f,-0.5f,0.5f,	1.0f, -1.0f, 1.0f,	0.0f,1.0f,		//Bottom Right
-			0.5f,0.5f,0.5f,		1.0f, 1.0f, 1.0f,	0.0f,0.0f		//Top Right
-		};
-		vector<unsigned int> attr {
-			3,3,2
-		};
-		vector<unsigned int> indices {
-			0, 2, 1,
-			1, 2, 3,
-
-			4, 5, 6,
-			5, 6, 7,
-
-			0, 4, 5,
-			0, 1, 5,
-
-			2, 6, 7,
-			2, 3, 7,
-
-			1, 3, 7,
-			1, 5, 7,
-
-			0, 2, 6,
-			0, 4, 6
-		};
-		// Model m1(vertices, indices, attr);
-		Chunk c = Chunk::genChunk(0,0);
-		c.blocks[3][36][3] = 1;
-		Model m1 = c.genMesh();
-
-		glActiveTexture(GL_TEXTURE0);
-		vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png"};
-		unsigned int texture1 = Game::genTextureAtlas(textures);
-		
-		Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
-		shaderProgram.uniforms = [&]() {
-			float timeValue = glfwGetTime();
-			glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
-
-
-			//Matrices
-			glm::mat4 model(1.0f);
-			// model = glm::rotate(model, glm::radians(m1.rot.x),glm::vec3(0,1,0));
-			// model = glm::rotate(model, glm::radians(m1.rot.y),glm::vec3(1,0,0));
-
-			glm::mat4 view(1.0f);
-			view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
-			view = glm::rotate(view, glm::radians(World::Camera.rot.x+180), glm::vec3(0,1,0));
-			view = glm::translate(view, World::Camera.pos*glm::vec3(-1));
-
-			glm::mat4 project;
-			project = glm::perspective(glm::radians(World::CameraConfig::FOV), (float)w/h, 0.1f, 100.0f);
-
-			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
-			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
-			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
-
-			glUniform1i(glGetUniformLocation(shaderProgram.ID,"totalTextures"),textures.size());
-
-		};
-		
-		m1.textures.push_back(texture1);
-		m1.shader = &shaderProgram;
-
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		//Render loop
-		thread tickFunc(tick);
-		glEnable(GL_DEPTH_TEST);
-		
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glFrontFace(GL_CCW);
-		
-		while(!glfwWindowShouldClose(window)) {
-			processInput(window);
-
-			//RENDERING
-			glClearColor(.1f,.5f,.4f,1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			m1.draw();
-	
-			glfwSwapBuffers(window); //updates screen buffer
-			glfwPollEvents(); //Check for inputs
-		}
-		running = false;
-		tickFunc.detach();
-		glfwTerminate();
 
 		return 0;
 	}
@@ -288,6 +188,32 @@ namespace Game {
 			mouseCapturePos = glm::vec2(Game::width/2, Game::height/2);
 			glfwSetCursorPos(window,400,400);
 		}
+	}
+	void loop () {
+		//Render loop
+		glEnable(GL_DEPTH_TEST);
+				
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+
+		while(!glfwWindowShouldClose(window)) {
+			processInput(window);
+
+			//RENDERING
+			glClearColor(.1f,.5f,.4f,1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			tick();
+			// for (Model* m : World::models) {
+			// 	m->draw();
+			// }
+			
+			glfwSwapBuffers(window); //updates screen buffer
+			glfwPollEvents(); //Check for inputs
+		}
+		running = false;
+		glfwTerminate();
 	}
 
 	vector<function<void()>> tickQueue;

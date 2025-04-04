@@ -33,8 +33,7 @@ namespace Game {
 	extern float deltaTick;
 	
 	int init(int w, int h);
-
-	unsigned int genTexture (string ImgName);
+	void loop ();
 	
 
 	extern bool cursorEnabled;
@@ -45,7 +44,7 @@ namespace Game {
 	void allowCursor(bool boolean); //lock cursor or not
 	
 	extern unsigned int textureAtlas;
-	void genTextureAtlas (std::string* imgNames);
+	unsigned int genTextureAtlas (const vector<string>& imgNames);
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
 	extern vector<function<void()>> tickQueue;

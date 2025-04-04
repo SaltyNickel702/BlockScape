@@ -1,12 +1,13 @@
 #include <glad/glad.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <string>
 #include <functional>
-
-// #include "Model.h"
+#include <vector>
 
 using namespace std;
 
@@ -93,12 +94,8 @@ class Shader {
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
 		};
-		void bind () {
-			glUseProgram(ID);
-			uniforms();
-		}
 
-		function<void()> uniforms = [](){};
+		function<void(glm::vec3 pos, glm::vec2 rot)> uniforms = [](glm::vec3 pos, glm::vec2 rot){};
 };
 
 #endif

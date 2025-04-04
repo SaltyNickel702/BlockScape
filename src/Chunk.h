@@ -9,7 +9,7 @@
 
 class Chunk {
     public:
-        Chunk() {};
+        Chunk() : loaded(false) {mesh = new Model();};
 
         glm::vec2 pos;
 

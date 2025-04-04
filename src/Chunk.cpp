@@ -8,8 +8,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 
 
 
-	int seed = 495804; // Change this int to change the seed
-	bool generateChunk = false;
+	int seed = World::seed;
 
 	FastNoiseLite noise;  // Create noise generator
 	//Fast Noise settings
@@ -148,7 +147,6 @@ Model Chunk::genMesh() {
 	// 	if (i % 9 == 8) cout << endl;
 	// }
 	
-	mesh = &c;
 	return c;
 }
 

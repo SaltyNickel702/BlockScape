@@ -88,11 +88,57 @@ void AddToggleKeybinds () { //things like menu opening
 }
 
 int main () {
+    //Load Game First
+    //None OpenGL things first
     DefineBlocks();
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
 
-    cout << World::blockTypes[2].textureSide << endl;
-
+    //Initialize OpenGL
     Game::init(1200,800);
+    cout << "creating GLFW" << endl;
+
+
+    //Compile Assets
+    vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png"};
+    unsigned int atlas = Game::genTextureAtlas(textures);
+    World::textures["atlas"] = &atlas;
+    cout << "Generating Texture" << endl;
+
+    Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
+    shaderProgram.uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        float timeValue = glfwGetTime();
+        glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
+
+
+        //Matrices
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, pos);
+        // model = glm::rotate(model, glm::radians(rot.x),glm::vec3(0,1,0));
+        // model = glm::rotate(model, glm::radians(rot.y)),glm::vec3(1,0,0);
+
+        glm::mat4 view(1.0f);
+        view = glm::rotate(view, glm::radians(World::Camera.rot.y), glm::vec3(1,0,0));
+        view = glm::rotate(view, glm::radians(World::Camera.rot.x+180), glm::vec3(0,1,0));
+        view = glm::translate(view, World::Camera.pos*glm::vec3(-1));
+
+        glm::mat4 project;
+        project = glm::perspective(glm::radians(World::Settings::FOV), (float)Game::width/Game::height, 0.1f, 500.0f);
+
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
+
+        glUniform1i(glGetUniformLocation(shaderProgram.ID,"totalTextures"),textures.size());
+
+    };
+    World::shaders["world"] = &shaderProgram;
+    cout << "Generating Shader" << endl;
+
+
+    //Add menu stuff here
+    World::loadNew(495804);
+
+
+    Game::loop();
 }

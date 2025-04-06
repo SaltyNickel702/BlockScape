@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(GraphicsTest)
+project(BlockScape)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -22,3 +22,4 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
 	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglfw3MAC.a")
 	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libgladMAC.a")
+endif()

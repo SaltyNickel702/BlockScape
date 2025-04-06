@@ -35,28 +35,21 @@ void DefineLogicObjects() {
     World::Player.onTick = [&](){
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
-    };
-
-    World::Camera.pos = glm::vec3(0,34,0);
-    World::Camera.rot = glm::vec2(0,0);
-    World::Camera.onTick = [&](){
-        LObject* c = &World::Camera; //shortcut for not having to write World::Camera each time
-
         //Temp Camera Rotation
         float rotSpeed = 90*Game::deltaTick;
         if (Game::cursorEnabled) {
-            if (Game::keyDown(GLFW_KEY_LEFT)) c->rot.x-= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_RIGHT)) c->rot.x+= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_UP)) c->rot.y-= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_DOWN)) c->rot.y+= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_LEFT)) p->rot.x-= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_RIGHT)) p->rot.x+= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_UP)) p->rot.y-= rotSpeed;
+            if (Game::keyDown(GLFW_KEY_DOWN)) p->rot.y+= rotSpeed;
         } else {
-            c->rot+= 0.1f*Game::cursorPos; //floating point coefficient determines sensitivity
+            p->rot+= 0.1f*Game::cursorPos; //floating point coefficient determines sensitivity
         }
         // cout << Game::cursorPos.x << " " << Game::cursorPos.y << " -- ";
         
-        if (c->rot.y > 90) c->rot.y = 90;
-        if (c->rot.y < -90) c->rot.y = -90;
-        if (c->rot.x < 0 || c->rot.x > 360) c->rot.x = fmod(c->rot.x + 360,360);
+        if (p->rot.y > 90) p->rot.y = 90;
+        if (p->rot.y < -90) p->rot.y = -90;
+        if (p->rot.x < 0 || p->rot.x > 360) p->rot.x = fmod(p->rot.x + 360,360);
 
         //Temp Rotation matrix
         glm::mat4 rotMatrix(1.0f);
@@ -69,16 +62,25 @@ void DefineLogicObjects() {
         //Temp Camera Movement
         float speed = 6.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=2.5;
-        if (Game::keyDown(GLFW_KEY_W)) c->pos = c->pos + speed*forwardVec;
-        if (Game::keyDown(GLFW_KEY_S)) c->pos = c->pos - speed*forwardVec;
-        if (Game::keyDown(GLFW_KEY_A)) c->pos = c->pos + speed*sideVec;
-        if (Game::keyDown(GLFW_KEY_D)) c->pos = c->pos - speed*sideVec;
-        if (Game::keyDown(GLFW_KEY_LEFT_SHIFT)) c->pos = c->pos - speed*upVec;
-        if (Game::keyDown(GLFW_KEY_SPACE)) c->pos = c->pos + speed*upVec;
+        if (Game::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
+        if (Game::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
+        if (Game::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed*sideVec;
+        if (Game::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed*sideVec;
+        if (Game::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
+        if (Game::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
+    };
+
+    World::Camera.pos = glm::vec3(0,34,0);
+    World::Camera.rot = glm::vec2(0,0);
+    World::Camera.onTick = [&](){
+        LObject* c = &World::Camera; //shortcut for not having to write World::Camera each time
+
+        c->pos = World::Player.pos + glm::vec3(0,2,0);
+        c->rot = World::Player.rot;
 
 
         // cout << c->rot.x << " " << c->rot.y << " -- ";
-        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+        // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
 }
@@ -125,7 +127,7 @@ int main () {
         view = glm::translate(view, World::Camera.pos*glm::vec3(-1));
 
         glm::mat4 project;
-        project = glm::perspective(glm::radians(World::Settings::FOV), (float)Game::width/Game::height, 0.1f, 500.0f);
+        project = glm::perspective(glm::radians(World::Settings::FOV), (float)Game::width/Game::height, 0.1f, 16.0f*World::Settings::renderDistance*2);
 
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -139,10 +141,6 @@ int main () {
 
     //Add menu stuff here
     World::loadNew(495804);
-
-    // Chunk* myChunk = World::getChunkByCC(0,0);
-    // cout << *myChunk->getBlock(5,30,5) << endl;
-    // cout << World::chunks[0][0].blocks[5][30][5] << endl;
 
 
     Game::loop();

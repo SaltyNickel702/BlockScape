@@ -13,6 +13,7 @@ Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, 
     // World::models.push_back(this); //Do this manually bc alway rebinds shader + want to do manually sometimes
 }
 void Model::setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+    cleanData();
     //Put vectors into arrays
     float v[vVert.size()];
     copy(vVert.begin(),vVert.end(), v);
@@ -75,6 +76,12 @@ void Model::draw () {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
 }
-Model Model::joinModels(Model* models) {
+Model Model::joinModels (Model* models) {
     return models[0];
+}
+void Model::cleanData () {
+    dataFormatted = false;
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }

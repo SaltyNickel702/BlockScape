@@ -2,10 +2,15 @@
 #include "Chunk.h"
 #include "World.h"
 
+Chunk::Chunk () : loaded(false) {
+	mesh = Model();
+	mesh.shader = World::shaders["world"];
+	mesh.textures.push_back(*World::textures["atlas"]);
+}
+
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
 	c.pos = glm::vec2(cx,cz); //assign position for reference
-
 
 
 	int seed = World::seed;
@@ -65,11 +70,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 	return c;
 }
 
-Model Chunk::genMesh() {
-	vector<float> vertices;
-	vector<unsigned int> indices;
-	vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
-
+void Chunk::genMeshParam() {	
 	Chunk* leftC = World::getChunkByCC(pos.x+1,pos.y);
 	Chunk* rightC = World::getChunkByCC(pos.x-1,pos.y);
 	Chunk* frontC = World::getChunkByCC(pos.x,pos.y+1);
@@ -162,15 +163,16 @@ Model Chunk::genMesh() {
 		}
 	}
 
-	Model c(vertices, indices, attrib);
-	c.pos = 16.0f*glm::vec3(pos.x,0,pos.y);
+	// Model c(vertices, indices, attrib);
+	// c.pos = 16.0f*glm::vec3(pos.x,0,pos.y);
 	
 	// for (int i = 0; i < vertices.size(); i++) {
 	// 	cout << vertices.at(i) << " ";
 	// 	if (i % 9 == 8) cout << endl;
 	// }
-	
-	return c;
+}
+void Chunk::genMeshGL () {
+	mesh.setData(vertices,indices,attrib);
 }
 
 

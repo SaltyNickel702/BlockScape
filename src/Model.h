@@ -11,7 +11,8 @@ class Model {
     public:
         Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
-        void setData(const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths);
+        void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths);
+        void cleanData ();
 
         bool dataFormatted = false;
         void draw ();

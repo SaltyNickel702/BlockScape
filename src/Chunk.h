@@ -9,7 +9,7 @@
 
 class Chunk {
     public:
-        Chunk() : loaded(false) {mesh = new Model();};
+        Chunk();
 
         glm::vec2 pos;
 
@@ -24,9 +24,13 @@ class Chunk {
 
         bool loaded;
 
-        Model* mesh;
-        Model genMesh();
+        Model mesh;
+        void genMeshGL();
+        void genMeshParam();
 
+        vector<float> vertices;
+        vector<unsigned int> indices;
+        vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
 };
 
 

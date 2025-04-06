@@ -36,7 +36,7 @@ namespace World { //world data
     
     namespace Settings {
         extern float FOV;
-        extern float renderDistance; //radius
+        extern int renderDistance; //radius
     }
 
     extern LObject Camera;

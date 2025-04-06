@@ -57,9 +57,13 @@ namespace {
 		Game::cursorPos = mouseCapturePos;
 		if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
 
-
-		for (LObject* o: World::LogicObjects) {
-			o->onTick();
+		int objs = 0;
+		for (LObject *o: World::LogicObjects) {
+			// cout << o->debugVal << endl;
+			// if (o->onTick) {
+			// 	o->onTick();
+			// }
+			objs++;
 		}
 	}
 }

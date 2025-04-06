@@ -16,5 +16,9 @@ add_executable(out ${SOURCES}) #add WIN32 to create the windows application w/ou
 include_directories("${CMAKE_SOURCE_DIR}/include/")
 
 
-target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglfw3.a")
-target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglad.a")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglfw3WIN.a")
+	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libgladWIN.a")
+else()
+	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libglfw3MAC.a")
+	target_link_libraries(out "${CMAKE_SOURCE_DIR}/statLib/libgladMAC.a")

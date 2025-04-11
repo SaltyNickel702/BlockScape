@@ -87,6 +87,11 @@ void DefineLogicObjects() {
 
 void AddToggleKeybinds () { //things like menu opening
     Game::addKeydownCallback(GLFW_KEY_ENTER,[&](){Game::allowCursor(!Game::cursorEnabled);});
+    // Game::addKeydownCallback(GLFW_KEY_R,[&](){
+    //     while (World::chunks.size() > 0) {
+    //         World::chunks.erase(World::chunks.begin());
+    //     }
+    // });
 }
 
 int main () {
@@ -141,7 +146,6 @@ int main () {
 
     //Add menu stuff here
     World::loadNew(495804);
-
 
     Game::loop();
 }

@@ -14,7 +14,7 @@ LObject World::Camera;
 LObject World::Player;
 
 float World::Settings::FOV = 72;
-int World::Settings::renderDistance = 2;
+int World::Settings::renderDistance = 10;
 
 
 Chunk* World::getChunk (float x, float z) { //In world coords
@@ -52,10 +52,12 @@ void chunkLoader () {
 	glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
 	for (int x = 0; x <= 2 * World::Settings::renderDistance; x++) {
 		for (int z = 0; z <= 2 * World::Settings::renderDistance; z++) { //load block data into memory
+
 			int cx = x - World::Settings::renderDistance + (int)p.x;
 			int cz = z - World::Settings::renderDistance + (int)p.y;
+
 			Chunk* c = World::getChunkByCC(cx,cz);
-			if (c == nullptr || true) { 
+			if (c == nullptr) {
 				totalChunks++;
 				//Check if saved (not added yet)
 	 			//Else generate new chunk
@@ -64,71 +66,74 @@ void chunkLoader () {
 		}
 	}
 
-	// for (auto& [key, cx] : World::chunks) {
-	// 	for (auto& [key2, cMem] : cx) {
-	// 		Chunk* c = &cMem;
-	// 		float distance = sqrtf(powf(p.x+.5 - c->pos.x,2) + powf(p.y+.5 - c->pos.y,2));
-	// 		if (distance > World::Settings::renderDistance) {
-	// 			//unload mesh
-	// 			if (c->loaded) {
-	// 				c->loaded = false;
-	// 				c->mesh.cleanData(); //frees up GPU memory
-	// 			}
-	// 		} else {
-	// 			//load mesh
-	// 			if (!c->loaded) {
-	// 				c->genMeshParam();
-	// 				chunkMeshGenQueue.push_back(c->pos);
-	// 			}
-	// 		}
-	// 	}
-	// }
-	cout << totalChunks << endl;
+	for (auto& [key, cx] : World::chunks) {
+		for (auto& [key2, cMem] : cx) {
+			Chunk* c = &cMem;
+			float distance = sqrtf(powf(p.x+.5 - c->pos.x,2) + powf(p.y+.5 - c->pos.y,2));
+			if (distance > World::Settings::renderDistance) {
+				//unload mesh
+				if (c->loaded) {
+					c->loaded = false;
+					c->mesh.cleanData(); //frees up GPU memory
+				}
+			} else {
+				//load mesh
+				if (!c->loaded) {
+					c->genMeshParam();
+					chunkMeshGenQueue.push_back(c->pos);
+				}
+			}
+		}
+	}
+	// cout << totalChunks << endl;
 	loadingChunks = false;
 }
+int* lastPlayerChunk;
 void worldSetup () { //called by the loading functions
 	// Chunk Rendering
-	LObject chunkRender;
-	chunkRender.onTick = [&]() {
-		cout << "renderer" << endl;
+	LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
+	chunkRender->onTick = [&]() {
+		cout << "Render" << endl;
+		for (auto& [key, cx] : World::chunks) {
+			for (auto& [key2, cMem] : cx) {
+				Chunk* c = &cMem;
+				if (c->loaded) {
+					c->mesh.draw();
+				}
+			}
+		}
 	};
-	// chunkRender.onTick = [&](){
-	// 	for (auto& [key, cx] : World::chunks) {
-	// 		for (auto& [key2, cMem] : cx) {
-	// 			Chunk* c = &cMem;
-	// 			if (c->loaded) {
-	// 				c->mesh.draw();
-	// 			};
-	// 		}
-	// 	}
-	// };
 
-	// //Check if player moves between chunks
-	LObject chunkChecker;
-	chunkChecker.onTick = [&]() {
-		cout << "checker" << endl;
+	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+	LObject* chunkBlockGen = new LObject();
+	chunkBlockGen->onTick = [&]() {
+		cout << "Load" << endl;
+		int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+		if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
+			// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
+			// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
+			thread chunkLoading(chunkLoader);
+			chunkLoading.detach();
+		}
+
+		lastPlayerChunk[0] = curChunk[0];
+		lastPlayerChunk[1] = curChunk[1];
 	};
-	// // glm::vec2 lastChunk((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
-	// chunkChecker.onTick = [&](){
-	// 	// glm::vec2 c((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
-	// 	// if (!(c.x == lastChunk.x && c.y == lastChunk.y)) {
-	// 	// 	cout << "Entered Chunk: " << c.x << " " << c.y << endl;
-	// 	// 	thread t(chunkLoader);
-	// 	// 	t.detach();
-	// 	// };
-	// // 	lastChunk = c;
-	// // 	//generate meshes
-	// // 	// int checksPerTick = (chunkMeshGenQueue.size() >= 3 ? 3 : chunkMeshGenQueue.size()); //adjust how many chunks can be loaded per tick
-	// // 	// while (checksPerTick--) {
-	// // 	// 	glm::vec2 p = chunkMeshGenQueue.at(0);
-	// // 	// 	Chunk* c = World::getChunkByCC(p.x,p.y);
-	// // 	// 	c->genMeshGL();
-	// // 	// 	c->loaded = true;
-	// // 	// 	chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
-	// // 	// }
-	// };
 
-	cout << World::LogicObjects.size() << endl;
+	LObject* chunkMeshGen = new LObject();
+	chunkMeshGen->onTick = [&]() {
+		cout << "Mesh" << endl;
+		int chunksLeft = (chunkMeshGenQueue.size() > 3 ? 3 : chunkMeshGenQueue.size());
+		while (chunksLeft--) {
+			glm::vec2 coords = chunkMeshGenQueue.at(0);
+			Chunk* c = &World::chunks[coords.x][coords.y];
+			c->genMeshGL();
+			c->loaded = true;
+			chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
+		}
+	};
+
+	// cout << World::LogicObjects.size() << endl;
 }
 
 void World::loadNew (int seed) {

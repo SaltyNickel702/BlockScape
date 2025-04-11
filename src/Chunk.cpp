@@ -11,6 +11,7 @@ Chunk::Chunk () : loaded(false) {
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
 	c.pos = glm::vec2(cx,cz); //assign position for reference
+	c.mesh.pos = glm::vec3(cx*16,0,cz*16);
 
 
 	int seed = World::seed;
@@ -162,14 +163,6 @@ void Chunk::genMeshParam() {
 			}
 		}
 	}
-
-	// Model c(vertices, indices, attrib);
-	// c.pos = 16.0f*glm::vec3(pos.x,0,pos.y);
-	
-	// for (int i = 0; i < vertices.size(); i++) {
-	// 	cout << vertices.at(i) << " ";
-	// 	if (i % 9 == 8) cout << endl;
-	// }
 }
 void Chunk::genMeshGL () {
 	mesh.setData(vertices,indices,attrib);

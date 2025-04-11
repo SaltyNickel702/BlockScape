@@ -59,10 +59,9 @@ namespace {
 
 		int objs = 0;
 		for (LObject *o: World::LogicObjects) {
-			// cout << o->debugVal << endl;
-			// if (o->onTick) {
-			// 	o->onTick();
-			// }
+			if (o->onTick) {
+				o->onTick();
+			}
 			objs++;
 		}
 	}

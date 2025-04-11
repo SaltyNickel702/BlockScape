@@ -75,7 +75,7 @@ void chunkLoader () {
 				//unload mesh
 				if (c->loaded) {
 					c->loaded = false;
-					c->mesh.cleanData(); //frees up GPU memory
+					c->mesh->cleanData(); //frees up GPU memory
 				}
 			} else {
 				//load mesh
@@ -106,13 +106,13 @@ void worldSetup () { //called by the loading functions
 				Chunk* c = &cMem;
 				if (c->loaded) {
 					// cout << "Drawing chunk at " << c->pos.x << ", " << c->pos.y << endl;
-					c->mesh.draw();
+					c->mesh->draw();
 				}
 			}
 		}
 	};
 
-	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+	// lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
 	// LObject* chunkBlockGen = new LObject();
 	// chunkBlockGen->onTick = [&]() {
 	// 	int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};

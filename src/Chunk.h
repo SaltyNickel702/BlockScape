@@ -24,7 +24,7 @@ class Chunk {
 
         bool loaded;
 
-        Model mesh;
+        Model* mesh;
         void genMeshGL();
         void genMeshParam();
 

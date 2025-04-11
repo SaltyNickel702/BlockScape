@@ -3,15 +3,15 @@
 #include "World.h"
 
 Chunk::Chunk () : loaded(false) {
-	mesh = Model();
-	mesh.shader = World::shaders["world"];
-	mesh.textures.push_back(*World::textures["atlas"]);
+	mesh = new Model();
+	mesh->shader = World::shaders["world"];
+	mesh->textures.push_back(*World::textures["atlas"]);
 }
 
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
 	c.pos = glm::vec2(cx,cz); //assign position for reference
-	c.mesh.pos = glm::vec3(cx*16,0,cz*16);
+	c.mesh->pos = glm::vec3(cx*16,0,cz*16);
 
 
 	int seed = World::seed;
@@ -71,7 +71,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 	return c;
 }
 
-void Chunk::genMeshParam() {	
+void Chunk::genMeshParam() {
 	Chunk* leftC = World::getChunkByCC(pos.x+1,pos.y);
 	Chunk* rightC = World::getChunkByCC(pos.x-1,pos.y);
 	Chunk* frontC = World::getChunkByCC(pos.x,pos.y+1);
@@ -165,7 +165,7 @@ void Chunk::genMeshParam() {
 	}
 }
 void Chunk::genMeshGL () {
-	mesh.setData(vertices,indices,attrib);
+	mesh->setData(vertices,indices,attrib);
 }
 
 

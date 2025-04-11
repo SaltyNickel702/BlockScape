@@ -51,11 +51,11 @@ void chunkLoader () {
 	loadingChunks = true;
 	int totalChunks = 0;
 	glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
-	for (int x = 0; x <= 2 * World::Settings::renderDistance; x++) {
-		for (int z = 0; z <= 2 * World::Settings::renderDistance; z++) { //load block data into memory
+	for (int x = 0; x <= 2 * World::Settings::renderDistance + 2; x++) {
+		for (int z = 0; z <= 2 * World::Settings::renderDistance + 2; z++) { //load block data into memory
 
-			int cx = x - World::Settings::renderDistance + (int)p.x;
-			int cz = z - World::Settings::renderDistance + (int)p.y;
+			int cx = x - World::Settings::renderDistance - 1 + (int)p.x;
+			int cz = z - World::Settings::renderDistance - 1 + (int)p.y;
 
 			Chunk* c = World::getChunkByCC(cx,cz);
 			if (c == nullptr) {
@@ -112,21 +112,21 @@ void worldSetup () { //called by the loading functions
 		}
 	};
 
-	// lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-	// LObject* chunkBlockGen = new LObject();
-	// chunkBlockGen->onTick = [&]() {
-	// 	int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-	// 	if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
-	// 		// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
-	// 		// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
-	// 		// thread* chunkLoading = new thread(chunkLoader); //test later
-	// 		thread chunkLoading(chunkLoader);
-	// 		chunkLoading.detach();
-	// 	}
+	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+	LObject* chunkBlockGen = new LObject();
+	chunkBlockGen->onTick = [&]() {
+		int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+		if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
+			// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
+			// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
+			thread* chunkLoading = new thread(chunkLoader); //test later
+			// thread chunkLoading(chunkLoader);
+			// chunkLoading.detach();
+		}
 
-	// 	lastPlayerChunk[0] = curChunk[0];
-	// 	lastPlayerChunk[1] = curChunk[1];
-	// };
+		lastPlayerChunk[0] = curChunk[0];
+		lastPlayerChunk[1] = curChunk[1];
+	};
 
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {

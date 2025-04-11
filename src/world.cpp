@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Game.h"
 #include <thread>
 
 int World::seed = 495804;
@@ -90,14 +91,21 @@ void chunkLoader () {
 }
 int* lastPlayerChunk;
 void worldSetup () { //called by the loading functions
+ 	Game::addKeydownCallback(GLFW_KEY_R,[&](){
+        while (World::chunks.size() > 0) {
+            World::chunks.erase(World::chunks.begin());
+        }
+		chunkLoader();
+    });
+
 	// Chunk Rendering
 	LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
 	chunkRender->onTick = [&]() {
-		cout << "Render" << endl;
 		for (auto& [key, cx] : World::chunks) {
 			for (auto& [key2, cMem] : cx) {
 				Chunk* c = &cMem;
 				if (c->loaded) {
+					// cout << "Drawing chunk at " << c->pos.x << ", " << c->pos.y << endl;
 					c->mesh.draw();
 				}
 			}
@@ -105,24 +113,23 @@ void worldSetup () { //called by the loading functions
 	};
 
 	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-	LObject* chunkBlockGen = new LObject();
-	chunkBlockGen->onTick = [&]() {
-		cout << "Load" << endl;
-		int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-		if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
-			// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
-			// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
-			thread chunkLoading(chunkLoader);
-			chunkLoading.detach();
-		}
+	// LObject* chunkBlockGen = new LObject();
+	// chunkBlockGen->onTick = [&]() {
+	// 	int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+	// 	if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
+	// 		// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
+	// 		// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
+	// 		// thread* chunkLoading = new thread(chunkLoader); //test later
+	// 		thread chunkLoading(chunkLoader);
+	// 		chunkLoading.detach();
+	// 	}
 
-		lastPlayerChunk[0] = curChunk[0];
-		lastPlayerChunk[1] = curChunk[1];
-	};
+	// 	lastPlayerChunk[0] = curChunk[0];
+	// 	lastPlayerChunk[1] = curChunk[1];
+	// };
 
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {
-		cout << "Mesh" << endl;
 		int chunksLeft = (chunkMeshGenQueue.size() > 3 ? 3 : chunkMeshGenQueue.size());
 		while (chunksLeft--) {
 			glm::vec2 coords = chunkMeshGenQueue.at(0);
@@ -139,44 +146,11 @@ void worldSetup () { //called by the loading functions
 void World::loadNew (int seed) {
 	World::seed = seed;
 	chunkLoader();
-	// glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
-	// for (int x = p.x-World::Settings::renderDistance; x <= p.x+World::Settings::renderDistance; x++) {
-	// 	map<int,Chunk> cx = World::chunks[x];
-	// 	for (int z = p.y-World::Settings::renderDistance; z <= p.y+World::Settings::renderDistance; z++) {
-	// 		auto c = cx.find(z);
-	// 		if (c == cx.end()) {
-	// 			//Check if saved (not added yet)
-	// 			//Else generate new chunk
-	// 			World::chunks[x][z] = Chunk::genChunk(x,z);
-	// 		}
-	// 	}
-	// }
-	// for (auto& [key, cx] : World::chunks) { //load/unload chunks already in memory
-	// 	for (auto& [key2, cMem] : cx) {
-	// 		Chunk* c = &cMem;
-	// 		float distance = sqrtf(powf(p.x - c->pos.x,2) + powf(p.y - c->pos.y,2));
-	// 		if (distance > World::Settings::renderDistance) {
-	// 			//unload
-	// 			if (c->loaded) {
-	// 				c->loaded = false;
-	// 				c->mesh = new Model();
-	// 			}
-	// 		} else {
-	// 			//load
-	// 			if (!c->loaded) {
-	// 				*c->mesh = c->genMesh();
-	// 				c->mesh->shader = World::shaders["world"];
-	// 				c->mesh->textures.push_back(*World::textures["atlas"]);
-	// 				c->loaded = true;
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	Chunk spawnC = World::chunks[0][0];
 	for (int y = 0; y < 128; y++) {
 		if (spawnC.blocks[7][y][7] == 0) {
-			World::Player.pos = glm::vec3(7.5,y,7.5); //change this after everything works
+			World::Player.pos = glm::vec3(7.5,y+20,7.5); //change this after everything works
 			break;
 		}
 	}

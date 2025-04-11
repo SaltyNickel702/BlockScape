@@ -32,6 +32,7 @@ void DefineBlocks() {
 }
 
 void DefineLogicObjects() {
+    World::Player.rot.x = -90;
     World::Player.onTick = [&](){
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
@@ -87,11 +88,7 @@ void DefineLogicObjects() {
 
 void AddToggleKeybinds () { //things like menu opening
     Game::addKeydownCallback(GLFW_KEY_ENTER,[&](){Game::allowCursor(!Game::cursorEnabled);});
-    // Game::addKeydownCallback(GLFW_KEY_R,[&](){
-    //     while (World::chunks.size() > 0) {
-    //         World::chunks.erase(World::chunks.begin());
-    //     }
-    // });
+   
 }
 
 int main () {

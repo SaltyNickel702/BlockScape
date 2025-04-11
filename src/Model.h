@@ -14,7 +14,7 @@ class Model {
         void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths);
         void cleanData ();
 
-        bool dataFormatted = false;
+        bool dataFormatted;
         void draw ();
 
         float* vertices;
@@ -22,9 +22,14 @@ class Model {
 
         unsigned int* attribLen;
 
+        std::vector<float> verticesVec;
+        std::vector<unsigned int> indicesVec;
+        std::vector<unsigned int> attribLenVec;
+
         int totalVertices;
         int attrPerVert;
         int totalIndices;
+        
 
         unsigned int VAO, EBO, VBO;
 

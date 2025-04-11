@@ -7,64 +7,57 @@
 #include <iostream>
 using namespace std;
 
-Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) : pos(glm::vec3(0)),rot(glm::vec2(0)) {
+Model::Model (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) : pos(glm::vec3(0)),rot(glm::vec2(0)), VAO(0), VBO(0), EBO(0), dataFormatted(false) {
     setData(vVert, vIndices, vAttribLengths);
 
     // World::models.push_back(this); //Do this manually bc alway rebinds shader + want to do manually sometimes
 }
-void Model::setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
+void Model::setData(const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths) {
     cleanData();
-    //Put vectors into arrays
-    float v[vVert.size()];
-    copy(vVert.begin(),vVert.end(), v);
-    vertices = v;
 
-    unsigned int i[vIndices.size()];
-    copy(vIndices.begin(),vIndices.end(), i);
-    indices = i;
-    totalIndices = vIndices.size();
+    // Store raw data
+    verticesVec = vVert;
+    indicesVec = vIndices;
+    attribLenVec = vAttribLengths;
 
-    unsigned int a[vAttribLengths.size()];
-    copy(vAttribLengths.begin(),vAttribLengths.end(), a);
-    attribLen = a;
+    float* v = verticesVec.data();
+    unsigned int* i = indicesVec.data();
+    unsigned int* a = attribLenVec.data();
 
-    //get Stride and Offset for buffering
-    unsigned int sums[vAttribLengths.size()]; //offset at j
-    attrPerVert = 0; //Stride per vertex
-    for (int j = 0; j < vAttribLengths.size(); j++) {
+    totalIndices = indicesVec.size();
+
+    // Calculate attribute layout
+    attrPerVert = 0;
+    vector<unsigned int> sums(attribLenVec.size()); //Stride per vertex
+    for (int j = 0; j < attribLenVec.size(); j++) {
         sums[j] = attrPerVert;
         attrPerVert += a[j];
     }
 
-    //Get total vertices
-    int totalData = sizeof(v)/sizeof(v[0]);
-    totalVertices = totalData/attrPerVert;
+    totalVertices = verticesVec.size() / attrPerVert;
 
-
-    //Generate Buffers
+    // Generate OpenGL buffers
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO); //editing VAO
+    glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesVec.size() * sizeof(float), v, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i), i, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesVec.size() * sizeof(unsigned int), i, GL_STATIC_DRAW);
 
-    for (int j = 0; j < vAttribLengths.size(); j++) {
+    for (int j = 0; j < attribLenVec.size(); j++) {
         glVertexAttribPointer(j, a[j], GL_FLOAT, GL_FALSE, attrPerVert * sizeof(float), (void*)(sums[j] * sizeof(float)));
-		glEnableVertexAttribArray(j);
+        glEnableVertexAttribArray(j);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
     dataFormatted = true;
 }
 void Model::draw () {
-    if (!dataFormatted) return;
+    if (!dataFormatted || VAO == 0 || totalIndices == 0) return;
     glUseProgram(shader->ID);
     shader->uniforms(pos,rot);
 

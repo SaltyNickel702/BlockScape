@@ -16,8 +16,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 
 	int seed = World::seed;
 
-	FastNoiseLite noise;  // Create noise generator
-	//Fast Noise settings
+	FastNoiseLite noise;  // Baseline noise map
     noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin); 
 	noise.SetFrequency(0.015f);
 	noise.SetSeed(seed); 
@@ -33,10 +32,15 @@ Chunk Chunk::genChunk (int cx, int cz) {
 	domainWarp.SetFrequency(0.115);
 	domainWarp.SetDomainWarpAmp(6);
 
-	FastNoiseLite generalHeight;
+	FastNoiseLite generalHeight; //height varaition
 	generalHeight.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	generalHeight.SetSeed(seed);
-	generalHeight.SetFrequency(0.01);
+	generalHeight.SetFrequency(0.003);
+
+	FastNoiseLite addedHeight; //steepness
+	addedHeight.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	addedHeight.SetSeed(seed+1);
+	addedHeight.SetFrequency(0.005);
  
 	
 	// Generates terrain
@@ -45,18 +49,25 @@ Chunk Chunk::genChunk (int cx, int cz) {
 			// Get height value and scale it to terrain height
 			float nX = (float)(x + cx*16);
 			float nZ = (float)(z + cz*16);
-			float heightMulti = (generalHeight.GetNoise(nX,nZ)+0.9)/(.9+.8)/2 + .5;
 			domainWarp.DomainWarp(nX,nZ);
+			float heightMulti = (generalHeight.GetNoise(nX,nZ)+1)/(2);
+			float heightAdd = (addedHeight.GetNoise(nX,nZ)+1)/(2);
 			float noiseVal = (noise.GetNoise(nX, nZ)+1)/2;
 			
-			int terrainHeight = (int)(noiseVal * 127 * heightMulti);
+			int terrainHeight = (int)((noiseVal * heightMulti*.7 + heightAdd*.3) * 127);
 			for (int y = 0; y < 128; y++) {
 				// Assign blocks based on Z level
 				if (y > terrainHeight) {
 					c.blocks[x][y][z] = 0;  
-				} 
+				}
+				else if (heightMulti * noiseVal > powf(.7,2)) {
+					c.blocks[x][y][z] = 3;
+				}
+				else if (heightMulti * noiseVal > powf(.67,2)) {
+					c.blocks[x][y][z] = 2;
+				}
 				else if (y == terrainHeight) {
-					c.blocks[x][y][z] = 1;  
+					c.blocks[x][y][z] = 1;
 				} 
 				else if (y >= terrainHeight - 4) {
 					c.blocks[x][y][z] = 2;  

@@ -9,6 +9,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+out vec3 pos;
 out vec2 UV;
 out vec3 normal;
 out float textureID;
@@ -18,6 +19,7 @@ void main()
 {
 	gl_Position = projection * view * model * vec4(aPos, 1.0);
 
+	pos = aPos;
 	UV = texIn;
 	normal = normIn;
 	textureID = textureIDin;

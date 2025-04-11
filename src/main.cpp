@@ -32,7 +32,6 @@ void DefineBlocks() {
 }
 
 void DefineLogicObjects() {
-    World::Player.rot.x = -90;
     World::Player.onTick = [&](){
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
@@ -61,8 +60,8 @@ void DefineLogicObjects() {
         glm::vec3 upVec(0,1,0);
 
         //Temp Camera Movement
-        float speed = 6.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=2.5;
+        float speed = 10.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
         if (Game::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
         if (Game::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed*sideVec;
@@ -116,6 +115,7 @@ int main () {
         float timeValue = glfwGetTime();
         glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
 
+        glUniform1i(glGetUniformLocation(shaderProgram.ID,"renderDistance"),World::Settings::renderDistance*16);
 
         //Matrices
         glm::mat4 model(1.0f);

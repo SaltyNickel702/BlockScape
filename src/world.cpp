@@ -15,7 +15,7 @@ LObject World::Camera;
 LObject World::Player;
 
 float World::Settings::FOV = 72;
-int World::Settings::renderDistance = 10;
+int World::Settings::renderDistance = 20;
 
 
 Chunk* World::getChunk (float x, float z) { //In world coords
@@ -70,7 +70,7 @@ void chunkLoader () {
 	for (auto& [key, cx] : World::chunks) {
 		for (auto& [key2, cMem] : cx) {
 			Chunk* c = &cMem;
-			float distance = sqrtf(powf(p.x+.5 - c->pos.x,2) + powf(p.y+.5 - c->pos.y,2));
+			float distance = sqrtf(powf(p.x - 0 - c->pos.x,2) + powf(p.y - 0 - c->pos.y,2));
 			if (distance > World::Settings::renderDistance) {
 				//unload mesh
 				if (c->loaded) {
@@ -130,7 +130,8 @@ void worldSetup () { //called by the loading functions
 
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {
-		int chunksLeft = (chunkMeshGenQueue.size() > 3 ? 3 : chunkMeshGenQueue.size());
+		int chunksPerTick = 3;
+		int chunksLeft = (chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : chunkMeshGenQueue.size());
 		while (chunksLeft--) {
 			glm::vec2 coords = chunkMeshGenQueue.at(0);
 			Chunk* c = &World::chunks[coords.x][coords.y];
@@ -150,7 +151,7 @@ void World::loadNew (int seed) {
 	Chunk spawnC = World::chunks[0][0];
 	for (int y = 0; y < 128; y++) {
 		if (spawnC.blocks[7][y][7] == 0) {
-			World::Player.pos = glm::vec3(7.5,y+20,7.5); //change this after everything works
+			World::Player.pos = glm::vec3(7.5,y,7.5); //change this after everything works
 			break;
 		}
 	}

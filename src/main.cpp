@@ -25,6 +25,9 @@ void DefineBlocks() {
     World::blockTypes[3] = stoneBlock;
 
     Block woodBlock("Wood", 4);
+    woodBlock.textureSide = 5;
+    woodBlock.textureTop = 4;
+    woodBlock.textureBottom = 4;
     World::blockTypes[4] = woodBlock;
 
     Block leavesBlock("Leaves", 5);
@@ -87,7 +90,9 @@ void DefineLogicObjects() {
 
 void AddToggleKeybinds () { //things like menu opening
     Game::addKeydownCallback(GLFW_KEY_ENTER,[&](){Game::allowCursor(!Game::cursorEnabled);});
-   
+    Game::addKeydownCallback(GLFW_KEY_C,[&](){
+        cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
+    });
 }
 
 int main () {
@@ -104,7 +109,7 @@ int main () {
 
     //Compile Assets
     cout << "Generating Textures" << endl;
-    vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png"};
+    vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png"};
     unsigned int atlas = Game::genTextureAtlas(textures);
     World::textures["atlas"] = &atlas;
 

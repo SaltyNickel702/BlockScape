@@ -60,20 +60,29 @@ Chunk Chunk::genChunk (int cx, int cz) {
 				if (y > terrainHeight) {
 					c.blocks[x][y][z] = 0;  
 				}
-				else if (heightMulti * noiseVal > powf(.7,2)) {
-					c.blocks[x][y][z] = 3;
-				}
 				else if (heightMulti * noiseVal > powf(.67,2)) {
-					c.blocks[x][y][z] = 2;
+					//Mountains
+					if (heightMulti * noiseVal > powf(.7,2)) {
+						c.blocks[x][y][z] = 3;
+					} else {
+						c.blocks[x][y][z] = 2;
+					}
 				}
-				else if (y == terrainHeight) {
-					c.blocks[x][y][z] = 1;
-				} 
-				else if (y >= terrainHeight - 4) {
-					c.blocks[x][y][z] = 2;  
+				else if (heightMulti * heightAdd < powf(.4,2)) {
+					//Desert
+					c.blocks[x][y][z] = 4; //currently logs, make sand
 				}
 				else {
-					c.blocks[x][y][z] = 3;  
+					//Plains
+					if (y == terrainHeight) {
+						c.blocks[x][y][z] = 1;
+					} 
+					else if (y >= terrainHeight - 4) {
+						c.blocks[x][y][z] = 2;  
+					}
+					else {
+						c.blocks[x][y][z] = 3;  
+					}
 				}
 			}
 		}

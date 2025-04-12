@@ -80,7 +80,7 @@ void DefineLogicObjects() {
 
 
         // cout << c->rot.x << " " << c->rot.y << " -- ";
-        // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
+        cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
 
 }

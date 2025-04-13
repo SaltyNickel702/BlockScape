@@ -48,6 +48,15 @@ namespace Game {
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
 	extern vector<function<void()>> tickQueue;
+
+	// Add a state enumeration to manage game states
+	enum class GameState {
+	    MENU,
+	    PLAYING
+	};
+
+	// Add a variable to track the current state of the game
+	extern GameState currentState;
 }
 
 #endif

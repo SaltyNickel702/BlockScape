@@ -95,6 +95,10 @@ class Shader {
 			glDeleteShader(fragment);
 		};
 
+		void use() {
+			glUseProgram(ID);
+		}
+
 		function<void(glm::vec3 pos, glm::vec2 rot)> uniforms = [](glm::vec3 pos, glm::vec2 rot){};
 };
 

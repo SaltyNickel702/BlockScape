@@ -93,6 +93,15 @@ void AddToggleKeybinds () { //things like menu opening
     Game::addKeydownCallback(GLFW_KEY_C,[&](){
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
+    Game::addKeydownCallback(GLFW_KEY_M,[&](){
+        if(Game::currentState == Game::GameState::MENU) {
+            Game::currentState = Game::GameState::PLAYING;
+            Game::allowCursor(!Game::cursorEnabled);
+        }else if(Game::currentState == Game::GameState::PLAYING) {
+            Game::currentState = Game::GameState::MENU;
+            Game::allowCursor(!Game::cursorEnabled);
+        }
+    });
 }
 
 int main () {

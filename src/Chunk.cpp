@@ -68,7 +68,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 						c.blocks[x][y][z] = 2;
 					}
 				}
-				else if (heightMulti * heightAdd < powf(.4,2)) {
+				else if (heightMulti * noiseVal * heightAdd < powf(.4,3)) {
 					//Desert
 					c.blocks[x][y][z] = 4; //currently logs, make sand
 				}

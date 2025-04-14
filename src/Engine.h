@@ -40,8 +40,8 @@ namespace Engine {
 	
 
 	extern bool cursorEnabled; //Tells if cursor is enabled | Do not directly control this
-	extern bool cursorDown; //true as long as mouse is down
-	extern bool cursorClicked; //only true for 1 tick after mouse pushed down
+	extern bool mouseDown[GLFW_MOUSE_BUTTON_LAST+1]; //Bool of whether button is down or not
+	extern bool mouseDownTick[GLFW_MOUSE_BUTTON_LAST+1]; //Same as Game::mouseDown, but only true for one tick
 	extern glm::vec2 cursorPos; //cursor position when cursor is enable, else is mouse movement
 
 	bool keyDown(int GLFWkey); //is key held Down

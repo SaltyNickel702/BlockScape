@@ -52,6 +52,7 @@ namespace UI {
 
 	extern vector<Menu*> menus;
 	extern LObject menuTick;
+	extern bool hoveringOverButton;
 }
 
 #endif

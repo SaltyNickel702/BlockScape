@@ -39,6 +39,7 @@ void DefineBlocks() {
 void DefineLogicObjects() {
     UI::menuTick.onTick = [&](){
         using namespace UI;
+        UI::hoveringOverButton = false;
 
 
         for (Menu* m : menus) {
@@ -55,8 +56,9 @@ void DefineLogicObjects() {
                 glm::vec2 c = Engine::cursorPos;
                 glm::vec2 p = b->images.at(b->currentImg)->pos;
                 glm::vec2 d = b->images.at(b->currentImg)->dim;
-                if (c.x >= p.x && c.x <= p.x+d.x && c.y >= p.y && c.y <= p.y+d.y) {
-                    if (Engine::cursorClicked) {
+                if (c.x >= p.x - .5*d.x && c.x <= p.x + .5*d.x && c.y >= p.y - .5*d.y && c.y <= p.y + .5*d.y) {
+                    UI::hoveringOverButton = true;
+                    if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
                         b->onClick();
                     }
                     if (!b->hovering) {
@@ -68,6 +70,11 @@ void DefineLogicObjects() {
                     b->onLeave();
                 }
             }
+        }
+        if (UI::hoveringOverButton) {
+            glfwSetCursor(Engine::window, glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR));
+        } else {
+            glfwSetCursor(Engine::window, nullptr);
         }
     };
     UI::menuTick.active = true; //always active
@@ -131,9 +138,21 @@ void DefineLogicObjects() {
 void defineMenus () {
     using namespace UI;
 
-    Menu* mainMenu = new Menu();
+    
+    Menu* mainMenu = new Menu(); //Temporary
+
     Image* back = new Image(*World::textures["mainMenu"],0,0,Engine::width,Engine::height);
-    mainMenu->images.push_back(back);
+    // mainMenu->images.push_back(back);
+    
+    Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
+    Button* startBtn = new Button(start);
+    startBtn->onClick = [&]() {
+        World::menus["mainMenu"]->visible = false;
+        World::loadNew(495804);
+        GameState::currentState = GameState::State::PLAYING;
+    };
+    mainMenu->buttons.push_back(startBtn);
+
     World::menus["mainMenu"] = mainMenu;
 }
 
@@ -201,6 +220,9 @@ void genTextures () {
 
     unsigned int* menuTemp = new unsigned int(Engine::genTexture("menu.png"));
     World::textures["mainMenu"] = menuTemp;
+
+    unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
+    World::textures["startButton"] = startButton;
 }
 
 int main () {
@@ -220,8 +242,6 @@ int main () {
 
     defineMenus();
     World::menus["mainMenu"]->visible = true;
-
-    World::loadNew(495804);//make it so this only runs when you click a button | which means I also have to code that
 
     Engine::loop();
 }

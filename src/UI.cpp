@@ -4,16 +4,18 @@
 namespace UI {
 	vector<Menu*> menus;
 	LObject menuTick;
+	bool hoveringOverButton = false;
 
 	Image::Image (unsigned int textureID, float x, float y, float w, float h) : imgMesh(new Model()) {
 		imgMesh->shader = World::shaders["menu"];
 		imgMesh->textures.push_back(textureID);
 
-		setPos(x,y);
 		setDim(w,h);
+		setPos(x,y);
 	}
 	void Image::setDim (float w, float h) {
 		dim = glm::vec2(w,h);
+		setPos(pos.x,pos.y);
 
 		vector<float> vert {
 			0,0,	0,0,
@@ -33,14 +35,14 @@ namespace UI {
 	}
 	void Image::setPos (float x, float y) {
 		pos = glm::vec2(x,y);
-		imgMesh->pos = glm::vec3(pos,0);
+		imgMesh->pos = glm::vec3(pos - .5f*dim,0);
 	}
 
 
-	Button::Button (Image* img) : currentImg(0) {
+	Button::Button (Image* img) : currentImg(0), hovering(false), onClick([&](){}), onHover([&](){}), onLeave([&](){}) {
 		images.push_back(img);
 	}
-	Button::Button (Image* img, function<void()> onClick, function<void()> onHover, function<void()> onLeave) : currentImg(0) {
+	Button::Button (Image* img, function<void()> onClick, function<void()> onHover, function<void()> onLeave) : currentImg(0), hovering(false) {
 		images.push_back(img);
 
 		this->onClick = onClick;

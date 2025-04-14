@@ -13,16 +13,17 @@ namespace {
 	//Input Handeling
 	bool keysDown[GLFW_KEY_LAST-GLFW_KEY_SPACE];
 	vector<function<void()>> functionCalls[GLFW_KEY_LAST-GLFW_KEY_SPACE];
+	
 	void processInput(GLFWwindow* window) {
 		//esc key closes app (temporary)
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
 
 		//Adding/removing keys to keysDown | If new key is added, call callback functions
-		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) {
+		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) { //I need to refactor keys and mouse movement registering to reflect new needs for game
 			bool isDown = keyDown(i);
 			if (isDown) {
-				bool previous = keysDown[i-GLFW_KEY_SPACE]; //
+				bool previous = keysDown[i-GLFW_KEY_SPACE];
 				if (!previous) {
 					vector<function<void()>> funcs = functionCalls[i-GLFW_KEY_SPACE];
 					for (const function<void()> func : funcs) {
@@ -31,6 +32,18 @@ namespace {
 				}
 				keysDown[i-GLFW_KEY_SPACE] = true;
 			} else keysDown[i-GLFW_KEY_SPACE] = false;
+		}
+		//Same for Mouse
+		for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++) {
+			if (mouseDownTick[i]) mouseDownTick[i] = false;
+			bool isDown = glfwGetMouseButton(window,i);
+			if (isDown) {
+				bool previous = mouseDown[i];
+				mouseDown[i] = true;
+				if (!previous) {
+					mouseDownTick[i] = true;
+				}
+			} else mouseDown[i] = false;
 		}
 	}
 	//last input stuff
@@ -120,7 +133,16 @@ namespace Engine {
 		int width, height, nrChannels;
 		unsigned char *data = stbi_load(ImgRel.c_str(), &width, &height, &nrChannels, 0);
 		if (data) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			int format;
+			if (nrChannels == 4) {
+				format = GL_RGBA;
+			} else if (nrChannels == 3) {
+				format = GL_RGB;
+			} else if (nrChannels == 1) {
+				format = GL_RED;
+			}
+
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		} else {
 			cout << "Failed to Load Texture" << endl;
@@ -169,9 +191,11 @@ namespace Engine {
 	}
 
 
+	//More Input Handeling
+
 	bool cursorEnabled = true;
-	bool cursorDown = false;
-	bool cursorClicked = false;
+	bool mouseDown[GLFW_MOUSE_BUTTON_LAST+1];
+	bool mouseDownTick[GLFW_MOUSE_BUTTON_LAST+1];
 	glm::vec2 cursorPos;
 
 	bool keyDown (int key) {
@@ -263,12 +287,11 @@ namespace Engine {
 		// initMenu();
 
 		while (!glfwWindowShouldClose(window)) {
-			processInput(window);
-
 			//RENDERING
 			glClearColor(.5,.7,.8,1.0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			processInput(window);
 			tick(); //Any logic is run through tick
 
 			glfwSwapBuffers(window); //updates screen buffer

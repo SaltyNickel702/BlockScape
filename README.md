@@ -1,6 +1,6 @@
 # Blockscape
 ## Contributors
-- Niko: Handle OpenGL rendering + Chunk mesh gen
+- Niko: Game Engine Creation + Chunk mesh gen
 - Dallin: GUI
 - Sean: Terrain Gen / Block creation
 - Jake: Art and Game Testing

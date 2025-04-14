@@ -3,3 +3,6 @@ build/*
 
 **/.DS_STORE
 .DS_STORE
+
+out.exe
+out

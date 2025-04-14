@@ -50,6 +50,7 @@ void chunkLoader () {
 	}
 	loadingChunks = true;
 	int totalChunks = 0;
+	cout << "Loading Started" << endl;
 	glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
 	for (int x = 0; x <= 2 * World::Settings::renderDistance + 2; x++) {
 		for (int z = 0; z <= 2 * World::Settings::renderDistance + 2; z++) { //load block data into memory
@@ -99,54 +100,50 @@ void worldSetup () { //called by the loading functions
     });
 
 	// Chunk Rendering
-	// LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
-	// chunkRender->onTick = [&]() {
-		// for (auto& [key, cx] : World::chunks) {
-		// 	for (auto& [key2, cMem] : cx) {
-		// 		Chunk* c = &cMem;
-		// 		if (c->loaded) {
-		// 			// cout << "Drawing chunk at " << c->pos.x << ", " << c->pos.y << endl;
-		// 			c->mesh->draw();
-		// 		}
-		// 	}
-		// }
-	// };
-	// chunkRender->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
+	LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
+	chunkRender->onTick = [&]() {
+		for (auto& [key, cx] : World::chunks) {
+			for (auto& [key2, cMem] : cx) {
+				Chunk* c = &cMem;
+				if (c->loaded) {
+					// cout << "Drawing chunk at " << c->pos.x << ", " << c->pos.y << endl;
+					c->mesh->draw();
+				}
+			}
+		}
+	};
+	chunkRender->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
 
-	// lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-	// LObject* chunkBlockGen = new LObject();
-	// chunkBlockGen->onTick = [&]() {
-	// 	int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
-	// 	if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
-	// 		// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
-	// 		// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
-	// 		thread* chunkLoading = new thread(chunkLoader); //test later
-	// 	}
+	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+	LObject* chunkBlockGen = new LObject();
+	chunkBlockGen->onTick = [&]() {
+		int curChunk[2] = {(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
+		if (!(lastPlayerChunk[0] == curChunk[0] && lastPlayerChunk[1] == curChunk[1])) {
+			// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
+			// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
+			thread* chunkLoading = new thread(chunkLoader); //test later
+		}
 
-	// 	lastPlayerChunk[0] = curChunk[0];
-	// 	lastPlayerChunk[1] = curChunk[1];
-	// };
-	// chunkBlockGen->activeStates = vector<GameState::State> {GameState::State::PLAYING}; //No need to load chunks when player is unable to move
+		lastPlayerChunk[0] = curChunk[0];
+		lastPlayerChunk[1] = curChunk[1];
+	};
+	chunkBlockGen->activeStates = vector<GameState::State> {GameState::State::PLAYING}; //No need to load chunks when player is unable to move
 
-	// LObject* chunkMeshGen = new LObject();
-	// chunkMeshGen->onTick = [&]() {
-		// int chunksPerTick = 3;
-		// int chunksLeft = (chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : chunkMeshGenQueue.size());
-		// while (chunksLeft--) {
-		// 	glm::vec2 coords = chunkMeshGenQueue.at(0);
-		// 	Chunk* c = &World::chunks[coords.x][coords.y];
-		// 	c->genMeshGL();
-		// 	c->loaded = true;
-		// 	chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
-		// }
-	// };
-	// chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
+	LObject* chunkMeshGen = new LObject();
+	chunkMeshGen->onTick = [&]() {
+		int chunksPerTick = 3;
+		int chunksLeft = (chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : chunkMeshGenQueue.size());
+		while (chunksLeft--) {
+			glm::vec2 coords = chunkMeshGenQueue.at(0);
+			Chunk* c = &World::chunks[coords.x][coords.y];
+			c->genMeshGL();
+			c->loaded = true;
+			chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
+		}
+	};
+	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
 
-	// cout << World::LogicObjects.size() << endl;
-
-	LObject* obj1 = new LObject();
-	obj1->activeStates = vector<GameState::State> {GameState::State::PLAYING};
-	LObject* obj2 = new LObject();
+	cout << World::LogicObjects.size() << endl;
 }
 
 void World::loadNew (int seed) {

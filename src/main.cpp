@@ -1,5 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION 
-#include "Game.h" //includes all needed includes
+#include "Engine.h" //includes all needed includes
 
 vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png"};
 
@@ -50,13 +50,13 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             
-            if (!Game::cursorEnabled) continue;
+            if (!Engine::cursorEnabled) continue;
             for (Button* b : m->buttons) {
-                glm::vec2 c = Game::cursorPos;
+                glm::vec2 c = Engine::cursorPos;
                 glm::vec2 p = b->images.at(b->currentImg)->pos;
                 glm::vec2 d = b->images.at(b->currentImg)->dim;
                 if (c.x >= p.x && c.x <= p.x+d.x && c.y >= p.y && c.y <= p.y+d.y) {
-                    if (Game::cursorClicked) {
+                    if (Engine::cursorClicked) {
                         b->onClick();
                     }
                     if (!b->hovering) {
@@ -76,16 +76,16 @@ void DefineLogicObjects() {
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
         //Temp Camera Rotation
-        float rotSpeed = 90*Game::deltaTick;
-        if (Game::cursorEnabled) {
-            if (Game::keyDown(GLFW_KEY_LEFT)) p->rot.x-= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_RIGHT)) p->rot.x+= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_UP)) p->rot.y-= rotSpeed;
-            if (Game::keyDown(GLFW_KEY_DOWN)) p->rot.y+= rotSpeed;
+        float rotSpeed = 90*Engine::deltaTick;
+        if (Engine::cursorEnabled) {
+            if (Engine::keyDown(GLFW_KEY_LEFT)) p->rot.x-= rotSpeed;
+            if (Engine::keyDown(GLFW_KEY_RIGHT)) p->rot.x+= rotSpeed;
+            if (Engine::keyDown(GLFW_KEY_UP)) p->rot.y-= rotSpeed;
+            if (Engine::keyDown(GLFW_KEY_DOWN)) p->rot.y+= rotSpeed;
         } else {
-            p->rot+= 0.1f*Game::cursorPos; //floating point coefficient determines sensitivity
+            p->rot+= 0.1f*Engine::cursorPos; //floating point coefficient determines sensitivity
         }
-        // cout << Game::cursorPos.x << " " << Game::cursorPos.y << " -- ";
+        // cout << Engine::cursorPos.x << " " << Engine::cursorPos.y << " -- ";
         
         if (p->rot.y > 90) p->rot.y = 90;
         if (p->rot.y < -90) p->rot.y = -90;
@@ -100,14 +100,14 @@ void DefineLogicObjects() {
         glm::vec3 upVec(0,1,0);
 
         //Temp Camera Movement
-        float speed = 10.0*Game::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (Game::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
-        if (Game::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
-        if (Game::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
-        if (Game::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed*sideVec;
-        if (Game::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed*sideVec;
-        if (Game::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
-        if (Game::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
+        float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
+        if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
+        if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
+        if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed*sideVec;
+        if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed*sideVec;
+        if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
+        if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
 
@@ -132,14 +132,14 @@ void defineMenus () {
     using namespace UI;
 
     Menu* mainMenu = new Menu();
-    Image* back = new Image(*World::textures["mainMenu"],0,0,Game::width,Game::height);
+    Image* back = new Image(*World::textures["mainMenu"],0,0,Engine::width,Engine::height);
     mainMenu->images.push_back(back);
     World::menus["mainMenu"] = mainMenu;
 }
 
 void AddToggleKeybinds () { //things like menu opening
-    Game::addKeydownCallback(GLFW_KEY_ENTER,[&](){Game::allowCursor(!Game::cursorEnabled);});
-    Game::addKeydownCallback(GLFW_KEY_C,[&](){
+    Engine::addKeydownCallback(GLFW_KEY_ENTER,[&](){Engine::allowCursor(!Engine::cursorEnabled);});
+    Engine::addKeydownCallback(GLFW_KEY_C,[&](){
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
 }
@@ -168,7 +168,7 @@ void genShaders () {
         view = glm::translate(view, World::Camera.pos*glm::vec3(-1));
 
         glm::mat4 project;
-        project = glm::perspective(glm::radians(World::Settings::FOV), (float)Game::width/Game::height, 0.1f, 16.0f*World::Settings::renderDistance*2);
+        project = glm::perspective(glm::radians(World::Settings::FOV), (float)Engine::width/Engine::height, 0.1f, 16.0f*World::Settings::renderDistance*2);
 
         glUniformMatrix4fv(glGetUniformLocation(worldShader->ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(worldShader->ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -187,7 +187,7 @@ void genShaders () {
         model = glm::translate(model,pos);
         glUniformMatrix4fv(glGetUniformLocation(menuShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-        glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Game::width, Game::height,1,1);
+        glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Engine::width, Engine::height,1,1);
 
         glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
     };
@@ -196,10 +196,10 @@ void genShaders () {
 void genTextures () {
     cout << "Generating Textures" << endl;
 
-    unsigned int* atlas = new unsigned int(Game::genTextureAtlas(blockTextures));
+    unsigned int* atlas = new unsigned int(Engine::genTextureAtlas(blockTextures));
     World::textures["atlas"] = atlas;
 
-    unsigned int* menuTemp = new unsigned int(Game::genTexture("menu.png"));
+    unsigned int* menuTemp = new unsigned int(Engine::genTexture("menu.png"));
     World::textures["mainMenu"] = menuTemp;
 }
 
@@ -212,7 +212,7 @@ int main () {
 
     //Initialize OpenGL
     cout << "Initializing GLFW" << endl;
-    Game::init(1200,800);
+    Engine::init(1200,800);
 
 
     genTextures();
@@ -221,8 +221,7 @@ int main () {
     defineMenus();
     World::menus["mainMenu"]->visible = true;
 
-    //Add menu stuff here
-    World::loadNew(495804);
+    World::loadNew(495804);//make it so this only runs when you click a button | which means I also have to code that
 
-    Game::loop();
+    Engine::loop();
 }

@@ -1,6 +1,5 @@
 #include "UI.h"
 #include "World.h"
-#include "Game.h"
 
 namespace UI {
 	vector<Menu*> menus;

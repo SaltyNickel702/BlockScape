@@ -1,13 +1,13 @@
-#include "Game.h"
+#include "Engine.h"
 
-using namespace Game;
+using namespace Engine;
 
 //Private namespace
 namespace {
 	void windowResizeCallback(GLFWwindow* window, int width, int height) { //for when the window gets resized
 		glViewport(0, 0, width, height);
-		Game::width = width;
-		Game::height = height;
+		Engine::width = width;
+		Engine::height = height;
 	}
 
 	//Input Handeling
@@ -36,9 +36,9 @@ namespace {
 	//last input stuff
 	glm::vec2 mouseCapturePos(0);
 	void mouseMoveCallback (GLFWwindow* window, double xpos, double ypos) {
-		glm::vec2 fin = glm::vec2(xpos,ypos) + (Game::cursorEnabled ? glm::vec2(0.0f) : mouseCapturePos);
+		glm::vec2 fin = glm::vec2(xpos,ypos) + (Engine::cursorEnabled ? glm::vec2(0.0f) : mouseCapturePos);
 		mouseCapturePos = fin;
-		if (!Game::cursorEnabled) glfwSetCursorPos(window,0,0);
+		if (!Engine::cursorEnabled) glfwSetCursorPos(window,0,0);
 	}
 
 	bool running = true;
@@ -54,8 +54,8 @@ namespace {
 			tickQueue.erase(tickQueue.begin());
 		}
 
-		Game::cursorPos = mouseCapturePos;
-		if (!Game::cursorEnabled) mouseCapturePos = glm::vec2(0);
+		Engine::cursorPos = mouseCapturePos;
+		if (!Engine::cursorEnabled) mouseCapturePos = glm::vec2(0);
 
 		int objs = 0;
 		for (LObject *o: World::LogicObjects) {
@@ -68,7 +68,7 @@ namespace {
 }
 
 //Exported Game namespace
-namespace Game {
+namespace Engine {
 	GLFWwindow* window = nullptr;
 	int width, height;
 
@@ -158,8 +158,8 @@ namespace Game {
 
 		//Sets GL Viewport (camera)
 		glViewport(0, 0, w, h);
-		Game::width = w;
-		Game::height = h;
+		Engine::width = w;
+		Engine::height = h;
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
@@ -183,14 +183,14 @@ namespace Game {
 	void allowCursor (bool b) {
 		cursorEnabled = b;
 		if (!b) {
-			Game::cursorPos = glm::vec2(0.0f);
+			Engine::cursorPos = glm::vec2(0.0f);
 			mouseCapturePos = glm::vec2(0.0f);
 			glfwSetCursorPos(window,0,0);
 		}
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		if (b) {
-			Game::cursorPos = glm::vec2(Game::width/2, Game::height/2);
-			mouseCapturePos = glm::vec2(Game::width/2, Game::height/2);
+			Engine::cursorPos = glm::vec2(Engine::width/2, Engine::height/2);
+			mouseCapturePos = glm::vec2(Engine::width/2, Engine::height/2);
 			glfwSetCursorPos(window,400,400);
 		}
 	}

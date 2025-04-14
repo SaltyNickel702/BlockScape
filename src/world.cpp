@@ -1,5 +1,5 @@
 #include "World.h"
-#include "Game.h"
+#include "Engine.h"
 #include <thread>
 
 int World::seed = 495804;
@@ -91,7 +91,7 @@ void chunkLoader () {
 }
 int* lastPlayerChunk;
 void worldSetup () { //called by the loading functions
- 	Game::addKeydownCallback(GLFW_KEY_R,[&](){
+	Engine::addKeydownCallback(GLFW_KEY_R,[&](){
         while (World::chunks.size() > 0) {
             World::chunks.erase(World::chunks.begin());
         }

@@ -30,7 +30,7 @@
 using namespace std;
 
 //Game engine namespace, not the BlockScape Game
-namespace Game {
+namespace Engine {
 	extern GLFWwindow* window;
 	extern int width, height;
 	extern float deltaTick; //Mutliply rate/second by deltaTick to get rate/tick

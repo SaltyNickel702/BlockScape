@@ -68,9 +68,9 @@ void chunkLoader () {
 	}
 
 
-	cout << endl << endl;
+	// cout << endl << endl;
 	for (auto& [key, cx] : World::chunks) {
-		cout << "Hi" << endl;
+		// cout << "Hi" << endl;
 		for (auto& [key2, cMem] : cx) {
 			Chunk* c = &cMem;
 			float distance = sqrtf(powf(p.x - 0 - c->pos.x,2) + powf(p.y - 0 - c->pos.y,2));
@@ -89,7 +89,7 @@ void chunkLoader () {
 			}
 		}
 	}
-	cout << "Chunk Mesh generated" << endl;
+	// cout << "Chunk Mesh generated" << endl;
 	// cout << totalChunks << endl;
 	loadingChunks = false;
 }

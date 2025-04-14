@@ -277,8 +277,7 @@ namespace Engine {
 	// }
 
 	void loop() {
-		// Enable depth testing and face culling
-		glEnable(GL_DEPTH_TEST);
+		// Enable face culling
 				
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);

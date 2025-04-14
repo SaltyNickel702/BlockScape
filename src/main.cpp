@@ -141,8 +141,8 @@ void defineMenus () {
     
     Menu* mainMenu = new Menu(); //Temporary
 
-    Image* back = new Image(*World::textures["mainMenu"],0,0,Engine::width,Engine::height);
-    // mainMenu->images.push_back(back);
+    Image* back = new Image(*World::textures["mainMenu"],Engine::width/2,Engine::height/2,Engine::width,Engine::height);
+    mainMenu->images.push_back(back);
     
     Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
     Button* startBtn = new Button(start);
@@ -169,7 +169,9 @@ void genShaders () {
     Shader* worldShader = new Shader("worldVert.glsl","worldFrag.glsl");
     World::shaders["world"] = worldShader;
     worldShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        glEnable(GL_DEPTH_TEST);
         Shader* worldShader = World::shaders["world"];
+        
         float timeValue = glfwGetTime();
         glUniform1f(glGetUniformLocation(worldShader->ID,"time"),timeValue);
 
@@ -200,6 +202,7 @@ void genShaders () {
     Shader* menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");
     World::shaders["menu"] = menuShader;
     menuShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        glDisable(GL_DEPTH_TEST);
         Shader* menuShader = World::shaders["menu"];
 
         glm::mat4 model(1);

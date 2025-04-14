@@ -8,7 +8,7 @@ map<int, map<int, Chunk>> World::chunks;
 map<int, Block> World::blockTypes;
 map<string, Shader*> World::shaders;
 map<string, unsigned int*> World::textures;
-vector<Model*> World::models;
+map<string, UI::Menu*> World::menus;
 vector<LObject*> World::LogicObjects;
 
 LObject World::Camera;
@@ -111,6 +111,7 @@ void worldSetup () { //called by the loading functions
 			}
 		}
 	};
+	chunkRender->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
 
 	lastPlayerChunk = new int[2]{(int)World::Player.pos.x/16, (int)World::Player.pos.z/16};
 	LObject* chunkBlockGen = new LObject();
@@ -120,13 +121,12 @@ void worldSetup () { //called by the loading functions
 			// cout << "Entered Chunk: " << curChunk[0] << " " << curChunk[1] << endl;
 			// cout << "Last Chunk: " << lastPlayerChunk[0] << " " << lastPlayerChunk[1] << endl;
 			thread* chunkLoading = new thread(chunkLoader); //test later
-			// thread chunkLoading(chunkLoader);
-			// chunkLoading.detach();
 		}
 
 		lastPlayerChunk[0] = curChunk[0];
 		lastPlayerChunk[1] = curChunk[1];
 	};
+	chunkBlockGen->activeStates = vector<GameState::State> {GameState::State::PLAYING}; //No need to load chunks when player is unable to move
 
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {
@@ -140,6 +140,7 @@ void worldSetup () { //called by the loading functions
 			chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
 		}
 	};
+	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
 
 	// cout << World::LogicObjects.size() << endl;
 }

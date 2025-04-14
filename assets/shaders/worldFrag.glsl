@@ -5,7 +5,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform int renderDistance;
 uniform int totalTextures;
-uniform sampler2D texture1;
+uniform sampler2D tex0;
 
 in vec3 pos;
 in vec2 UV;
@@ -18,7 +18,7 @@ void main ()
 {
 	//Get Texture
 	vec2 newUV = UV * vec2(1.0 / totalTextures, 1.0) + vec2(textureID / totalTextures, 0.0);	
-	vec4 textureColor = texture(texture1, newUV);
+	vec4 textureColor = texture(tex0, newUV);
 
 	//Grass Whiteness
 	textureColor = mix(textureColor,vec4(1),.9*clamp((pos.y-50)/(90-50),0,1));

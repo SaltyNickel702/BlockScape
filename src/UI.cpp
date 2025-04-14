@@ -1,0 +1,56 @@
+#include "UI.h"
+#include "World.h"
+#include "Game.h"
+
+namespace UI {
+	vector<Menu*> menus;
+	LObject menuTick;
+
+	Image::Image (unsigned int textureID, float x, float y, float w, float h) : imgMesh(new Model()) {
+		imgMesh->shader = World::shaders["menu"];
+		imgMesh->textures.push_back(textureID);
+
+		setPos(x,y);
+		setDim(w,h);
+	}
+	void Image::setDim (float w, float h) {
+		dim = glm::vec2(w,h);
+
+		vector<float> vert {
+			0,0,	0,0,
+			w,0,	1,0,
+			w,h,	1,1,
+			0,h,	0,1
+		};
+		vector<unsigned int> indices {
+			2,1,0,
+			3,2,0
+		};
+		vector<unsigned int> attr {
+			2,2
+		};
+		
+		imgMesh->setData(vert,indices,attr);
+	}
+	void Image::setPos (float x, float y) {
+		pos = glm::vec2(x,y);
+		imgMesh->pos = glm::vec3(pos,0);
+	}
+
+
+	Button::Button (Image* img) : currentImg(0) {
+		images.push_back(img);
+	}
+	Button::Button (Image* img, function<void()> onClick, function<void()> onHover, function<void()> onLeave) : currentImg(0) {
+		images.push_back(img);
+
+		this->onClick = onClick;
+		this->onHover = onHover;
+		this->onLeave = onLeave;
+	}
+
+
+	Menu::Menu () : visible(false) {
+		menus.push_back(this);
+	}
+}

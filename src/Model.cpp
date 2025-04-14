@@ -62,17 +62,23 @@ void Model::draw () {
     shader->uniforms(pos,rot);
 
     for (int i = 0; i < textures.size(); i++) {
-        glActiveTexture(0x84C0+i);
+        glActiveTexture(GL_TEXTURE0+i);
         glBindTexture(GL_TEXTURE_2D, textures.at(i));
+        string texName = "tex" + to_string(i);
+        glUniform1i(glGetUniformLocation(shader->ID,texName.c_str()),i);
     }
+
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES,totalIndices,GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0);
 }
 Model Model::joinModels (Model* models) {
     return models[0];
 }
 void Model::cleanData () {
+    if (!dataFormatted) return;
     dataFormatted = false;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);

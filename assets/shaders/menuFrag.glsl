@@ -1,12 +1,12 @@
 #version 330 core
-out vec4 FragColor;
 
 in vec2 UV;
 
-uniform sampler2D menuTexture;
+uniform sampler2D tex0;
 
-// Modify the fragment shader to output a solid white color for debugging
+out vec4 FragColor;
+
 void main()
 {
-    FragColor = texture(menuTexture, UV); // Sample the texture using UV coordinates
+    FragColor = texture(tex0, UV);
 }

@@ -59,7 +59,7 @@ namespace {
 
 		int objs = 0;
 		for (LObject *o: World::LogicObjects) {
-			if (o->onTick) {
+			if ((o->active || find(o->activeStates.begin(),o->activeStates.end(), GameState::currentState) != o->activeStates.end()) && o->onTick) {
 				o->onTick();
 			}
 			objs++;
@@ -170,6 +170,8 @@ namespace Game {
 
 
 	bool cursorEnabled = true;
+	bool cursorDown = false;
+	bool cursorClicked = false;
 	glm::vec2 cursorPos;
 
 	bool keyDown (int key) {
@@ -193,64 +195,62 @@ namespace Game {
 		}
 	}
 
-	GameState currentState = GameState::MENU;
-
 	// Add global variables for menu rendering
 	Shader* menuShader = nullptr;
 	unsigned int menuTexture = 0;
 	unsigned int menuVAO = 0, menuVBO = 0;
 
-	void initMenu() {
-		// Load the menu shaders
-		menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");
+	// void initMenu() {
+	// 	// Load the menu shaders
+	// 	menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");
 
-		// Load the menu texture
-		menuTexture = genTexture("menu.png");
+	// 	// Load the menu texture
+	// 	menuTexture = genTexture("menu.png");
 
-		// Ensure the shader uniform is set correctly
-		menuShader->use();
-		glUniform1i(glGetUniformLocation(menuShader->ID, "menuTexture"), 0); // Bind to texture unit 0
+	// 	// Ensure the shader uniform is set correctly
+	// 	menuShader->use();
+	// 	glUniform1i(glGetUniformLocation(menuShader->ID, "menuTexture"), 0); // Bind to texture unit 0
 
-		// Set up a quad for rendering the menu
-		float vertices[] = {
-			// positions   // texCoords
-			-1.0f,  1.0f,  0.0f, 0.0f, // Flip UV vertically
-			-1.0f, -1.0f,  0.0f, 1.0f,
-			 1.0f, -1.0f,  1.0f, 1.0f,
-			 1.0f,  1.0f,  1.0f, 0.0f
-		};
-		unsigned int indices[] = {
-			0, 1, 2,
-			0, 2, 3
-		};
+	// 	// Set up a quad for rendering the menu
+	// 	float vertices[] = {
+	// 		// positions   // texCoords
+	// 		-1.0f,  1.0f,  0.0f, 0.0f, // Flip UV vertically
+	// 		-1.0f, -1.0f,  0.0f, 1.0f,
+	// 		 1.0f, -1.0f,  1.0f, 1.0f,
+	// 		 1.0f,  1.0f,  1.0f, 0.0f
+	// 	};
+	// 	unsigned int indices[] = {
+	// 		0, 1, 2,
+	// 		0, 2, 3
+	// 	};
 
-		glGenVertexArrays(1, &menuVAO);
-		glGenBuffers(1, &menuVBO);
+	// 	glGenVertexArrays(1, &menuVAO);
+	// 	glGenBuffers(1, &menuVBO);
 
-		glBindVertexArray(menuVAO);
+	// 	glBindVertexArray(menuVAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, menuVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 	glBindBuffer(GL_ARRAY_BUFFER, menuVBO);
+	// 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
+	// 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	// 	glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+	// 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	// 	glEnableVertexAttribArray(1);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-	}
+	// 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// 	glBindVertexArray(0);
+	// }
 
-	void renderMenu() {
-		menuShader->use();
-		int textureLocation = glGetUniformLocation(menuShader->ID, "menuTexture");
+	// void renderMenu() {
+	// 	menuShader->use();
+	// 	int textureLocation = glGetUniformLocation(menuShader->ID, "menuTexture");
 
-		glBindTexture(GL_TEXTURE_2D, menuTexture);
-		glBindVertexArray(menuVAO);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-		glBindVertexArray(0);
-	}
+	// 	glBindTexture(GL_TEXTURE_2D, menuTexture);
+	// 	glBindVertexArray(menuVAO);
+	// 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	// 	glBindVertexArray(0);
+	// }
 
 	void loop() {
 		// Enable depth testing and face culling
@@ -260,7 +260,7 @@ namespace Game {
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
 
-		initMenu();
+		// initMenu();
 
 		while (!glfwWindowShouldClose(window)) {
 			processInput(window);
@@ -269,14 +269,7 @@ namespace Game {
 			glClearColor(.5,.7,.8,1.0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			if (currentState == GameState::MENU) {
-				renderMenu();
-			} else if (currentState == GameState::PLAYING) {
-				tick();
-				// for (Model* m : World::models) {
-				// 	m->draw();
-				// }
-			}
+			tick(); //Any logic is run through tick
 
 			glfwSwapBuffers(window); //updates screen buffer
 			glfwPollEvents(); //Check for inputs

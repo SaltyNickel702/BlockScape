@@ -14,6 +14,7 @@
 #include <FastNoise/FastNoiseLite.h>
 #include <stbi/stb_image.h>
 #include <cmath>
+#include <algorithm>
 
 //Project Classes
 #include "Shader.h"
@@ -22,21 +23,25 @@
 #include "Block.h"
 #include "Model.h"
 #include "Logic.h"
+#include "UI.h"
+#include "GameState.h"
 
 
 using namespace std;
 
-
+//Game engine namespace, not the BlockScape Game
 namespace Game {
 	extern GLFWwindow* window;
 	extern int width, height;
-	extern float deltaTick;
+	extern float deltaTick; //Mutliply rate/second by deltaTick to get rate/tick
 	
-	int init(int w, int h);
-	void loop ();
+	int init(int w, int h); //Starts OpenGL
+	void loop (); //Starts the game loop
 	
 
-	extern bool cursorEnabled;
+	extern bool cursorEnabled; //Tells if cursor is enabled | Do not directly control this
+	extern bool cursorDown; //true as long as mouse is down
+	extern bool cursorClicked; //only true for 1 tick after mouse pushed down
 	extern glm::vec2 cursorPos; //cursor position when cursor is enable, else is mouse movement
 
 	bool keyDown(int GLFWkey); //is key held Down
@@ -47,16 +52,7 @@ namespace Game {
 	unsigned int genTextureAtlas (const vector<string>& imgNames);
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
-	extern vector<function<void()>> tickQueue;
-
-	// Add a state enumeration to manage game states
-	enum class GameState {
-	    MENU,
-	    PLAYING
-	};
-
-	// Add a variable to track the current state of the game
-	extern GameState currentState;
+	extern vector<function<void()>> tickQueue;	
 }
 
 #endif

@@ -7,6 +7,7 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
+//A chunk of the world which contains blocks and has its own mesh
 class Chunk {
     public:
         Chunk();

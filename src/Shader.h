@@ -15,9 +15,11 @@ using namespace std;
 #ifndef SHADER_H
 #define SHADER_H
 
+//OpenGL Shader Constructor
 class Shader {
 	public:
 		unsigned int ID;
+		int test;
 
 		Shader (const string vertexPath, const string fragmentPath) {
 			string vertexCode;

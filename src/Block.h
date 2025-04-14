@@ -6,6 +6,7 @@ using namespace std;
 #ifndef BLOCK_H
 #define BLOCK_H
 
+//Class that contains each block type's data
 class Block {
     public:
         Block() {};

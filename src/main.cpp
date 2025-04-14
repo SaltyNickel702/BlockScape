@@ -1,6 +1,8 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Game.h" //includes all needed includes
 
+vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png"};
+
 
 void DefineBlocks() {
     Block airBlock("Air", 0);
@@ -35,6 +37,41 @@ void DefineBlocks() {
 }
 
 void DefineLogicObjects() {
+    UI::menuTick.onTick = [&](){
+        using namespace UI;
+
+
+        for (Menu* m : menus) {
+            if (!m->visible) continue;
+            for (Image* i : m->images) {
+                i->imgMesh->draw();
+            }
+            for (Button* b : m->buttons) {
+                b->images.at(b->currentImg)->imgMesh->draw();
+            }
+            
+            if (!Game::cursorEnabled) continue;
+            for (Button* b : m->buttons) {
+                glm::vec2 c = Game::cursorPos;
+                glm::vec2 p = b->images.at(b->currentImg)->pos;
+                glm::vec2 d = b->images.at(b->currentImg)->dim;
+                if (c.x >= p.x && c.x <= p.x+d.x && c.y >= p.y && c.y <= p.y+d.y) {
+                    if (Game::cursorClicked) {
+                        b->onClick();
+                    }
+                    if (!b->hovering) {
+                        b->hovering = true;
+                        b->onHover();
+                    }
+                } else if (b->hovering) {
+                    b->hovering = false;
+                    b->onLeave();
+                }
+            }
+        }
+    };
+    UI::menuTick.active = true; //always active
+
     World::Player.onTick = [&](){
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
@@ -72,6 +109,7 @@ void DefineLogicObjects() {
         if (Game::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
         if (Game::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
     };
+    World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
 
     World::Camera.pos = glm::vec3(0,34,0);
     World::Camera.rot = glm::vec2(0,0);
@@ -85,7 +123,18 @@ void DefineLogicObjects() {
         // cout << c->rot.x << " " << c->rot.y << " -- ";
         // cout << c->pos.x << " " << c->pos.y << " " << c->pos.z << endl;
     };
+    World::Camera.activeStates = vector<GameState::State> {GameState::State::PLAYING};
 
+
+}
+
+void defineMenus () {
+    using namespace UI;
+
+    Menu* mainMenu = new Menu();
+    Image* back = new Image(*World::textures["mainMenu"],0,0,Game::width,Game::height);
+    mainMenu->images.push_back(back);
+    World::menus["mainMenu"] = mainMenu;
 }
 
 void AddToggleKeybinds () { //things like menu opening
@@ -93,43 +142,19 @@ void AddToggleKeybinds () { //things like menu opening
     Game::addKeydownCallback(GLFW_KEY_C,[&](){
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
-    Game::addKeydownCallback(GLFW_KEY_M,[&](){
-        if(Game::currentState == Game::GameState::MENU) {
-            Game::currentState = Game::GameState::PLAYING;
-            Game::allowCursor(!Game::cursorEnabled);
-        }else if(Game::currentState == Game::GameState::PLAYING) {
-            Game::currentState = Game::GameState::MENU;
-            Game::allowCursor(!Game::cursorEnabled);
-        }
-    });
 }
 
-int main () {
-    //Load Game First
-    //None OpenGL things first
-    DefineBlocks();
-    DefineLogicObjects();
-    AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
-
-    //Initialize OpenGL
-    Game::init(1200,800);
-    cout << "creating GLFW" << endl;
-
-
-    //Compile Assets
-    cout << "Generating Textures" << endl;
-    vector<string> textures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png"};
-    unsigned int atlas = Game::genTextureAtlas(textures);
-    World::textures["atlas"] = &atlas;
-
-
+void genShaders () {
     cout << "Generating Shaders" << endl;
-    Shader shaderProgram("worldVert.glsl","worldFrag.glsl");
-    shaderProgram.uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
-        float timeValue = glfwGetTime();
-        glUniform1f(glGetUniformLocation(shaderProgram.ID,"time"),timeValue);
 
-        glUniform1i(glGetUniformLocation(shaderProgram.ID,"renderDistance"),World::Settings::renderDistance*16);
+    Shader* worldShader = new Shader("worldVert.glsl","worldFrag.glsl");
+    World::shaders["world"] = worldShader;
+    worldShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        Shader* worldShader = World::shaders["world"];
+        float timeValue = glfwGetTime();
+        glUniform1f(glGetUniformLocation(worldShader->ID,"time"),timeValue);
+
+        glUniform1i(glGetUniformLocation(worldShader->ID,"renderDistance"),World::Settings::renderDistance*16);
 
         //Matrices
         glm::mat4 model(1.0f);
@@ -145,15 +170,56 @@ int main () {
         glm::mat4 project;
         project = glm::perspective(glm::radians(World::Settings::FOV), (float)Game::width/Game::height, 0.1f, 16.0f*World::Settings::renderDistance*2);
 
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
+        glUniformMatrix4fv(glGetUniformLocation(worldShader->ID,"model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(worldShader->ID,"view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(worldShader->ID,"projection"), 1, GL_FALSE, glm::value_ptr(project));
 
-        glUniform1i(glGetUniformLocation(shaderProgram.ID,"totalTextures"),textures.size());
+        glUniform1i(glGetUniformLocation(worldShader->ID,"totalTextures"),blockTextures.size());
 
     };
-    World::shaders["world"] = &shaderProgram;
 
+    Shader* menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");
+    World::shaders["menu"] = menuShader;
+    menuShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        Shader* menuShader = World::shaders["menu"];
+
+        glm::mat4 model(1);
+        model = glm::translate(model,pos);
+        glUniformMatrix4fv(glGetUniformLocation(menuShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Game::width, Game::height,1,1);
+
+        glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
+    };
+}
+
+void genTextures () {
+    cout << "Generating Textures" << endl;
+
+    unsigned int* atlas = new unsigned int(Game::genTextureAtlas(blockTextures));
+    World::textures["atlas"] = atlas;
+
+    unsigned int* menuTemp = new unsigned int(Game::genTexture("menu.png"));
+    World::textures["mainMenu"] = menuTemp;
+}
+
+int main () {
+    //Load Game First
+    //None OpenGL things first
+    DefineBlocks();
+    DefineLogicObjects();
+    AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
+
+    //Initialize OpenGL
+    cout << "Initializing GLFW" << endl;
+    Game::init(1200,800);
+
+
+    genTextures();
+    genShaders();
+
+    defineMenus();
+    World::menus["mainMenu"]->visible = true;
 
     //Add menu stuff here
     World::loadNew(495804);

@@ -7,6 +7,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+//Container for OpenGL mesh data
 class Model {
     public:
         Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};

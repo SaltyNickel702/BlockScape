@@ -50,7 +50,6 @@ void chunkLoader () {
 	}
 	loadingChunks = true;
 	int totalChunks = 0;
-	cout << "Loading Started" << endl;
 	glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
 	for (int x = 0; x <= 2 * World::Settings::renderDistance + 2; x++) {
 		for (int z = 0; z <= 2 * World::Settings::renderDistance + 2; z++) { //load block data into memory
@@ -68,7 +67,10 @@ void chunkLoader () {
 		}
 	}
 
+
+	cout << endl << endl;
 	for (auto& [key, cx] : World::chunks) {
+		cout << "Hi" << endl;
 		for (auto& [key2, cMem] : cx) {
 			Chunk* c = &cMem;
 			float distance = sqrtf(powf(p.x - 0 - c->pos.x,2) + powf(p.y - 0 - c->pos.y,2));
@@ -87,6 +89,7 @@ void chunkLoader () {
 			}
 		}
 	}
+	cout << "Chunk Mesh generated" << endl;
 	// cout << totalChunks << endl;
 	loadingChunks = false;
 }
@@ -142,8 +145,6 @@ void worldSetup () { //called by the loading functions
 		}
 	};
 	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
-
-	cout << World::LogicObjects.size() << endl;
 }
 
 void World::loadNew (int seed) {

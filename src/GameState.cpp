@@ -1,3 +1,3 @@
 #include "GameState.h"
 
-GameState::State GameState::currentState = GameState::State::MENU;
+GameState::State GameState::currentState = GameState::State::PLAYING;

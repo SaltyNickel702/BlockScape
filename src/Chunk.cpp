@@ -98,9 +98,9 @@ void Chunk::genMeshParam() {
 	Chunk* backC = World::getChunkByCC(pos.x,pos.y-1);
 
 	int faces = 0;
-	for (int x = 0; x < 16; (float)x++) {
-		for (int y = 0; y < 128; (float)y++) {
-			for (int z = 0; z < 16; (float)z++) {
+	for (int x = 0; x < 16; x++) {
+		for (int y = 0; y < 128; y++) {
+			for (int z = 0; z < 16; z++) {
 				int ths = blocks[x][y][z];
 				if (ths == 0) continue;
 				Block* blck = &World::blockTypes[ths]; //pointer bc more memory efficient. No new block class for each block

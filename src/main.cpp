@@ -79,6 +79,7 @@ void DefineLogicObjects() {
     };
     UI::menuTick.active = true; //always active
 
+
     World::Player.onTick = [&](){
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
@@ -117,6 +118,7 @@ void DefineLogicObjects() {
         if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
+
 
     World::Camera.pos = glm::vec3(0,34,0);
     World::Camera.rot = glm::vec2(0,0);
@@ -244,7 +246,9 @@ int main () {
     genShaders();
 
     defineMenus();
-    World::menus["mainMenu"]->visible = true;
+    // World::menus["mainMenu"]->visible = true;
+
+    World::loadNew(495804);
 
     Engine::loop();
 }

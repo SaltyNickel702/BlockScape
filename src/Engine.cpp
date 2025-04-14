@@ -75,6 +75,9 @@ namespace {
 			if ((o->active || find(o->activeStates.begin(),o->activeStates.end(), GameState::currentState) != o->activeStates.end()) && o->onTick) {
 				o->onTick();
 			}
+			if (o->testVal) {
+				cout << o->testVal << endl;
+			}
 			objs++;
 		}
 	}

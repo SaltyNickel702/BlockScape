@@ -16,6 +16,8 @@ class LObject {
         glm::vec2 rot; //left right ; up down  |  (0 is left, 360 is toward right) ; (-90 is up, 90 is down)
         std::function<void()> onTick;
 
+        int testVal;
+
         std::vector<GameState::State> activeStates;
         bool active; // Will run even if currentState isn't listed under activeStates
 };

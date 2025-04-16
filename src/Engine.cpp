@@ -10,6 +10,7 @@ namespace {
 		Engine::height = height;
 	}
 
+
 	//Input Handeling
 	bool keysDown[GLFW_KEY_LAST-GLFW_KEY_SPACE];
 	vector<function<void()>> functionCalls[GLFW_KEY_LAST-GLFW_KEY_SPACE];
@@ -161,9 +162,8 @@ namespace Engine {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //Set Version
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //Use core version of OpenGL
-		// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //FOR MACOS
-
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //FOR MACOS
 
 		//Create GLFW window
 		window = glfwCreateWindow(w, h, "Block Scape", NULL, NULL); //Size, title, monitor, shared recourses
@@ -188,7 +188,9 @@ namespace Engine {
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
 		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// #ifdef __APPLE__
+		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// #endif
 
 		return 0;
 	}

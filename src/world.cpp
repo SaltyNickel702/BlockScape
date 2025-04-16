@@ -44,6 +44,7 @@ void World::setBlock (int x, int y, int z, int block) {
 //World Management Stuff
 bool loadingChunks = false;
 vector<glm::vec2> chunkMeshGenQueue;
+vector<glm::vec2> chunkMeshDelQueue;
 void chunkLoader () {
 	while (loadingChunks) { //so only one can run at a time
 
@@ -68,17 +69,15 @@ void chunkLoader () {
 	}
 
 
-	// cout << endl << endl;
 	for (auto& [key, cx] : World::chunks) {
-		// cout << "Hi" << endl;
 		for (auto& [key2, cMem] : cx) {
 			Chunk* c = &cMem;
 			float distance = sqrtf(powf(p.x - 0 - c->pos.x,2) + powf(p.y - 0 - c->pos.y,2));
 			if (distance > World::Settings::renderDistance) {
 				//unload mesh
 				if (c->loaded) {
-					c->loaded = false;
-					c->mesh->cleanData(); //frees up GPU memory
+					// cout << "Cleaning" << endl;
+					chunkMeshDelQueue.push_back(c->pos);
 				}
 			} else {
 				//load mesh
@@ -109,7 +108,6 @@ void worldSetup () { //called by the loading functions
 			for (auto& [key2, cMem] : cx) {
 				Chunk* c = &cMem;
 				if (c->loaded) {
-					// cout << "Drawing chunk at " << c->pos.x << ", " << c->pos.y << endl;
 					c->mesh->draw();
 				}
 			}
@@ -142,6 +140,14 @@ void worldSetup () { //called by the loading functions
 			c->genMeshGL();
 			c->loaded = true;
 			chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
+		}
+		//delete chunks
+		while (chunkMeshDelQueue.size() > 0) {
+			glm::vec2 coords = chunkMeshDelQueue.at(0);
+			Chunk* c = &World::chunks[coords.x][coords.y];
+			c->loaded = false;
+			c->mesh->cleanData();
+			chunkMeshDelQueue.erase(chunkMeshDelQueue.begin());
 		}
 	};
 	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};

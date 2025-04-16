@@ -80,7 +80,7 @@ Model Model::joinModels (Model* models) {
 void Model::cleanData () {
     if (!dataFormatted) return;
     dataFormatted = false;
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    if (glIsVertexArray(VAO)) glDeleteVertexArrays(1, &VAO);
+    if (glIsBuffer(VBO)) glDeleteBuffers(1, &VBO);
+    if (glIsBuffer(EBO)) glDeleteBuffers(1, &EBO);
 }

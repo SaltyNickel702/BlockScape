@@ -15,6 +15,7 @@
 #include <stbi/stb_image.h>
 #include <cmath>
 #include <algorithm>
+#include <ctime>
 
 //Project Classes
 #include "Shader.h"

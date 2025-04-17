@@ -246,9 +246,10 @@ int main () {
     genShaders();
 
     defineMenus();
-    World::menus["mainMenu"]->visible = true;
+    // World::menus["mainMenu"]->visible = true;
 
     // World::loadNew(495804);
+    World::loadNew(time(0));
 
     Engine::loop();
 }

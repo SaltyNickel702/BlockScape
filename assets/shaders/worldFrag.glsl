@@ -35,5 +35,11 @@ void main ()
 	float fogFactor = (distance - (fogDistance - cutoff))/(.8*cutoff);
 	textureColor = mix(textureColor, vec4(.5,.7,.8,1), clamp(fogFactor,0,1));
 
+	//Ocean Temp Shader
+	if (pos.y < 29.8) {
+		float waterFactor = (distance - (8-20))/(.8*20);
+		textureColor = mix(textureColor,vec4(0,.2,.6,1),clamp(waterFactor,0,.9));
+	}
+
 	FragColor = textureColor;
 }

@@ -132,7 +132,7 @@ void worldSetup () { //called by the loading functions
 
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {
-		int chunksPerTick = 3;
+		int chunksPerTick = 10;
 		int chunksLeft = (chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : chunkMeshGenQueue.size());
 		while (chunksLeft--) {
 			glm::vec2 coords = chunkMeshGenQueue.at(0);

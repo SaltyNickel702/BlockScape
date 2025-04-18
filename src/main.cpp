@@ -50,10 +50,6 @@ void DefineBlocks() {
     sandBlock.textureTop = 7;
     sandBlock.textureBottom = 7;
     World::blockTypes[6] = sandBlock;
-    
-    Block waterBlock("Water", 7);
-    waterBlock.tranparent = true;
-    waterBlock.textureBottom = 
 }
 
 void DefineLogicObjects() {

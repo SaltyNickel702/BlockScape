@@ -58,7 +58,6 @@ Chunk Chunk::genChunk (int cx, int cz) {
 			for (int y = 0; y < 128; y++) {
 				// Assign blocks based on Z level
 				if (y > terrainHeight) {
-					if 
 					c.blocks[x][y][z] = 0;  
 				}
 				else if (heightMulti * noiseVal > powf(.67,2)) {
@@ -118,8 +117,17 @@ void Chunk::genMeshParam() {
 
 				int front = (z < 15 ? blocks[x][y][z+1] : ((frontC == nullptr) ? -1 : *frontC->getBlock(x,y,0)));
 				int back = (z > 0 ? blocks[x][y][z-1] : ((backC == nullptr) ? -1 : *backC->getBlock(x,y,15)));
+
+				Block* bl = (left != -1 ? &World::blockTypes[left] : nullptr);
+				Block* br = (right != -1 ? &World::blockTypes[right] : nullptr);
+				Block* bu = (up != -1 ? &World::blockTypes[up] : nullptr);
+				Block* bd = (down != -1 ? &World::blockTypes[down] : nullptr);
+				Block* bf = (front != -1 ? &World::blockTypes[front] : nullptr);
+				Block* bb = (back != -1 ? &World::blockTypes[back] : nullptr);
+
+
 				
-				if (left == 0) {
+				if (bl != nullptr && ((blck->tranparent && left != ths) || bl->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	1,0,0,	1,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	1,0,0,	1,0,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	1,0,0,	0,0,	(float)blck->textureSide});
@@ -130,7 +138,7 @@ void Chunk::genMeshParam() {
 					
 					faces++;
 				}
-				if (right == 0) {
+				if (br != nullptr && ((blck->tranparent && right != ths) || br->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	-1,0,0,	0,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	-1,0,0,	1,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	-1,0,0,	1,0,	(float)blck->textureSide});
@@ -141,7 +149,7 @@ void Chunk::genMeshParam() {
 					
 					faces++;
 				}
-				if (up == 0) {
+				if (bu != nullptr && ((blck->tranparent && up != ths) || bu->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,1,0,	0,1,	(float)blck->textureTop});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+1,	0,1,0,	1,1,	(float)blck->textureTop});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,1,0,	1,0,	(float)blck->textureTop});
@@ -152,7 +160,7 @@ void Chunk::genMeshParam() {
 					
 					faces++;
 				}
-				if (down == 0) {
+				if (bd != nullptr && ((blck->tranparent && down != ths) || bd->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,-1,0,	1,1,	(float)blck->textureBottom});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+0,	0,-1,0,	1,0,	(float)blck->textureBottom});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,-1,0,	0,0,	(float)blck->textureBottom});
@@ -163,7 +171,7 @@ void Chunk::genMeshParam() {
 					
 					faces++;
 				}
-				if (front == 0) {
+				if (bf != nullptr && ((blck->tranparent && front != ths) || bf->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+1,	0,0,1,	0,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+0,(float)z+1,	0,0,1,	1,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+1,	0,0,1,	1,0,	(float)blck->textureSide});
@@ -174,7 +182,7 @@ void Chunk::genMeshParam() {
 					
 					faces++;
 				}
-				if (back == 0) {
+				if (bb != nullptr && ((blck->tranparent && back != ths) || bb->tranparent)) {
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+0,(float)z+0,	0,0,-1,	1,1,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+0,(float)y+1,(float)z+0,	0,0,-1,	1,0,	(float)blck->textureSide});
 					vertices.insert(vertices.end(),{(float)x+1,(float)y+1,(float)z+0,	0,0,-1,	0,0,	(float)blck->textureSide});

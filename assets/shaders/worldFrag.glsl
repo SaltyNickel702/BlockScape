@@ -7,6 +7,7 @@ uniform int renderDistance;
 uniform int totalTextures;
 uniform sampler2D tex0;
 uniform vec3 cameraPos;
+uniform vec3 cameraRot;
 
 in vec3 pos;
 in vec2 UV;
@@ -18,6 +19,7 @@ out vec4 FragColor;
 void main ()
 {
 	float distance = length(view * model * vec4(pos, 1.0));
+	vec3 wPos = (model * vec4(pos,1)).xyz;
 
 	//Get Texture
 	vec2 newUV = UV * vec2(1.0 / totalTextures, 1.0) + vec2(textureID / totalTextures, 0.0);	
@@ -31,10 +33,17 @@ void main ()
 	float dotProd = (dot(normalize(normal),normalize(sun))+1)/2;
 	textureColor = (dotProd+0.1)*textureColor;
 
-	//Ocean Temp Shader
-	if (pos.y < 29.8) {
-		float waterFactor = (distance - (10-16))/(.8*16);
-		textureColor = mix(textureColor,vec4(0,.2,.6,1),clamp(waterFactor,0,.95));
+	//Ocean Shader
+	vec4 waterColor = vec4(0,.2,.6,1);
+	float waterLevel = 29+14.0/16.0;
+	if ((cameraPos.y > waterLevel && pos.y < waterLevel) || (cameraPos.y < waterLevel && pos.y > waterLevel)) {
+		float surfaceFactor = 1-abs(dot(normalize(cameraPos-wPos),vec3(0,-1,0)));
+		textureColor = mix(textureColor,waterColor,clamp(.7*pow(surfaceFactor,.75)+.3,0,1));
+	}
+	if (pos.y < waterLevel) {
+		float density = 0.06;
+		float fogFactor = 1.0 - exp(-length(vec3(cameraPos.x-wPos.x,30-wPos.y,cameraPos.z-wPos.z)) * density);
+		textureColor = mix(textureColor,waterColor,clamp(fogFactor, 0.0, .95));
 	}
 
 	//Fog

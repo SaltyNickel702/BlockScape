@@ -213,6 +213,7 @@ void genShaders () {
         glUniform1i(glGetUniformLocation(worldShader->ID,"totalTextures"),blockTextures.size());
 
         glUniform3f(glGetUniformLocation(worldShader->ID,"cameraPos"),World::Camera.pos.x,World::Camera.pos.y,World::Camera.pos.z);
+        glUniform2f(glGetUniformLocation(worldShader->ID,"cameraRot"),World::Camera.rot.x,World::Camera.rot.y);
     };
 
     Shader* menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");
@@ -260,7 +261,8 @@ int main () {
     // World::menus["mainMenu"]->visible = true;
 
     // World::loadNew(495804);
-    World::loadNew(time(0));
+    World::loadNew(54123);
+    // World::loadNew(time(0));
 
     Engine::loop();
 }

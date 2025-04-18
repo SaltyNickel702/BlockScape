@@ -20,6 +20,8 @@ class Block {
         unsigned int textureSide;
         unsigned int textureTop;
         unsigned int textureBottom;
+
+        bool tranparent;
 };
 
 

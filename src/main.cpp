@@ -6,34 +6,44 @@ vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.p
 
 void DefineBlocks() {
     Block airBlock("Air", 0);
+    airBlock.tranparent = true;
     World::blockTypes[0] = airBlock;
 
     Block grassBlock("Grass", 1);
+    grassBlock.tranparent = false;
     grassBlock.textureSide = 0;
     grassBlock.textureTop = 1;
     grassBlock.textureBottom = 2;
     World::blockTypes[1] = grassBlock;
 
     Block dirtBlock("Dirt", 2);
+    dirtBlock.tranparent = false;
     dirtBlock.textureSide = 2;
     dirtBlock.textureTop = 2;
     dirtBlock.textureBottom = 2;
     World::blockTypes[2] = dirtBlock;
     
     Block stoneBlock("Stone", 3);
+    stoneBlock.tranparent = false;
     stoneBlock.textureSide = 3;
     stoneBlock.textureTop = 3;
     stoneBlock.textureBottom = 3;
     World::blockTypes[3] = stoneBlock;
 
     Block woodBlock("Wood", 4);
+    woodBlock.tranparent = false;
     woodBlock.textureSide = 5;
     woodBlock.textureTop = 4;
     woodBlock.textureBottom = 4;
     World::blockTypes[4] = woodBlock;
 
     Block leavesBlock("Leaves", 5);
+    leavesBlock.tranparent = true;
     World::blockTypes[5] = leavesBlock;
+
+    Block sandBlock("Sand", 6);
+    sandBlock.tranparent = false;
+    World::blockTypes[6] = sandBlock;
 }
 
 void DefineLogicObjects() {

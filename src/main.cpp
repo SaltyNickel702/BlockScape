@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
-vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png"};
+vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png"};
 
 
 void DefineBlocks() {
@@ -39,11 +39,21 @@ void DefineBlocks() {
 
     Block leavesBlock("Leaves", 5);
     leavesBlock.tranparent = true;
+    leavesBlock.textureSide = 6;
+    leavesBlock.textureTop = 6;
+    leavesBlock.textureBottom = 6;
     World::blockTypes[5] = leavesBlock;
 
     Block sandBlock("Sand", 6);
     sandBlock.tranparent = false;
+    sandBlock.textureSide = 7;
+    sandBlock.textureTop = 7;
+    sandBlock.textureBottom = 7;
     World::blockTypes[6] = sandBlock;
+    
+    Block waterBlock("Water", 7);
+    waterBlock.tranparent = true;
+    waterBlock.textureBottom = 
 }
 
 void DefineLogicObjects() {
@@ -152,9 +162,6 @@ void defineMenus () {
 
     
     Menu* mainMenu = new Menu(); //Temporary
-
-    Image* back = new Image(*World::textures["mainMenu"],Engine::width/2,Engine::height/2,Engine::width,Engine::height);
-    mainMenu->images.push_back(back);
     
     Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
     Button* startBtn = new Button(start);
@@ -233,9 +240,6 @@ void genTextures () {
 
     unsigned int* atlas = new unsigned int(Engine::genTextureAtlas(blockTextures));
     World::textures["atlas"] = atlas;
-
-    unsigned int* menuTemp = new unsigned int(Engine::genTexture("menu.png"));
-    World::textures["mainMenu"] = menuTemp;
 
     unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
     World::textures["startButton"] = startButton;

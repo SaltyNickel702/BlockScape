@@ -149,7 +149,7 @@ namespace Engine {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		} else {
-			cout << "Failed to Load Texture" << endl;
+			cout << "Failed to Load Texture: " << ImgName << endl;
 		}
 		stbi_image_free(data);
 		glBindTexture(GL_TEXTURE_2D, 0);

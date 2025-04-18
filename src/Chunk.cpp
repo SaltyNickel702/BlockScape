@@ -58,6 +58,7 @@ Chunk Chunk::genChunk (int cx, int cz) {
 			for (int y = 0; y < 128; y++) {
 				// Assign blocks based on Z level
 				if (y > terrainHeight) {
+					if 
 					c.blocks[x][y][z] = 0;  
 				}
 				else if (heightMulti * noiseVal > powf(.67,2)) {
@@ -69,8 +70,12 @@ Chunk Chunk::genChunk (int cx, int cz) {
 					}
 				}
 				else if (heightMulti * noiseVal * heightAdd < powf(.4,3)) {
-					//Desert
-					c.blocks[x][y][z] = 4; //currently logs, make sand
+					//Lake Biome
+					if (heightMulti * noiseVal * heightAdd < powf(.32,3)) {
+						c.blocks[x][y][z] = 2;
+					} else {
+						c.blocks[x][y][z] = 6;
+					}
 				}
 				else {
 					//Plains

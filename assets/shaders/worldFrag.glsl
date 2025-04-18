@@ -6,6 +6,7 @@ uniform mat4 view;
 uniform int renderDistance;
 uniform int totalTextures;
 uniform sampler2D tex0;
+uniform vec3 cameraPos;
 
 in vec3 pos;
 in vec2 UV;
@@ -16,6 +17,8 @@ out vec4 FragColor;
 
 void main ()
 {
+	float distance = length(view * model * vec4(pos, 1.0));
+
 	//Get Texture
 	vec2 newUV = UV * vec2(1.0 / totalTextures, 1.0) + vec2(textureID / totalTextures, 0.0);	
 	vec4 textureColor = texture(tex0, newUV);
@@ -28,18 +31,17 @@ void main ()
 	float dotProd = (dot(normalize(normal),normalize(sun))+1)/2;
 	textureColor = (dotProd+0.1)*textureColor;
 
+	//Ocean Temp Shader
+	if (pos.y < 29.8) {
+		float waterFactor = (distance - (10-16))/(.8*16);
+		textureColor = mix(textureColor,vec4(0,.2,.6,1),clamp(waterFactor,0,.95));
+	}
+
 	//Fog
-	float distance = length(view * model * vec4(pos, 1.0));
 	float fogDistance = renderDistance - 16;
 	float cutoff = .3*fogDistance;
 	float fogFactor = (distance - (fogDistance - cutoff))/(.8*cutoff);
 	textureColor = mix(textureColor, vec4(.5,.7,.8,1), clamp(fogFactor,0,1));
-
-	//Ocean Temp Shader
-	if (pos.y < 29.8) {
-		float waterFactor = (distance - (8-20))/(.8*20);
-		textureColor = mix(textureColor,vec4(0,.2,.6,1),clamp(waterFactor,0,.9));
-	}
 
 	FragColor = textureColor;
 }

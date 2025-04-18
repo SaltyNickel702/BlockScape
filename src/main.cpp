@@ -199,6 +199,7 @@ void genShaders () {
 
         glUniform1i(glGetUniformLocation(worldShader->ID,"totalTextures"),blockTextures.size());
 
+        glUniform3f(glGetUniformLocation(worldShader->ID,"cameraPos"),World::Camera.pos.x,World::Camera.pos.y,World::Camera.pos.z);
     };
 
     Shader* menuShader = new Shader("menuVert.glsl", "menuFrag.glsl");

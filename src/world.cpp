@@ -172,3 +172,64 @@ void World::loadNew (int seed) {
 
 	worldSetup();
 }
+void World::saveGame (string saveFolder) {
+	using namespace World::PlayerData;
+	string sF = "./saves/" + saveFolder;
+
+	if (!filesystem::exists(sF)) {
+		filesystem::create_directory(sF);
+	}
+
+	
+	#pragma region 
+	ofstream playerBSF(sF+"/player.bs",ofstream::trunc); //erase previous contents
+	vector<string> playerBS;
+
+	string posData = "pos=" + to_string(World::Player.pos.x) + "," + to_string(World::Player.pos.y) + "," + to_string(World::Player.pos.z);
+	playerBS.push_back(posData);
+	
+	string rotData = "rot=" + to_string(World::Player.rot.x) + "," + to_string(World::Player.rot.y);
+	playerBS.push_back(rotData);
+
+	if (playerBSF.is_open()) {
+		for (int i = 0; i < playerBS.size(); i++) {
+			playerBSF << playerBS.at(i);
+			if (i != playerBS.size()-1) {
+				playerBSF << "\n";
+			}
+		}
+		playerBSF.close();
+	}
+	#pragma endregion
+
+
+	#pragma region
+	ofstream configBSF(sF+"/config.bs",ofstream::trunc);
+	vector<string> configBS;
+
+	string seed = to_string(World::seed);
+	configBS.push_back(seed);
+
+	if (configBSF.is_open()) {
+		for (int i = 0; i < configBS.size(); i++) {
+			configBSF << configBS.at(i);
+			if (i != configBS.size()-1) {
+				configBSF << "\n";
+			}
+		}
+		configBSF.close();
+	}
+	#pragma endregion
+
+
+	#pragma region
+	ofstream worldBSF(sF + "/world.bs", ofstream::trunc);
+	vector<string> worldBS;
+
+	for (auto& [x, cx] : World::chunks) {
+		for (auto& [y, cMem] : cx) {
+			Chunk* c = &cMem;
+			
+		}
+	}
+}

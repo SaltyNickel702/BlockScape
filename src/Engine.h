@@ -16,6 +16,8 @@
 #include <cmath>
 #include <algorithm>
 #include <ctime>
+#include <fstream>
+#include <filesystem>
 
 //Project Classes
 #include "Shader.h"

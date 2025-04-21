@@ -188,6 +188,9 @@ void AddToggleKeybinds () { //things like menu opening
     Engine::addKeydownCallback(GLFW_KEY_C,[&](){
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
+    Engine::addKeydownCallback(GLFW_KEY_P,[&](){
+        World::saveGame("test");
+    });
 }
 
 void genShaders () {

@@ -2,7 +2,7 @@
 #include "Chunk.h"
 #include "World.h"
 
-Chunk::Chunk () : loaded(false) {
+Chunk::Chunk () : loaded(false), modified(false) {
 	mesh = new Model();
 	mesh->shader = World::shaders["world"];
 	mesh->textures.push_back(*World::textures["atlas"]);

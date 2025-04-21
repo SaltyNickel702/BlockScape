@@ -276,7 +276,8 @@ int main () {
     // World::menus["mainMenu"]->visible = true;
 
     // World::loadNew(495804);
-    World::loadNew(54123);
+    World::loadNew(54123453);
+    World::chunks[0][0].modified = true;
     // World::loadNew(time(0));
 
     Engine::loop();

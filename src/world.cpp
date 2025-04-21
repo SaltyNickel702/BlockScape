@@ -1,6 +1,6 @@
 #include "World.h"
 #include "Engine.h"
-#include <thread>
+#include <cstdint>
 
 int World::seed = 495804;
 map<int, map<int, Chunk>> World::chunks;
@@ -41,7 +41,9 @@ int* World::getBlock (int x, int y, int z) {
 }
 void World::setBlock (int x, int y, int z, int block) {
 	int* blck = getBlock(x,y,z);
+	if (*blck == block) return;
 	*blck = block;
+	getChunk(x,z)->modified = true;
 }
 
 
@@ -182,7 +184,7 @@ void World::saveGame (string saveFolder) {
 
 	
 	#pragma region 
-	ofstream playerBSF(sF+"/player.bs",ofstream::trunc); //erase previous contents
+	ofstream playerBSF(sF+"/player.ini",ofstream::trunc); //erase previous contents
 	vector<string> playerBS;
 
 	string posData = "pos=" + to_string(World::Player.pos.x) + "," + to_string(World::Player.pos.y) + "," + to_string(World::Player.pos.z);
@@ -204,10 +206,10 @@ void World::saveGame (string saveFolder) {
 
 
 	#pragma region
-	ofstream configBSF(sF+"/config.bs",ofstream::trunc);
+	ofstream configBSF(sF+"/config.ini",ofstream::trunc);
 	vector<string> configBS;
 
-	string seed = to_string(World::seed);
+	string seed = "seed=" + to_string(World::seed);
 	configBS.push_back(seed);
 
 	if (configBSF.is_open()) {
@@ -223,13 +225,35 @@ void World::saveGame (string saveFolder) {
 
 
 	#pragma region
-	ofstream worldBSF(sF + "/world.bs", ofstream::trunc);
-	vector<string> worldBS;
+	ofstream worldBSF(sF + "/world.dat", ios::binary | ofstream::trunc);
 
-	for (auto& [x, cx] : World::chunks) {
-		for (auto& [y, cMem] : cx) {
+	for (auto& [cx, mx] : World::chunks) {
+		for (auto& [cy, cMem] : mx) {
 			Chunk* c = &cMem;
+			if (!c->modified) continue;
+
+			//write coords
+			uint32_t cx32 = cx;
+			for (int i = 0; i < 4; ++i) {
+				uint8_t byte = (cx32 >> (i * 8)) & 0xFF;
+				worldBSF.write(reinterpret_cast<char*>(&byte), 1);
+			}
+			uint32_t cy32 = cy;
+			for (int i = 0; i < 4; ++i) {
+				uint8_t byte = (cy32 >> (i * 8)) & 0xFF;
+				worldBSF.write(reinterpret_cast<char*>(&byte), 1);
+			}
 			
+			for (int y = 0; y < 128; y++) {
+				for (int z = 0; z < 16; z++) {
+					for (int x = 0; x < 16; x++) {
+						uint8_t byte = static_cast<uint8_t>(c->blocks[x][y][z] & 0xFF);
+						worldBSF.write(reinterpret_cast<char*>(&byte), 1);
+					}
+				}
+			}
 		}
 	}
+	worldBSF.close();
+	#pragma endregion
 }

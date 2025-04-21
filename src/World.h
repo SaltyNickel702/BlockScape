@@ -45,6 +45,15 @@ namespace World {
 
     extern LObject Camera;
     extern LObject Player;
+    namespace PlayerData {
+        enum class GameMode {
+            SPECTATOR,
+            CREATIVE,
+            SURVIVAL
+        };
+        extern GameMode CurrentMode;
+        extern bool Flying;
+    }
 
     extern int seed;	
 }

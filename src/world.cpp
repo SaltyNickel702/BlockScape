@@ -13,6 +13,10 @@ vector<LObject*> World::LogicObjects;
 
 LObject World::Camera;
 LObject World::Player;
+namespace World::PlayerData {
+	GameMode CurrentMode = GameMode::SPECTATOR;
+	bool Flying = false;
+}
 
 float World::Settings::FOV = 72;
 int World::Settings::renderDistance = 20;
@@ -39,6 +43,7 @@ void World::setBlock (int x, int y, int z, int block) {
 	int* blck = getBlock(x,y,z);
 	*blck = block;
 }
+
 
 
 //World Management Stuff

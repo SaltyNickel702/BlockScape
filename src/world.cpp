@@ -2,7 +2,8 @@
 #include "Engine.h"
 #include <cstdint>
 
-int World::seed = 495804;
+int World::seed;
+string World::saveName;
 map<int, map<int, Chunk>> World::chunks;
 
 map<int, Block> World::blockTypes;
@@ -23,8 +24,8 @@ int World::Settings::renderDistance = 20;
 
 
 Chunk* World::getChunk (float x, float z) { //In world coords
-	int cx = (int)x/16.0f;
-	int cz = (int)z/16.0f;
+	int cx = floor((x >= 0 ? x : x-1)/16.0f);
+	int cz = floor((z >= 0 ? z : z-1)/16.0f);
 	return getChunkByCC(cx,cz);
 }
 Chunk* World::getChunkByCC (int cx, int cz) {
@@ -36,28 +37,33 @@ Chunk* World::getChunkByCC (int cx, int cz) {
 	return nullptr;
 }
 int* World::getBlock (int x, int y, int z) {
-	Chunk* c = getChunk(x,y);
-	return &c->blocks[x%16][y%16][z];
+	Chunk* c = getChunk(x,z);
+	int nx = (x >= 0 ? x % 16 : abs(-15 + abs(x % 16)));
+	int nz = (z >= 0 ? z % 16 : abs(-15 + abs(z % 16)));
+	cout << nx << " " << nz << endl;
+	return &c->blocks[nx][y][nz];
 }
 void World::setBlock (int x, int y, int z, int block) {
 	int* blck = getBlock(x,y,z);
 	if (*blck == block) return;
 	*blck = block;
-	getChunk(x,z)->modified = true;
+	Chunk* c = getChunk(x,z);
+	c->modified = true;
+	c->genMeshParam();
+	chunkMeshGenQueue.push_back(c->pos);
 }
 
 
 
 //World Management Stuff
 bool loadingChunks = false;
-vector<glm::vec2> chunkMeshGenQueue;
-vector<glm::vec2> chunkMeshDelQueue;
+vector<glm::vec2> World::chunkMeshGenQueue;
+vector<glm::vec2> World::chunkMeshDelQueue;
 void chunkLoader () {
 	while (loadingChunks) { //so only one can run at a time
 
 	}
 	loadingChunks = true;
-	int totalChunks = 0;
 	glm::vec2 p((int)(World::Player.pos.x/16), (int)(World::Player.pos.z/16));
 	for (int x = 0; x <= 2 * World::Settings::renderDistance + 2; x++) {
 		for (int z = 0; z <= 2 * World::Settings::renderDistance + 2; z++) { //load block data into memory
@@ -66,10 +72,7 @@ void chunkLoader () {
 			int cz = z - World::Settings::renderDistance - 1 + (int)p.y;
 
 			Chunk* c = World::getChunkByCC(cx,cz);
-			if (c == nullptr) {
-				totalChunks++;
-				//Check if saved (not added yet)
-	 			//Else generate new chunk
+			if (c == nullptr) { //chunk not loaded into memory
 				World::chunks[cx][cz] = Chunk::genChunk(cx,cz);
 			};
 		}
@@ -84,13 +87,13 @@ void chunkLoader () {
 				//unload mesh
 				if (c->loaded) {
 					// cout << "Cleaning" << endl;
-					chunkMeshDelQueue.push_back(c->pos);
+					World::chunkMeshDelQueue.push_back(c->pos);
 				}
 			} else {
 				//load mesh
-				if (!c->loaded) {
+				if (!c->loaded && c->blocksLoaded) {
 					c->genMeshParam();
-					chunkMeshGenQueue.push_back(c->pos);
+					World::chunkMeshGenQueue.push_back(c->pos);
 				}
 			}
 		}
@@ -115,6 +118,7 @@ void worldSetup () { //called by the loading functions
 			for (auto& [key2, cMem] : cx) {
 				Chunk* c = &cMem;
 				if (c->loaded) {
+					// cout << key << " " << key2 << endl;
 					c->mesh->draw();
 				}
 			}
@@ -140,21 +144,25 @@ void worldSetup () { //called by the loading functions
 	LObject* chunkMeshGen = new LObject();
 	chunkMeshGen->onTick = [&]() {
 		int chunksPerTick = 10;
-		int chunksLeft = (chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : chunkMeshGenQueue.size());
+		int chunksLeft = (World::chunkMeshGenQueue.size() > chunksPerTick ? chunksPerTick : World::chunkMeshGenQueue.size());
 		while (chunksLeft--) {
-			glm::vec2 coords = chunkMeshGenQueue.at(0);
+			glm::vec2 coords = World::chunkMeshGenQueue.at(0);
 			Chunk* c = &World::chunks[coords.x][coords.y];
-			c->genMeshGL();
-			c->loaded = true;
-			chunkMeshGenQueue.erase(chunkMeshGenQueue.begin());
+			if (!c->meshReady) {
+				World::chunkMeshGenQueue.push_back(coords);
+			} else {
+				c->genMeshGL();
+				c->loaded = true;
+			}
+			World::chunkMeshGenQueue.erase(World::chunkMeshGenQueue.begin());
 		}
 		//delete chunks
-		while (chunkMeshDelQueue.size() > 0) {
-			glm::vec2 coords = chunkMeshDelQueue.at(0);
+		while (World::chunkMeshDelQueue.size() > 0) {
+			glm::vec2 coords = World::chunkMeshDelQueue.at(0);
 			Chunk* c = &World::chunks[coords.x][coords.y];
 			c->loaded = false;
 			c->mesh->cleanData();
-			chunkMeshDelQueue.erase(chunkMeshDelQueue.begin());
+			World::chunkMeshDelQueue.erase(World::chunkMeshDelQueue.begin());
 		}
 	};
 	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
@@ -256,4 +264,177 @@ void World::saveGame (string saveFolder) {
 	}
 	worldBSF.close();
 	#pragma endregion
+}
+map<string, string> readIniFile (string fileRel) {
+	ifstream ini (fileRel);
+	map<string, string> out;
+	if (ini.is_open()) {
+		string line;
+		while (getline(ini,line)) {
+			string id;
+			bool foundID = false;
+			string contents;
+			for (int i = 0; i < line.size(); i++) {
+				char c = line.at(i);
+				if (!foundID) {
+					if (c == '=') {
+						foundID = true;
+					} else {
+						id.push_back(c);
+					}
+				} else {
+					contents.push_back(c);
+				}
+			}
+			out[id] = contents;
+		}
+	}
+	ini.close();
+	return out;
+}
+int World::loadFromSave (string saveFolder) {
+	World::saveName = saveFolder;
+	using namespace World::PlayerData;
+	string sF = "./saves/" + saveFolder;
+
+	if (!filesystem::exists(sF)) {
+		return -1;
+	}
+
+	#pragma region 
+	map<string, string> config = readIniFile(sF + "/config.ini");
+	for (auto& [id, content] : config) {
+		if (id == "seed") {
+			try {
+				int o = std::stoi(content);
+				World::seed = o;
+			} catch (const std::invalid_argument& e) {
+			} catch (const std::out_of_range& e) {
+			}
+		}
+	}
+	#pragma endregion
+
+
+	#pragma region 
+	map<string, string> playerDat = readIniFile(sF + "/player.ini");
+	for (auto& [id, content] : playerDat) {
+		// cout << id << "=" << content << endl;
+		if (id == "pos") {
+			try {
+				string strs[3];
+				int i = 0;
+				for (char c : content) {
+					if (c == ',') {
+						if (i < 2) i++;
+					} else {
+						strs[i].push_back(c);
+					}
+				}
+				
+				float pos[3];
+				for (int i = 0; i < 3; i++) {
+					pos[i] = stof(strs[i]);
+				}
+				World::Player.pos.x = pos[0];
+				World::Player.pos.y = pos[1];
+				World::Player.pos.z = pos[2];
+			} catch (const std::invalid_argument& e) {
+			} catch (const std::out_of_range& e) {
+			}
+		} else {
+			try {
+				string strs[2];
+				int i = 0;
+				for (char c : content) {
+					if (c == ',') {
+						if (i < 1) i++;
+					} else {
+						strs[i].push_back(c);
+					}
+				}
+				
+				float rot[2];
+				for (int i = 0; i < 2; i++) {
+					rot[i] = stof(strs[i]);
+				}
+				World::Player.rot.x = rot[0];
+				World::Player.rot.y = rot[1];
+			} catch (const std::invalid_argument& e) {
+			} catch (const std::out_of_range& e) {
+			}
+		}
+	}
+	#pragma endregion
+
+	#pragma region
+	ifstream world(sF + "/world.dat", std::ios::binary);
+
+    if (!world) {
+        return 1;
+    }
+
+    // Move to the end to get file size
+    world.seekg(0, ios::end);
+    streamsize size = world.tellg();
+    world.seekg(0, ios::beg);
+
+    // Allocate and read all bytes
+    std::vector<uint8_t> buffer(size);
+    if (!world.read(reinterpret_cast<char*>(buffer.data()), size)) {
+        // Read failed
+        return 1;
+    }
+	int i = 0;
+	int chunkSize = 8 + 128*16*16;
+	uint8_t intByteMem[4];
+	int pos[2];
+	Chunk* curChunk;
+	while (i < size) {
+		int iCD = i % chunkSize; //iterator Chunk Data (includes all chunk data)
+		uint8_t* b = &buffer[i];
+		if (iCD < 4) {
+			intByteMem[iCD] = *b;
+			if (iCD == 3) {
+				int32_t value = (intByteMem[0]) |
+								(intByteMem[1] << 8) |
+								(intByteMem[2] << 16) |
+								(intByteMem[3] << 24);
+				pos[0] = (int)value;
+			}
+		} else if (iCD < 8) {
+			intByteMem[iCD-4] = *b;
+			if (iCD == 7) {
+				int32_t value = (intByteMem[0]) |
+								(intByteMem[1] << 8) |
+								(intByteMem[2] << 16) |
+								(intByteMem[3] << 24);
+				pos[1] = (int)value;
+				World::chunks[pos[0]][pos[1]].modified = true;
+				World::chunks[pos[0]][pos[1]].blocksLoaded = true;
+				World::chunks[pos[0]][pos[1]].loaded = false;
+				curChunk = getChunkByCC(pos[0],pos[1]);
+				curChunk->pos = glm::vec2(pos[0],pos[1]); //assign position for reference
+				curChunk->mesh->pos = glm::vec3(pos[0]*16,0,pos[1]*16);
+			}
+		} else {
+			int iC = iCD-8; //subtract first 8 bits
+			int y = floor(iC / 256); //16^2 = 256
+			int z = floor((iC%256)/16);
+			int x = iC%16;
+			if (curChunk) {
+				curChunk->blocks[x][y][z] = *b;
+			}
+		}
+		i++;
+	}
+
+    world.close();
+	#pragma endregion
+
+	Chunk* t = getChunkByCC(0,0);
+	chunkLoader();
+	worldSetup();
+
+	return 0;
 }

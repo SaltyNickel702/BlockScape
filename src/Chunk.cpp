@@ -2,17 +2,24 @@
 #include "Chunk.h"
 #include "World.h"
 
-Chunk::Chunk () : loaded(false), modified(false) {
+Chunk::Chunk () : loaded(false), modified(false), blocksLoaded(false), meshReady(false) {
 	mesh = new Model();
 	mesh->shader = World::shaders["world"];
 	mesh->textures.push_back(*World::textures["atlas"]);
+
+	for (int x = 0; x < 16; x++) {
+		for (int z = 0; z < 16; z++) {
+			for (int y = 0; y < 128; y++) {
+				blocks[x][y][z] = 0;
+			}
+		}
+	}
 }
 
 Chunk Chunk::genChunk (int cx, int cz) {
 	Chunk c;
 	c.pos = glm::vec2(cx,cz); //assign position for reference
 	c.mesh->pos = glm::vec3(cx*16,0,cz*16);
-
 
 	int seed = World::seed;
 
@@ -92,10 +99,14 @@ Chunk Chunk::genChunk (int cx, int cz) {
 		}
 	}
 
+	c.blocksLoaded = true;
 	return c;
 }
 
 void Chunk::genMeshParam() {
+	vertices.clear();
+	indices.clear();
+
 	Chunk* leftC = World::getChunkByCC(pos.x+1,pos.y);
 	Chunk* rightC = World::getChunkByCC(pos.x-1,pos.y);
 	Chunk* frontC = World::getChunkByCC(pos.x,pos.y+1);
@@ -112,7 +123,7 @@ void Chunk::genMeshParam() {
 				int left = (x < 15 ? blocks[x+1][y][z] : ((leftC == nullptr) ? -1 : *leftC->getBlock(0,y,z))); //-1 means not present | replace -1 with other side chunk block for x and z
 				int right = (x > 0 ? blocks[x-1][y][z] : ((rightC == nullptr) ? -1 : *rightC->getBlock(15,y,z)));
 				
-				int up = (y < 127 ? blocks[x][y+1][z] : 0); //assume air is above y:63
+				int up = (y < 127 ? blocks[x][y+1][z] : 0); //assume air is above y:127
 				int down = (y > 0 ? blocks[x][y-1][z] : 0); //assume air is below y:0
 
 				int front = (z < 15 ? blocks[x][y][z+1] : ((frontC == nullptr) ? -1 : *frontC->getBlock(x,y,0)));
@@ -196,9 +207,11 @@ void Chunk::genMeshParam() {
 			}
 		}
 	}
+	meshReady = true;
 }
 void Chunk::genMeshGL () {
 	mesh->setData(vertices,indices,attrib);
+	meshReady = false;
 }
 
 

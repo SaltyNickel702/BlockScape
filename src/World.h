@@ -19,7 +19,7 @@ using namespace std;
 //Everything related to BlockScape
 namespace World {
     void loadNew (int seed); //Load data into chunk files
-    void loadFromSave (string saveFolder);
+    int loadFromSave (string saveFolder); // returns 0 if success, -1 if failure
     void saveGame (string saveFolder);
 
     extern map<int, map<int,Chunk>> chunks;
@@ -55,7 +55,11 @@ namespace World {
         extern bool Flying;
     }
 
-    extern int seed;	
+    extern int seed;
+    extern string saveName;
+
+    extern vector<glm::vec2> chunkMeshGenQueue;
+    extern vector<glm::vec2> chunkMeshDelQueue;
 }
 
 #endif

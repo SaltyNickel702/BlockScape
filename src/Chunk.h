@@ -24,6 +24,9 @@ class Chunk {
         int* getBlock (int x, int y, int z);
 
         bool loaded;
+        bool blocksLoaded;
+        bool meshReady;
+        bool modified;
 
         Model* mesh;
         void genMeshGL();
@@ -32,8 +35,6 @@ class Chunk {
         vector<float> vertices;
         vector<unsigned int> indices;
         vector<unsigned int> attrib {3,3,2,1}; //pos, normal, uv, texture ID
-
-        bool modified;
 };
 
 

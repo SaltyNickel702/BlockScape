@@ -53,6 +53,8 @@ namespace World {
         };
         extern GameMode CurrentMode;
         extern bool Flying;
+        bool isColliding(int x, int y, int z);
+        extern glm::vec3 Pdim;
     }
 
     extern int seed;

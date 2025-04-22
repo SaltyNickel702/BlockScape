@@ -17,6 +17,39 @@ LObject World::Player;
 namespace World::PlayerData {
 	GameMode CurrentMode = GameMode::SPECTATOR;
 	bool Flying = false;
+	glm::vec3 Pdim = {0.6,1.8,0.6};
+	bool isColliding(int x, int y, int z) {
+		glm::vec3 playerPos = World::Player.pos;
+		glm::vec3 playerDim = World::PlayerData::Pdim;
+	
+		// Calculate the bounding box of the player
+		int minX = (playerPos.x - playerDim.x / 2);
+		//cout<<"MinX: " << minX << endl;
+		int maxX = (playerPos.x + playerDim.x / 2);
+		//cout<<"MaxX: " << maxX << endl;
+		int minY = (playerPos.y);
+		//cout<<"MinY: " << minY << endl;
+		int maxY = (playerPos.y + playerDim.y + 0.6); // Add a small offset to the top of the player
+		//cout<<"MaxY: " << maxY << endl;
+		int minZ = (playerPos.z - playerDim.z / 2);
+		//cout<<"MinZ: " << minZ << endl;
+		int maxZ = (playerPos.z + playerDim.z / 2);
+		//cout<<"MaxZ: " << maxZ << endl;
+	
+		// Iterate over all blocks in the bounding box
+		for (int bx = minX; bx <= maxX; bx++) {
+			for (int by = minY; by <= maxY; by++) {
+				for (int bz = minZ; bz <= maxZ; bz++) {
+					int* block = World::getBlock(bx, by, bz);
+					if (block && *block != 0) { // 0 is air
+						return true; // Collision detected
+					}
+				}
+			}
+		}
+	
+		return false; // No collision
+	}
 }
 
 float World::Settings::FOV = 72;
@@ -40,7 +73,7 @@ int* World::getBlock (int x, int y, int z) {
 	Chunk* c = getChunk(x,z);
 	int nx = (x >= 0 ? x % 16 : abs(-15 + abs(x % 16)));
 	int nz = (z >= 0 ? z % 16 : abs(-15 + abs(z % 16)));
-	cout << nx << " " << nz << endl;
+	//cout << nx << " " << nz << endl;
 	return &c->blocks[nx][y][nz];
 }
 void World::setBlock (int x, int y, int z, int block) {

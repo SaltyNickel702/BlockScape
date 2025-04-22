@@ -116,18 +116,15 @@ void DefineLogicObjects() {
         if (p->rot.y > 90) p->rot.y = 90;
         if (p->rot.y < -90) p->rot.y = -90;
         if (p->rot.x < 0 || p->rot.x > 360) p->rot.x = fmod(p->rot.x + 360,360);
-
+        glm::mat4 rotMatrix(1.0f);
+        rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
+        // rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
+        glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
+        glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
+        glm::vec3 upVec(0,1,0);
+        //Temp Camera Movement
+        float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (CurrentMode == GameMode::SPECTATOR) {
-            //Spectator mode no collision
-            glm::mat4 rotMatrix(1.0f);
-            rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
-            // rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
-            glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
-            glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
-            glm::vec3 upVec(0,1,0);
-
-            //Temp Camera Movement
-            float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
             if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
             if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
             if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
@@ -135,8 +132,13 @@ void DefineLogicObjects() {
             if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed*sideVec;
             if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
             if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
+
+            //you need to know from which direction the collision is coming so you can stop movement only from that direction
+            if(isColliding(p->pos.x,p->pos.y,p->pos.z)) {
+                cout<<"Colliding!"<<endl;
+            } else {cout<<"Not colliding!"<<endl;}
         } else {
-            if (true) {
+            if (Flying) {
                 //Creative Flying
 
             } else {

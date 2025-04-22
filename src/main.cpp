@@ -145,8 +145,15 @@ void DefineLogicObjects() {
             }
         }
 
+        //Block Placing
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-            World::setBlock(p->pos.x,p->pos.y,p->pos.z, 5);
+            glm::vec3* bcPtr = World::Camera.raycast(6,.1);
+            if (bcPtr != nullptr) {
+                glm::vec3 bc = *bcPtr;
+                // delete bcPtr;
+                World::setBlock(bc.x,bc.y,bc.z,0);
+
+            }
         }
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
@@ -193,7 +200,7 @@ void AddToggleKeybinds () { //things like menu opening
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
     Engine::addKeydownCallback(GLFW_KEY_P,[&](){
-        World::saveGame("newWorld");
+        World::saveGame("creativeMining");
     });
 }
 
@@ -279,9 +286,9 @@ int main () {
     defineMenus();
     // World::menus["mainMenu"]->visible = true;
 
-    // World::loadNew(495804);
+    World::loadNew(495804);
     // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
+    // World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     Engine::loop();

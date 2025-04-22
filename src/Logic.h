@@ -18,5 +18,7 @@ class LObject {
         
         std::vector<GameState::State> activeStates;
         bool active; // Will run even if currentState isn't listed under activeStates
+
+        glm::vec3* raycast (float limit, float step);
 };
 #endif

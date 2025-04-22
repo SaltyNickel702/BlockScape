@@ -35,8 +35,8 @@ namespace World {
     
     Chunk* getChunk (float x, float z); //world coords
     Chunk* getChunkByCC (int cx, int cy); //chunk coords;
-    int* getBlock (int x, int y, int z);
-    void setBlock (int x, int y, int z, int block);
+    int* getBlock (float x, float y, float z);
+    void setBlock (float x, float y, float z, int block);
     
     namespace Settings {
         extern float FOV;

@@ -36,21 +36,52 @@ Chunk* World::getChunkByCC (int cx, int cz) {
 	};
 	return nullptr;
 }
-int* World::getBlock (int x, int y, int z) {
+int* World::getBlock (float fx, float fy, float fz) {
+	int x = (int)(fx);
+	int y = (int)(fy);
+	int z = (int)(fz);
+
 	Chunk* c = getChunk(x,z);
-	int nx = (x >= 0 ? x % 16 : abs(-15 + abs(x % 16)));
-	int nz = (z >= 0 ? z % 16 : abs(-15 + abs(z % 16)));
-	cout << nx << " " << nz << endl;
+	int nx = (x >= 0 ? x % 16 : x % 16 + 15);
+	int nz = (z >= 0 ? z % 16 : z % 16 + 15);
 	return &c->blocks[nx][y][nz];
 }
-void World::setBlock (int x, int y, int z, int block) {
+void World::setBlock (float fx, float fy, float fz, int block) {
+	int x = (int)(fx);
+	int y = (int)(fy);
+	int z = (int)(fz);
+
 	int* blck = getBlock(x,y,z);
 	if (*blck == block) return;
 	*blck = block;
+	
+	//Update Current Chunk
 	Chunk* c = getChunk(x,z);
-	c->modified = true;
+	c->modified = true; //only for updated chunk
 	c->genMeshParam();
 	chunkMeshGenQueue.push_back(c->pos);
+
+	//Update side chunks
+	vector<glm::vec2> cs;
+	if ((x < 0 && x % 16 + 15 == 0) || x % 16 == 0) {
+		//chunk toward -x
+		cs.push_back(glm::vec2(x-1,z));
+	} else if ((x < 0 && x % 16 + 15 == 15) || x % 16 == 15) {
+		//chunk toward +x
+		cs.push_back(glm::vec2(x+1,z));
+	}
+	if ((z < 0 && z % 16 + 15 == 0) || z % 16 == 0) {
+		//chunk toward -z
+		cs.push_back(glm::vec2(x,z-1));
+	} else if ((z < 0 && z % 16 + 15 == 15) || z % 16 == 15) {
+		//chunk toward +z
+		cs.push_back(glm::vec2(x,z+1));
+	}
+	for (glm::vec2 v : cs) {
+		Chunk* c = getChunk(v.x,v.y);
+		c->genMeshParam();
+		chunkMeshGenQueue.push_back(c->pos);
+	}
 }
 
 

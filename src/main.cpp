@@ -116,13 +116,17 @@ void DefineLogicObjects() {
         if (p->rot.y > 90) p->rot.y = 90;
         if (p->rot.y < -90) p->rot.y = -90;
         if (p->rot.x < 0 || p->rot.x > 360) p->rot.x = fmod(p->rot.x + 360,360);
+        
+        //Rotation Matrices
         glm::mat4 rotMatrix(1.0f);
         rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.x), glm::vec3(0,1,0));
         // rotMatrix = glm::rotate(rotMatrix, -glm::radians(World::Camera.rot.y), glm::vec3(1,0,0)); //Uncomment to make movement relative camera y instead of only x rotation
         glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
         glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
         glm::vec3 upVec(0,1,0);
-        //Temp Camera Movement
+
+
+        //Movement
         float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (CurrentMode == GameMode::SPECTATOR) {
             if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
@@ -134,9 +138,9 @@ void DefineLogicObjects() {
             if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
 
             //you need to know from which direction the collision is coming so you can stop movement only from that direction
-            if(isColliding(p->pos.x,p->pos.y,p->pos.z)) {
-                cout<<"Colliding!"<<endl;
-            } else {cout<<"Not colliding!"<<endl;}
+            // if(isColliding(p->pos.x,p->pos.y,p->pos.z)) {
+            //     cout<<"Colliding!"<<endl;
+            // } else {cout<<"Not colliding!"<<endl;}
         } else {
             if (Flying) {
                 //Creative Flying
@@ -156,6 +160,9 @@ void DefineLogicObjects() {
                 World::setBlock(bc.x,bc.y,bc.z,0);
 
             }
+        }
+        if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
+            World::setBlock(p->pos.x,p->pos.y,p->pos.z,5);
         }
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
@@ -202,7 +209,7 @@ void AddToggleKeybinds () { //things like menu opening
         cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
     });
     Engine::addKeydownCallback(GLFW_KEY_P,[&](){
-        World::saveGame("creativeMining");
+        World::saveGame("newWorld");
     });
 }
 
@@ -288,9 +295,9 @@ int main () {
     defineMenus();
     // World::menus["mainMenu"]->visible = true;
 
-    World::loadNew(495804);
+    // World::loadNew(495804);
     // World::loadNew(54123453);
-    // World::loadFromSave("newWorld");
+    World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     Engine::loop();

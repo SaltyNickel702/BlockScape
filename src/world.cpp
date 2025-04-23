@@ -17,38 +17,39 @@ LObject World::Player;
 namespace World::PlayerData {
 	GameMode CurrentMode = GameMode::SPECTATOR;
 	bool Flying = false;
-	glm::vec3 Pdim = {0.6,1.8,0.6};
-	bool isColliding(int x, int y, int z) {
-		glm::vec3 playerPos = World::Player.pos;
-		glm::vec3 playerDim = World::PlayerData::Pdim;
-	
-		// Calculate the bounding box of the player
-		int minX = (playerPos.x - playerDim.x / 2);
-		//cout<<"MinX: " << minX << endl;
-		int maxX = (playerPos.x + playerDim.x / 2);
-		//cout<<"MaxX: " << maxX << endl;
-		int minY = (playerPos.y);
-		//cout<<"MinY: " << minY << endl;
-		int maxY = (playerPos.y + playerDim.y + 0.6); // Add a small offset to the top of the player
-		//cout<<"MaxY: " << maxY << endl;
-		int minZ = (playerPos.z - playerDim.z / 2);
-		//cout<<"MinZ: " << minZ << endl;
-		int maxZ = (playerPos.z + playerDim.z / 2);
-		//cout<<"MaxZ: " << maxZ << endl;
-	
-		// Iterate over all blocks in the bounding box
-		for (int bx = minX; bx <= maxX; bx++) {
-			for (int by = minY; by <= maxY; by++) {
-				for (int bz = minZ; bz <= maxZ; bz++) {
-					int* block = World::getBlock(bx, by, bz);
-					if (block && *block != 0) { // 0 is air
-						return true; // Collision detected
-					}
-				}
+	glm::vec3 Pdim = {0.7f,1.8f,0.7f};
+	bool isColliding(float x, float y, float z) {
+		float width = Pdim.x / 2.0f;
+		float depth = Pdim.z / 2.0f;
+		float adjustedY = y + (Pdim.y);
+		/*if (Engine::keyDown(GLFW_KEY_F)){
+		//cout << y << endl;
+		//cout << adjustedY << endl;
+		}*/
+		// Check 8 corners of playerss bounding box
+		float checkPoints[][3] = {
+			{x - width, y + 0.4f, z - depth},          // bottom corners
+			{x + width, y + 0.4f, z - depth},
+			{x - width, y + 0.4f, z + depth},
+			{x + width, y + 0.4f, z + depth},
+			{x - width, adjustedY + 0.4f, z - depth},  // top corners
+			{x + width, adjustedY + 0.4f, z - depth},
+			{x - width, adjustedY + 0.4f, z + depth},
+			{x + width, adjustedY + 0.4f, z + depth},
+			//{x, (adjustedY + 0.4f) /2.0f, z}, // Center point. decided its not really necessary.
+		};
+		for (float (&point)[3] : checkPoints) {
+			float blockX = point[0];
+			float blockY = point[1];
+			float blockZ = point[2];
+
+			int* block = World::getBlock(blockX, blockY, blockZ);
+			if (block != nullptr && *block != 0) {  // If block exists and is not air
+				return true;
 			}
 		}
-	
-		return false; // No collision
+
+		return false;
 	}
 }
 

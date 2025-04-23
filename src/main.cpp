@@ -124,27 +124,53 @@ void DefineLogicObjects() {
         glm::vec3 forwardVec = rotMatrix * glm::vec4(0,0,1,1) * glm::vec4(1,-1,1,1);
         glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
         glm::vec3 upVec(0,1,0);
-
+        
+        // mode change. VERY TEMPORARY
+        Engine::addKeydownCallback(GLFW_KEY_1,[&](){
+           CurrentMode = GameMode::SPECTATOR;
+           cout << "Spectator Mode" << endl;
+        });
+        Engine::addKeydownCallback(GLFW_KEY_2,[&](){
+            CurrentMode = GameMode::CREATIVE;
+            Flying = true;
+            cout << "Creative Mode" << endl;
+        });
 
         //Movement
         float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (CurrentMode == GameMode::SPECTATOR) {
             if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
-            if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed*forwardVec;
-            if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed*forwardVec;
-            if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed*sideVec;
-            if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed*sideVec;
-            if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed*upVec;
-            if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed*upVec;
-
-            //you need to know from which direction the collision is coming so you can stop movement only from that direction
-            // if(isColliding(p->pos.x,p->pos.y,p->pos.z)) {
-            //     cout<<"Colliding!"<<endl;
-            // } else {cout<<"Not colliding!"<<endl;}
+            if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed * forwardVec;
+            if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed * forwardVec;
+            if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed * sideVec;
+            if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed * sideVec;
+            if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed * upVec;
+            if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed * upVec;
         } else {
-            if (Flying) {
-                //Creative Flying
-
+            if (Flying == true) {
+                //Creative flying
+                glm::vec3 previousPos = p->pos; // position to check against
+                if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
+                if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed * forwardVec;
+                if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed * forwardVec;
+                if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed * sideVec;
+                if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed * sideVec;
+                if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed * upVec;
+                if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed * upVec;
+                //Calculate movement direction. uncomment if you need it
+                //glm::vec3 movementDirection = p->pos - previousPos;
+                // x axis
+                if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
+                    p->pos.x = previousPos.x;
+                }
+                // y axos
+                if (isColliding(p->pos.x, p->pos.y, previousPos.z)) {
+                    p->pos.y = previousPos.y;
+                }
+                // z axis
+                if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
+                    p->pos.z = previousPos.z;
+                }
             } else {
                 //Survival + Creative walking
 

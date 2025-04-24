@@ -71,19 +71,19 @@ Chunk* World::getChunkByCC (int cx, int cz) {
 	return nullptr;
 }
 int* World::getBlock (float fx, float fy, float fz) {
-	int x = (int)(fx);
-	int y = (int)(fy);
-	int z = (int)(fz);
+	int x = floor(fx); //-0.5 -> -1
+	int y = floor(fy);
+	int z = floor(fz);
 
 	Chunk* c = getChunk(x,z);
-	int nx = (x >= 0 ? x % 16 : x % 16 + 15);
-	int nz = (z >= 0 ? z % 16 : z % 16 + 15);
+	int nx = (x % 16 + 16) % 16;
+	int nz = (z % 16 + 16) % 16;
 	return &c->blocks[nx][y][nz];
 }
 void World::setBlock (float fx, float fy, float fz, int block) {
-	int x = (int)(fx);
-	int y = (int)(fy);
-	int z = (int)(fz);
+	int x = floor(fx);
+	int y = floor(fy);
+	int z = floor(fz);
 
 	int* blck = getBlock(x,y,z);
 	if (*blck == block) return;
@@ -479,7 +479,7 @@ int World::loadFromSave (string saveFolder) {
 				World::chunks[pos[0]][pos[1]].blocksLoaded = true;
 				World::chunks[pos[0]][pos[1]].loaded = false;
 				curChunk = getChunkByCC(pos[0],pos[1]);
-				curChunk->pos = glm::vec2(pos[0],pos[1]); //assign position for reference
+				curChunk->pos = glm::vec2(pos[0],pos[1]);
 				curChunk->mesh->pos = glm::vec3(pos[0]*16,0,pos[1]*16);
 			}
 		} else {

@@ -18,25 +18,33 @@ namespace World::PlayerData {
 	GameMode CurrentMode = GameMode::SPECTATOR;
 	bool Flying = false;
 	glm::vec3 Pdim = {0.7f,1.8f,0.7f};
+	glm::vec3 velocity = {0.0f, 0.0f, 0.0f}; // added for gravity/jumping
+	bool onGround = false;
 	bool isColliding(float x, float y, float z) {
 		float width = Pdim.x / 2.0f;
 		float depth = Pdim.z / 2.0f;
-		float adjustedY = y + (Pdim.y);
-		/*if (Engine::keyDown(GLFW_KEY_F)){
-		//cout << y << endl;
-		//cout << adjustedY << endl;
-		}*/
-		// Check 8 corners of playerss bounding box
+
+		//btw, the "+0.4f" is so that our camera is at eye level, not top of head level.
+		// theres prob a better way, but this works ig.
+
+		// calc 3 different y values to check (oh god)
+		float bottomY = y+0.4f;  // bottom
+		float topY = (y + Pdim.y) + 0.4f;  // top
+		float midY = y + ((Pdim.y) / 2.0f) +0.4f;  // middle point for edge checks
+		
 		float checkPoints[][3] = {
-			{x - width, y + 0.4f, z - depth},          // bottom corners
-			{x + width, y + 0.4f, z - depth},
-			{x - width, y + 0.4f, z + depth},
-			{x + width, y + 0.4f, z + depth},
-			{x - width, adjustedY + 0.4f, z - depth},  // top corners
-			{x + width, adjustedY + 0.4f, z - depth},
-			{x - width, adjustedY + 0.4f, z + depth},
-			{x + width, adjustedY + 0.4f, z + depth},
-			//{x, (adjustedY + 0.4f) /2.0f, z}, // Center point. decided its not really necessary.
+			{x - width, bottomY, z - depth},//Bottom points.
+			{x + width, bottomY, z - depth},
+			{x - width, bottomY, z + depth},
+			{x + width, bottomY, z + depth},
+			{x - width, midY, z - depth},   //added middle points to prevent phasing through blocks.
+			{x + width, midY, z - depth},
+			{x - width, midY, z + depth},
+			{x + width, midY, z + depth},
+			{x - width, topY, z - depth},   //top points.
+			{x + width, topY, z - depth},
+			{x - width, topY, z + depth},
+			{x + width, topY, z + depth}
 		};
 		for (float (&point)[3] : checkPoints) {
 			float blockX = point[0];
@@ -44,7 +52,7 @@ namespace World::PlayerData {
 			float blockZ = point[2];
 
 			int* block = World::getBlock(blockX, blockY, blockZ);
-			if (block != nullptr && *block != 0) {  // If block exists and is not air
+			if (block != nullptr && *block != 0) {
 				return true;
 			}
 		}

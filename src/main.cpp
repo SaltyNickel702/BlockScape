@@ -133,11 +133,15 @@ void DefineLogicObjects() {
             CurrentMode = GameMode::CREATIVE;
             Flying = true;
             cout << "Creative Mode" << endl;
+        } else if (Engine::keyDownTick[GLFW_KEY_3]) {
+            CurrentMode = GameMode::SURVIVAL;
+            Flying = false;
+            cout << "Survival Mode" << endl;
         }
 
         //Movement
         float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (CurrentMode == GameMode::SPECTATOR) {
+        if (CurrentMode == GameMode::SPECTATOR) {           // spectator movement
             if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
             if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
             if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
@@ -146,8 +150,7 @@ void DefineLogicObjects() {
             if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
             if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
         } else {
-            if (Flying == true) {
-                //Creative flying
+            if (Flying == true) {           //Creative flying
                 glm::vec3 previousPos = p->pos; // position to check against
                 if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
                 if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
@@ -156,8 +159,6 @@ void DefineLogicObjects() {
                 if (Engine::keyDown[GLFW_KEY_D]) p->pos = p->pos - speed * sideVec;
                 if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
                 if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
-                //Calculate movement direction. uncomment if you need it
-                //glm::vec3 movementDirection = p->pos - previousPos;
                 // x axis
                 if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
                     p->pos.x = previousPos.x;
@@ -170,9 +171,57 @@ void DefineLogicObjects() {
                 if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
                     p->pos.z = previousPos.z;
                 }
-            } else {
-                //Survival + Creative walking
+            } else {        //Survival + Creative walking
+                glm::vec3 previousPos = p->pos;
+                if (!onGround) {
+                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for diff grav phys
+                }
+                if (velocity.y < -22.0f) velocity.y = -22.0f; // settign a max fall speed. val to change for diff grav phys
+                
+                glm::vec3 walkDir = glm::vec3(0.0f);
 
+                // change these to an inWater bool 
+                // if we ever get water that isint just below a certain level
+                float pspeed;
+                if (p->pos.y <= 29){
+                    pspeed = 2.3f; // below water. val to change for diff grav phys
+                } else if (p->pos.y > 29){
+                    pspeed = 5.5f; // above water . val to change for diff grav phys
+                }
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) pspeed *= 1.5f; // "running" multiplier (its a brisk walk at best)
+                if (Engine::keyDown[GLFW_KEY_W]) walkDir += forwardVec;
+                if (Engine::keyDown[GLFW_KEY_S]) walkDir -= forwardVec;
+                if (Engine::keyDown[GLFW_KEY_A]) walkDir += sideVec;
+                if (Engine::keyDown[GLFW_KEY_D]) walkDir -= sideVec;
+
+                if (glm::length(walkDir) > 0) {
+                    walkDir = glm::normalize(walkDir) * pspeed * Engine::deltaTick;
+                }
+                p->pos.x += walkDir.x;
+                p->pos.z += walkDir.z;
+                if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
+                    p->pos.x = previousPos.x;
+                }
+                if (isColliding(p->pos.x, previousPos.y, p->pos.z)) {
+                    p->pos.z = previousPos.z;
+                }
+                p->pos.y += velocity.y * Engine::deltaTick;
+                onGround = false;
+                if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
+                    if (velocity.y < 0) { // Moving down
+                        p->pos.y = floor(previousPos.y) + 0.6f; // snap to ground
+                        onGround = true;
+                        velocity.y = 0;
+                    } else { // moving up
+                        p->pos.y = previousPos.y;
+                        velocity.y = 0;
+                    }
+                }
+                // jumping
+                if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
+                    velocity.y = 10.0f; // jump speed. val to change for diff grav phys
+                    onGround = false;
+                }
             }
         }
 

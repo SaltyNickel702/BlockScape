@@ -104,10 +104,10 @@ void DefineLogicObjects() {
         //Temp Camera Rotation
         float rotSpeed = 90*Engine::deltaTick;
         if (Engine::cursorEnabled) {
-            if (Engine::keyDown(GLFW_KEY_LEFT)) p->rot.x-= rotSpeed;
-            if (Engine::keyDown(GLFW_KEY_RIGHT)) p->rot.x+= rotSpeed;
-            if (Engine::keyDown(GLFW_KEY_UP)) p->rot.y-= rotSpeed;
-            if (Engine::keyDown(GLFW_KEY_DOWN)) p->rot.y+= rotSpeed;
+            if (Engine::keyDown[GLFW_KEY_LEFT]) p->rot.x-= rotSpeed;
+            if (Engine::keyDown[GLFW_KEY_RIGHT]) p->rot.x+= rotSpeed;
+            if (Engine::keyDown[GLFW_KEY_UP]) p->rot.y-= rotSpeed;
+            if (Engine::keyDown[GLFW_KEY_DOWN]) p->rot.y+= rotSpeed;
         } else {
             p->rot+= 0.1f*Engine::cursorPos; //floating point coefficient determines sensitivity
         }
@@ -126,37 +126,36 @@ void DefineLogicObjects() {
         glm::vec3 upVec(0,1,0);
         
         // mode change. VERY TEMPORARY
-        Engine::addKeydownCallback(GLFW_KEY_1,[&](){
-           CurrentMode = GameMode::SPECTATOR;
-           cout << "Spectator Mode" << endl;
-        });
-        Engine::addKeydownCallback(GLFW_KEY_2,[&](){
+        if (Engine::keyDownTick[GLFW_KEY_1]) {
+            CurrentMode = GameMode::SPECTATOR;
+            cout << "Spectator Mode" << endl;
+        } else if (Engine::keyDownTick[GLFW_KEY_2]) {
             CurrentMode = GameMode::CREATIVE;
             Flying = true;
             cout << "Creative Mode" << endl;
-        });
+        }
 
         //Movement
         float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (CurrentMode == GameMode::SPECTATOR) {
-            if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
-            if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed * forwardVec;
-            if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed * forwardVec;
-            if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed * sideVec;
-            if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed * sideVec;
-            if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed * upVec;
-            if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed * upVec;
+            if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
+            if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
+            if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
+            if (Engine::keyDown[GLFW_KEY_A]) p->pos = p->pos + speed * sideVec;
+            if (Engine::keyDown[GLFW_KEY_D]) p->pos = p->pos - speed * sideVec;
+            if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
+            if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
         } else {
             if (Flying == true) {
                 //Creative flying
                 glm::vec3 previousPos = p->pos; // position to check against
-                if (Engine::keyDown(GLFW_KEY_LEFT_CONTROL)) speed*=5;//2.5
-                if (Engine::keyDown(GLFW_KEY_W)) p->pos = p->pos + speed * forwardVec;
-                if (Engine::keyDown(GLFW_KEY_S)) p->pos = p->pos - speed * forwardVec;
-                if (Engine::keyDown(GLFW_KEY_A)) p->pos = p->pos + speed * sideVec;
-                if (Engine::keyDown(GLFW_KEY_D)) p->pos = p->pos - speed * sideVec;
-                if (Engine::keyDown(GLFW_KEY_LEFT_SHIFT)) p->pos = p->pos - speed * upVec;
-                if (Engine::keyDown(GLFW_KEY_SPACE)) p->pos = p->pos + speed * upVec;
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
+                if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
+                if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
+                if (Engine::keyDown[GLFW_KEY_A]) p->pos = p->pos + speed * sideVec;
+                if (Engine::keyDown[GLFW_KEY_D]) p->pos = p->pos - speed * sideVec;
+                if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
+                if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
                 //Calculate movement direction. uncomment if you need it
                 //glm::vec3 movementDirection = p->pos - previousPos;
                 // x axis
@@ -230,13 +229,28 @@ void defineMenus () {
 }
 
 void AddToggleKeybinds () { //things like menu opening
-    Engine::addKeydownCallback(GLFW_KEY_ENTER,[&](){Engine::allowCursor(!Engine::cursorEnabled);});
-    Engine::addKeydownCallback(GLFW_KEY_C,[&](){
-        cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
-    });
-    Engine::addKeydownCallback(GLFW_KEY_P,[&](){
-        World::saveGame("newWorld");
-    });
+    LObject* global = new LObject();
+    global->active = true;
+
+    LObject* mainMenu = new LObject();
+    mainMenu->activeStates = vector<GameState::State>{GameState::State::MENU};
+
+    LObject* pauseMenu = new LObject();
+    pauseMenu->activeStates = vector<GameState::State>{GameState::State::PAUSE};
+
+    LObject* running = new LObject();
+    running->onTick = [&](){
+        if (Engine::keyDownTick[GLFW_KEY_ENTER]) {
+            Engine::allowCursor(!Engine::cursorEnabled);
+        }
+        if (Engine::keyDownTick[GLFW_KEY_C]) {
+            cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
+        }
+        if (Engine::keyDownTick[GLFW_KEY_P]) {
+            World::saveGame("newWorld");
+        }
+    };
+    running->activeStates = vector<GameState::State>{GameState::State::PLAYING};
 }
 
 void genShaders () {

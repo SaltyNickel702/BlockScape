@@ -12,32 +12,28 @@ namespace {
 
 
 	//Input Handeling
-	bool keysDown[GLFW_KEY_LAST-GLFW_KEY_SPACE];
-	vector<function<void()>> functionCalls[GLFW_KEY_LAST-GLFW_KEY_SPACE];
-	
+	glm::vec2 mouseLastPos(0);
 	void processInput(GLFWwindow* window) {
 		//esc key closes app (temporary)
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
 
-		//Adding/removing keys to keysDown | If new key is added, call callback functions
-		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) { //I need to refactor keys and mouse movement registering to reflect new needs for game
-			bool isDown = keyDown(i);
+		//Adding/removing keys to keyDown | If new key is added, add to keyDownTick for one tick
+		for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++) {
+			if (keyDownTick[i]) keyDownTick[i] = false;
+			bool isDown = (glfwGetKey(window, i) == GLFW_PRESS);
 			if (isDown) {
-				bool previous = keysDown[i-GLFW_KEY_SPACE];
+				bool previous = keyDown[i];
+				keyDown[i] = true;
 				if (!previous) {
-					vector<function<void()>> funcs = functionCalls[i-GLFW_KEY_SPACE];
-					for (const function<void()> func : funcs) {
-						func();
-					}
+					keyDownTick[i] = true;
 				}
-				keysDown[i-GLFW_KEY_SPACE] = true;
-			} else keysDown[i-GLFW_KEY_SPACE] = false;
+			} else keyDown[i] = false;
 		}
 		//Same for Mouse
 		for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++) {
 			if (mouseDownTick[i]) mouseDownTick[i] = false;
-			bool isDown = glfwGetMouseButton(window,i);
+			bool isDown = (glfwGetMouseButton(window,i) == GLFW_PRESS);
 			if (isDown) {
 				bool previous = mouseDown[i];
 				mouseDown[i] = true;
@@ -46,14 +42,16 @@ namespace {
 				}
 			} else mouseDown[i] = false;
 		}
+	
+		//Get Mouse Position
+		double pos[2];
+		glfwGetCursorPos(window,&pos[0],&pos[1]);
+		Engine::cursorPos = glm::vec2(floor(pos[0]),floor(pos[1]));
+		if (!Engine::cursorEnabled) {
+			glfwSetCursorPos(window,0,0);
+		}
 	}
 	//last input stuff
-	glm::vec2 mouseCapturePos(0);
-	void mouseMoveCallback (GLFWwindow* window, double xpos, double ypos) {
-		glm::vec2 fin = glm::vec2(xpos,ypos) + (Engine::cursorEnabled ? glm::vec2(0.0f) : mouseCapturePos);
-		mouseCapturePos = fin;
-		if (!Engine::cursorEnabled) glfwSetCursorPos(window,0,0);
-	}
 
 	bool running = true;
 	float lastFrame = 0;
@@ -67,9 +65,6 @@ namespace {
 			tickQueue[0]();
 			tickQueue.erase(tickQueue.begin());
 		}
-
-		Engine::cursorPos = mouseCapturePos;
-		if (!Engine::cursorEnabled) mouseCapturePos = glm::vec2(0);
 
 		int objs = 0;
 		for (LObject *o: World::LogicObjects) {
@@ -184,7 +179,6 @@ namespace Engine {
 		Engine::width = w;
 		Engine::height = h;
 		glfwSetFramebufferSizeCallback(window,windowResizeCallback); //assigns resize callback function
-		glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 		// #ifdef __APPLE__
 		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -194,33 +188,27 @@ namespace Engine {
 	}
 
 
-	//More Input Handeling
+	//Input Handeling
 
 	bool cursorEnabled = true;
 	bool mouseDown[GLFW_MOUSE_BUTTON_LAST+1];
 	bool mouseDownTick[GLFW_MOUSE_BUTTON_LAST+1];
 	glm::vec2 cursorPos;
-
-	bool keyDown (int key) {
-		return glfwGetKey(window, key) == GLFW_PRESS;
-	}
-	void addKeydownCallback(int key, const function<void()>& func) {
-		functionCalls[key-GLFW_KEY_SPACE].push_back(func);
-	}
 	void allowCursor (bool b) {
 		cursorEnabled = b;
-		if (!b) {
-			Engine::cursorPos = glm::vec2(0.0f);
-			mouseCapturePos = glm::vec2(0.0f);
+		if (!b) { //disable
+			Engine::cursorPos = glm::vec2(0);
 			glfwSetCursorPos(window,0,0);
 		}
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-		if (b) {
+		if (b) { //enable
 			Engine::cursorPos = glm::vec2(Engine::width/2, Engine::height/2);
-			mouseCapturePos = glm::vec2(Engine::width/2, Engine::height/2);
 			glfwSetCursorPos(window,400,400);
 		}
 	}
+
+	bool keyDown[GLFW_KEY_LAST+1];
+	bool keyDownTick[GLFW_KEY_LAST+1];
 
 	// Add global variables for menu rendering
 	Shader* menuShader = nullptr;

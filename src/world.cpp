@@ -169,13 +169,6 @@ void chunkLoader () {
 }
 int* lastPlayerChunk;
 void worldSetup () { //called by the loading functions
-	Engine::addKeydownCallback(GLFW_KEY_R,[&](){
-		while (World::chunks.size() > 0) {
-			World::chunks.erase(World::chunks.begin());
-        }
-		chunkLoader();
-    });
-
 	// Chunk Rendering
 	LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
 	chunkRender->onTick = [&]() {

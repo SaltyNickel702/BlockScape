@@ -55,7 +55,7 @@ namespace Engine {
 	unsigned int genTextureAtlas (const vector<string>& imgNames);
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
-	extern vector<function<void()>> tickQueue;	
+	extern vector<function<void()>> tickQueue;
 }
 
 #endif

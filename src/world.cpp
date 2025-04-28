@@ -62,12 +62,12 @@ namespace World::PlayerData {
 }
 
 float World::Settings::FOV = 72;
-int World::Settings::renderDistance = 20;
+int World::Settings::renderDistance = 15;
 
 
 Chunk* World::getChunk (float x, float z) { //In world coords
-	int cx = floor((x >= 0 ? x : x-1)/16.0f);
-	int cz = floor((z >= 0 ? z : z-1)/16.0f);
+	int cx = floor(x/16.0f);
+	int cz = floor(z/16.0f);
 	return getChunkByCC(cx,cz);
 }
 Chunk* World::getChunkByCC (int cx, int cz) {
@@ -83,9 +83,9 @@ int* World::getBlock (float fx, float fy, float fz) {
 	int y = floor(fy);
 	int z = floor(fz);
 
-	Chunk* c = getChunk(x,z);
-	int nx = (x % 16 + 16) % 16;
-	int nz = (z % 16 + 16) % 16;
+	Chunk* c = getChunk(fx,fz);
+	int nx = (x >= 0 ? x % 16 : -(abs(x+1)%16) + 15);
+	int nz = (z >= 0 ? z % 16 : -(abs(z+1)%16) + 15);
 	return &c->blocks[nx][y][nz];
 }
 void World::setBlock (float fx, float fy, float fz, int block) {

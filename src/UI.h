@@ -5,6 +5,7 @@
 
 #include "Logic.h"
 #include "Model.h"
+#include "GameState.h"
 
 #ifndef UI_H
 #define UI_H
@@ -48,6 +49,7 @@ namespace UI {
 			vector<Image*> images;
 
 			bool visible;
+			vector<GameState::State> activeStates;
 	};
 
 	extern vector<Menu*> menus;

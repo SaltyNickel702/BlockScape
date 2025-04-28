@@ -59,7 +59,7 @@ void DefineLogicObjects() {
 
 
         for (Menu* m : menus) {
-            if (!m->visible) continue;
+            if (!(m->visible || find(m->activeStates.begin(),m->activeStates.end(),GameState::currentState) != m->activeStates.end())) continue;
             for (Image* i : m->images) {
                 i->imgMesh->draw();
             }
@@ -75,15 +75,15 @@ void DefineLogicObjects() {
                 if (c.x >= p.x - .5*d.x && c.x <= p.x + .5*d.x && c.y >= p.y - .5*d.y && c.y <= p.y + .5*d.y) {
                     UI::hoveringOverButton = true;
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-                        b->onClick();
+                        Engine::tickQueue.push_back(b->onClick);
                     }
                     if (!b->hovering) {
                         b->hovering = true;
-                        b->onHover();
+                        Engine::tickQueue.push_back(b->onHover);
                     }
                 } else if (b->hovering) {
                     b->hovering = false;
-                    b->onLeave();
+                    Engine::tickQueue.push_back(b->onLeave);
                 }
             }
         }
@@ -268,11 +268,11 @@ void defineMenus () {
     Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
     Button* startBtn = new Button(start);
     startBtn->onClick = [&]() {
-        World::menus["mainMenu"]->visible = false;
-        World::loadNew(495804);
+        World::loadFromSave("newWorld");
         GameState::currentState = GameState::State::PLAYING;
     };
     mainMenu->buttons.push_back(startBtn);
+    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
 
     World::menus["mainMenu"] = mainMenu;
 }
@@ -386,7 +386,7 @@ int main () {
 
     // World::loadNew(495804);
     // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
+    // World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     Engine::loop();

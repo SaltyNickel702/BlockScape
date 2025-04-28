@@ -41,12 +41,32 @@ namespace UI {
 			function<void()> onLeave; //once on leave
 	};
 
+	class Font {
+		public:
+			Font() = delete;
+			Font(std::string rel, int w, int h);
+			int width, height;
+			unsigned int ID;
+	};
+	class Text {
+		private:
+			std::string text;
+			vector<Image> imgs;
+
+		public:
+			Text();
+			Text(std::string text,float size);
+
+			void setText(std::string text);
+	};
+
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen
 		public:
 			Menu();
 
 			vector<Button*> buttons;
 			vector<Image*> images;
+			vector<Text*> texts;
 
 			bool visible;
 			vector<GameState::State> activeStates;

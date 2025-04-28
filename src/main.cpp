@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
-vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png"};
+vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png","OakPlank.png"};
 
 
 void DefineBlocks() {
@@ -50,6 +50,13 @@ void DefineBlocks() {
     sandBlock.textureTop = 7;
     sandBlock.textureBottom = 7;
     World::blockTypes[6] = sandBlock;
+
+    Block woodPlank("Plank", 7);
+    sandBlock.tranparent = false;
+    sandBlock.textureSide = 8;
+    sandBlock.textureTop = 8;
+    sandBlock.textureBottom = 8;
+    World::blockTypes[7] = woodPlank;
 }
 
 void DefineLogicObjects() {

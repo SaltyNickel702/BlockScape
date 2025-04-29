@@ -73,6 +73,9 @@ void DefineLogicObjects() {
             for (Button* b : m->buttons) {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
+            for (Text* t : m->texts) {
+                t->draw();
+            }
             
             if (!Engine::cursorEnabled) continue;
             for (Button* b : m->buttons) {

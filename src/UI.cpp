@@ -50,6 +50,27 @@ namespace UI {
 		this->onLeave = onLeave;
 	}
 
+	Font::Font (std::string rel, int width, int height) {
+		w = width;
+		h = height;
+
+		ID = Engine::genTexture(rel);
+	}
+	Text::Text (Font font) {
+		f = font;
+
+		mesh = new Model();
+		mesh->textures = vector<unsigned int> {f.ID};
+		mesh->shader = World::shaders["TextShader"];
+
+		setHeight(f.h);
+	}
+	Text::setFont (Font font) {
+		f = font;
+
+		if (mesh != nullptr) mesh = new Model();
+		mesh->textures = vector<unsigned int> {f.ID};
+	}
 
 	Menu::Menu () : visible(false) {
 		menus.push_back(this);

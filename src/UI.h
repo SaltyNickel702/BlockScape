@@ -44,20 +44,28 @@ namespace UI {
 	class Font {
 		public:
 			Font() = delete;
-			Font(std::string rel, int w, int h);
-			int width, height;
+			Font(std::string rel, int width, int height);
+			
+			int w,h;
 			unsigned int ID;
 	};
 	class Text {
 		private:
-			std::string text;
-			vector<Image> imgs;
+			Model* mesh;
+			float w,h;
+			Font* f = nullptr;
 
 		public:
-			Text();
-			Text(std::string text,float size);
+			Text() = delete;
+			Text(Font font);
 
-			void setText(std::string text);
+			std::string text;
+
+			void setFont (Font font);
+			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
+			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
+
+			void draw ();
 	};
 
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen

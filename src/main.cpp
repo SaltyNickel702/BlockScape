@@ -51,11 +51,11 @@ void DefineBlocks() {
     sandBlock.textureBottom = 7;
     World::blockTypes[6] = sandBlock;
 
-    Block woodPlank("Plank", 7);
-    sandBlock.tranparent = false;
-    sandBlock.textureSide = 8;
-    sandBlock.textureTop = 8;
-    sandBlock.textureBottom = 8;
+    Block woodPlank("Wooden Plank", 7);
+    woodPlank.tranparent = false;
+    woodPlank.textureSide = 8;
+    woodPlank.textureTop = 8;
+    woodPlank.textureBottom = 8;
     World::blockTypes[7] = woodPlank;
 }
 

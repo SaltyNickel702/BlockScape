@@ -44,9 +44,9 @@ namespace UI {
 	class Font {
 		public:
 			Font() = delete;
-			Font(std::string rel, int width, int height);
+			Font(std::string rel, int width, int height, int length);
 			
-			int w,h;
+			int w,h,l;
 			unsigned int ID;
 	};
 	class Text {

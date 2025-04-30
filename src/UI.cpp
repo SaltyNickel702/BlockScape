@@ -1,6 +1,7 @@
 #include "UI.h"
 #include "Engine.h"
 #include "World.h"
+#include <cctype>
 
 namespace UI {
 	vector<Menu*> menus;
@@ -54,6 +55,7 @@ namespace UI {
 	Font::Font (std::string rel, int width, int height) {
 		w = width;
 		h = height;
+		l = length;
 
 		ID = Engine::genTexture(rel);
 	}
@@ -62,7 +64,7 @@ namespace UI {
 
 		mesh = new Model();
 		mesh->textures = vector<unsigned int> {f->ID};
-		mesh->shader = World::shaders["TextShader"];
+		mesh->shader = World::shaders["text"];
 
 		setHeight(f->h);
 	}
@@ -74,7 +76,7 @@ namespace UI {
 
 		setHeight(h);
 	}
-	void Text::draw () {
+	void Text::draw () { //modified code of Model::draw bc use same 4 vert for each char, moving pos instead | Allows for Text::text to be set dynamically without function call
 		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0) return;
 		glUseProgram(mesh->shader->ID);
 		
@@ -85,9 +87,15 @@ namespace UI {
 			glUniform1i(glGetUniformLocation(mesh->shader->ID,texName.c_str()),i);
 		}
 
+		glUniform1i(glGetUniformLocation(mesh->shader->ID,"fontChars"),f->l);
+
 		glBindVertexArray(mesh->VAO);
 
 		for (int i = 0; i < text.size(); i++) {
+			char c = tolower(text.at(i));
+			int cInd = ((int)c)-97;
+			glUniform1i(glGetUniformLocation(mesh->shader->ID,"charInd"),cInd);
+
 			mesh->shader->uniforms(glm::vec3(x+i*w,y,0),mesh->rot);
 			glDrawElements(GL_TRIANGLES,mesh->totalIndices,GL_UNSIGNED_INT,0);
 		}

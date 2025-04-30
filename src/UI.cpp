@@ -75,18 +75,48 @@ namespace UI {
 		setHeight(h);
 	}
 	void Text::draw () {
+		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0) return;
+		glUseProgram(mesh->shader->ID);
+		
+		for (int i = 0; i < mesh->textures.size(); i++) {
+			glActiveTexture(GL_TEXTURE0+i);
+			glBindTexture(GL_TEXTURE_2D, mesh->textures.at(i));
+			string texName = "tex" + to_string(i);
+			glUniform1i(glGetUniformLocation(mesh->shader->ID,texName.c_str()),i);
+		}
 
+		glBindVertexArray(mesh->VAO);
+
+		for (int i = 0; i < text.size(); i++) {
+			mesh->shader->uniforms(glm::vec3(x+i*w,y,0),mesh->rot);
+			glDrawElements(GL_TRIANGLES,mesh->totalIndices,GL_UNSIGNED_INT,0);
+		}
+
+		glBindVertexArray(0);
 	}
 	void Text::setHeight (float h) {
 		this->h = h;
 		w = f->w/(float)f->h * h;
+		Text::genMesh();
 	}
 	void Text::setWidth (float w) {
 		this->w = w;
 		h = f->h/(float)f->w * w;
+		Text::genMesh();
 	}
 	void Text::genMesh () {
-		// mesh vert;
+		vector<float> vert {
+			0,0, 0,0,
+			0,h, 0,1,
+			w,h, 1,1,
+			w,0, 1,0
+		};
+		vector<vector<unsigned int> indices {
+			0,1,2,
+			0,2,3
+		};
+		vector<unsigned int> attrib {2,2};
+		mesh->setData(vert,indices,attrib);
 	}
 
 

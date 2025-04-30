@@ -62,6 +62,7 @@ namespace UI {
 			Text(Font* font);
 
 			std::string text;
+			float x,y;
 
 			void setFont (Font* font);
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio

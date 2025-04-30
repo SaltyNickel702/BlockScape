@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "Engine.h"
 #include "World.h"
 
 namespace UI {
@@ -56,21 +57,31 @@ namespace UI {
 
 		ID = Engine::genTexture(rel);
 	}
-	Text::Text (Font font) {
+	Text::Text (Font* font) {
 		f = font;
 
 		mesh = new Model();
-		mesh->textures = vector<unsigned int> {f.ID};
+		mesh->textures = vector<unsigned int> {f->ID};
 		mesh->shader = World::shaders["TextShader"];
 
-		setHeight(f.h);
+		setHeight(f->h);
 	}
-	Text::setFont (Font font) {
+	void Text::setFont (Font* font) {
 		f = font;
 
 		if (mesh != nullptr) mesh = new Model();
-		mesh->textures = vector<unsigned int> {f.ID};
+		mesh->textures = vector<unsigned int> {f->ID};
 	}
+	void Text::draw () {
+
+	}
+	void Text::setHeight (float h) {
+
+	}
+	void Text::setWidth (float w) {
+		
+	}
+
 
 	Menu::Menu () : visible(false) {
 		menus.push_back(this);

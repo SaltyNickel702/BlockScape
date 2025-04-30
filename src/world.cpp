@@ -17,7 +17,7 @@ LObject World::Player;
 namespace World::PlayerData {
 	GameMode CurrentMode = GameMode::SPECTATOR;
 	bool Flying = false;
-	glm::vec3 Pdim = {0.7f,1.8f,0.7f};
+	glm::vec3 Pdim = {0.65f,1.8f,0.65f};
 	glm::vec3 velocity = {0.0f, 0.0f, 0.0f}; // added for gravity/jumping
 	bool onGround = false;
 	bool isColliding(float x, float y, float z) {

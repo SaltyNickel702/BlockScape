@@ -396,7 +396,7 @@ int main () {
 
     // World::loadNew(495804);
     // World::loadNew(54123453);
-    // World::loadFromSave("newWorld");
+    World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     Engine::loop();

@@ -53,15 +53,15 @@ namespace UI {
 		private:
 			Model* mesh;
 			float w,h;
-			Font* f = nullptr;
+			Font* f;
 
 		public:
 			Text() = delete;
-			Text(Font font);
+			Text(Font* font);
 
 			std::string text;
 
-			void setFont (Font font);
+			void setFont (Font* font);
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
 			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
 

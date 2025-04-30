@@ -71,15 +71,22 @@ namespace UI {
 
 		if (mesh != nullptr) mesh = new Model();
 		mesh->textures = vector<unsigned int> {f->ID};
+
+		setHeight(h);
 	}
 	void Text::draw () {
 
 	}
 	void Text::setHeight (float h) {
-
+		this->h = h;
+		w = f->w/(float)f->h * h;
 	}
 	void Text::setWidth (float w) {
-		
+		this->w = w;
+		h = f->h/(float)f->w * w;
+	}
+	void Text::genMesh () {
+		// mesh vert;
 	}
 
 

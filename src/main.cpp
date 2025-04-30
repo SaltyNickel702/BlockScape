@@ -240,9 +240,8 @@ void DefineLogicObjects() {
             glm::vec3* bcPtr = World::Camera.raycast(6,.1);
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
-                // delete bcPtr;
+                delete bcPtr;
                 World::setBlock(bc.x,bc.y,bc.z,0);
-
             }
         }
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
@@ -378,7 +377,7 @@ void genTextures () {
 
 int main () {
     //Load Game First
-    //None OpenGL things first
+    //Non- OpenGL things first
     DefineBlocks();
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
@@ -392,12 +391,13 @@ int main () {
     genShaders();
 
     defineMenus();
-    // World::menus["mainMenu"]->visible = true;
 
-    // World::loadNew(495804);
-    // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
-    // World::loadNew(time(0));
-
+    if (GameState::currentState == GameState::State::PLAYING) {
+        // World::loadNew(495804);
+        // World::loadNew(54123453);
+        World::loadFromSave("newWorld");
+        // World::loadNew(time(0));
+    }
+    
     Engine::loop();
 }

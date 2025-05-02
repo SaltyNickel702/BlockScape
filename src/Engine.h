@@ -43,10 +43,10 @@ namespace Engine {
 	
 
 	extern bool cursorEnabled; //Tells if cursor is enabled | Do not directly control this
+	void allowCursor(bool boolean); //lock cursor or not
 	extern bool mouseDown[GLFW_MOUSE_BUTTON_LAST+1]; //Bool of whether button is down or not
 	extern bool mouseDownTick[GLFW_MOUSE_BUTTON_LAST+1]; //Same as Engine::mouseDown, but only true for one tick
 	extern glm::vec2 cursorPos; //cursor position when cursor is enable, else is mouse movement
-	void allowCursor(bool boolean); //lock cursor or not
 
 	extern bool keyDown[GLFW_KEY_LAST+1]; //Bool of whether key is down or not
 	extern bool keyDownTick[GLFW_KEY_LAST+1]; //Same as Engine::keyDown, but only true for one tick
@@ -55,7 +55,7 @@ namespace Engine {
 	unsigned int genTextureAtlas (const vector<string>& imgNames);
 	unsigned int genTexture (string ImgName); //generates texture on graphics card from png file and returns texture ID
 
-	extern vector<function<void()>> tickQueue;	
+	extern vector<function<void()>> tickQueue;
 }
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "Logic.h"
 #include "Model.h"
+#include "GameState.h"
 
 #ifndef UI_H
 #define UI_H
@@ -40,14 +41,46 @@ namespace UI {
 			function<void()> onLeave; //once on leave
 	};
 
+	class Font {
+		public:
+			Font() = delete;
+			Font(std::string rel, int width, int height, int length);
+			
+			int w,h,l;
+			unsigned int ID;
+	};
+	class Text {
+		private:
+			Model* mesh;
+			float w,h;
+			Font* f;
+
+			void genMesh ();
+
+		public:
+			Text() = delete;
+			Text(Font* font);
+
+			std::string text;
+			float x,y;
+
+			void setFont (Font* font);
+			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
+			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
+
+			void draw ();
+	};
+
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen
 		public:
 			Menu();
 
 			vector<Button*> buttons;
 			vector<Image*> images;
+			vector<Text*> texts;
 
 			bool visible;
+			vector<GameState::State> activeStates;
 	};
 
 	extern vector<Menu*> menus;

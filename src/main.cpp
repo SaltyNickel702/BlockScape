@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
-vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png"};
+vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png","OakPlank.png"};
 
 
 void DefineBlocks() {
@@ -50,6 +50,13 @@ void DefineBlocks() {
     sandBlock.textureTop = 7;
     sandBlock.textureBottom = 7;
     World::blockTypes[6] = sandBlock;
+
+    Block woodPlank("Wooden Plank", 7);
+    woodPlank.tranparent = false;
+    woodPlank.textureSide = 8;
+    woodPlank.textureTop = 8;
+    woodPlank.textureBottom = 8;
+    World::blockTypes[7] = woodPlank;
 }
 
 void DefineLogicObjects() {
@@ -59,12 +66,15 @@ void DefineLogicObjects() {
 
 
         for (Menu* m : menus) {
-            if (!m->visible) continue;
+            if (!(m->visible || find(m->activeStates.begin(),m->activeStates.end(),GameState::currentState) != m->activeStates.end())) continue;
             for (Image* i : m->images) {
                 i->imgMesh->draw();
             }
             for (Button* b : m->buttons) {
                 b->images.at(b->currentImg)->imgMesh->draw();
+            }
+            for (Text* t : m->texts) {
+                t->draw();
             }
             
             if (!Engine::cursorEnabled) continue;
@@ -75,15 +85,15 @@ void DefineLogicObjects() {
                 if (c.x >= p.x - .5*d.x && c.x <= p.x + .5*d.x && c.y >= p.y - .5*d.y && c.y <= p.y + .5*d.y) {
                     UI::hoveringOverButton = true;
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-                        b->onClick();
+                        Engine::tickQueue.push_back(b->onClick);
                     }
                     if (!b->hovering) {
                         b->hovering = true;
-                        b->onHover();
+                        Engine::tickQueue.push_back(b->onHover);
                     }
                 } else if (b->hovering) {
                     b->hovering = false;
-                    b->onLeave();
+                    Engine::tickQueue.push_back(b->onLeave);
                 }
             }
         }
@@ -133,11 +143,15 @@ void DefineLogicObjects() {
             CurrentMode = GameMode::CREATIVE;
             Flying = true;
             cout << "Creative Mode" << endl;
+        } else if (Engine::keyDownTick[GLFW_KEY_3]) {
+            CurrentMode = GameMode::SURVIVAL;
+            Flying = false;
+            cout << "Survival Mode" << endl;
         }
 
         //Movement
         float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
-        if (CurrentMode == GameMode::SPECTATOR) {
+        if (CurrentMode == GameMode::SPECTATOR) {           // spectator movement
             if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
             if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
             if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
@@ -146,8 +160,7 @@ void DefineLogicObjects() {
             if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
             if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
         } else {
-            if (Flying == true) {
-                //Creative flying
+            if (Flying == true) {           //Creative flying
                 glm::vec3 previousPos = p->pos; // position to check against
                 if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
                 if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
@@ -156,8 +169,6 @@ void DefineLogicObjects() {
                 if (Engine::keyDown[GLFW_KEY_D]) p->pos = p->pos - speed * sideVec;
                 if (Engine::keyDown[GLFW_KEY_LEFT_SHIFT]) p->pos = p->pos - speed * upVec;
                 if (Engine::keyDown[GLFW_KEY_SPACE]) p->pos = p->pos + speed * upVec;
-                //Calculate movement direction. uncomment if you need it
-                //glm::vec3 movementDirection = p->pos - previousPos;
                 // x axis
                 if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
                     p->pos.x = previousPos.x;
@@ -170,9 +181,57 @@ void DefineLogicObjects() {
                 if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
                     p->pos.z = previousPos.z;
                 }
-            } else {
-                //Survival + Creative walking
+            } else {        //Survival + Creative walking
+                glm::vec3 previousPos = p->pos;
+                if (!onGround) {
+                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for diff grav phys
+                }
+                if (velocity.y < -22.0f) velocity.y = -22.0f; // settign a max fall speed. val to change for diff grav phys
+                
+                glm::vec3 walkDir = glm::vec3(0.0f);
 
+                // change these to an inWater bool 
+                // if we ever get water that isint just below a certain level
+                float pspeed;
+                if (p->pos.y <= 29){
+                    pspeed = 2.3f; // below water. val to change for diff grav phys
+                } else if (p->pos.y > 29){
+                    pspeed = 5.5f; // above water . val to change for diff grav phys
+                }
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) pspeed *= 1.5f; // "running" multiplier (its a brisk walk at best)
+                if (Engine::keyDown[GLFW_KEY_W]) walkDir += forwardVec;
+                if (Engine::keyDown[GLFW_KEY_S]) walkDir -= forwardVec;
+                if (Engine::keyDown[GLFW_KEY_A]) walkDir += sideVec;
+                if (Engine::keyDown[GLFW_KEY_D]) walkDir -= sideVec;
+
+                if (glm::length(walkDir) > 0) {
+                    walkDir = glm::normalize(walkDir) * pspeed * Engine::deltaTick;
+                }
+                p->pos.x += walkDir.x;
+                p->pos.z += walkDir.z;
+                if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
+                    p->pos.x = previousPos.x;
+                }
+                if (isColliding(p->pos.x, previousPos.y, p->pos.z)) {
+                    p->pos.z = previousPos.z;
+                }
+                p->pos.y += velocity.y * Engine::deltaTick;
+                onGround = false;
+                if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
+                    if (velocity.y < 0) { // Moving down
+                        p->pos.y = floor(previousPos.y) + 0.6f; // snap to ground
+                        onGround = true;
+                        velocity.y = 0;
+                    } else { // moving up
+                        p->pos.y = previousPos.y;
+                        velocity.y = 0;
+                    }
+                }
+                // jumping
+                if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
+                    velocity.y = 10.0f; // jump speed. val to change for diff grav phys
+                    onGround = false;
+                }
             }
         }
 
@@ -181,9 +240,8 @@ void DefineLogicObjects() {
             glm::vec3* bcPtr = World::Camera.raycast(6,.1);
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
-                // delete bcPtr;
+                delete bcPtr;
                 World::setBlock(bc.x,bc.y,bc.z,0);
-
             }
         }
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
@@ -219,11 +277,11 @@ void defineMenus () {
     Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
     Button* startBtn = new Button(start);
     startBtn->onClick = [&]() {
-        World::menus["mainMenu"]->visible = false;
-        World::loadNew(495804);
+        World::loadFromSave("newWorld");
         GameState::currentState = GameState::State::PLAYING;
     };
     mainMenu->buttons.push_back(startBtn);
+    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
 
     World::menus["mainMenu"] = mainMenu;
 }
@@ -305,6 +363,21 @@ void genShaders () {
 
         glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
     };
+
+    Shader* textShader = new Shader("textVert.glsl", "textFrag.glsl");
+    World::shaders["text"] = textShader;
+    textShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        glDisable(GL_DEPTH_TEST);
+        Shader* menuShader = World::shaders["menu"];
+
+        glm::mat4 model(1);
+        model = glm::translate(model,pos);
+        glUniformMatrix4fv(glGetUniformLocation(menuShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Engine::width, Engine::height,1,1);
+
+        glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
+    }
 }
 
 void genTextures () {
@@ -319,7 +392,7 @@ void genTextures () {
 
 int main () {
     //Load Game First
-    //None OpenGL things first
+    //Non- OpenGL things first
     DefineBlocks();
     DefineLogicObjects();
     AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
@@ -333,12 +406,13 @@ int main () {
     genShaders();
 
     defineMenus();
-    // World::menus["mainMenu"]->visible = true;
 
-    // World::loadNew(495804);
-    // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
-    // World::loadNew(time(0));
-
+    if (GameState::currentState == GameState::State::PLAYING) {
+        // World::loadNew(495804);
+        // World::loadNew(54123453);
+        World::loadFromSave("newWorld");
+        // World::loadNew(time(0));
+    }
+    
     Engine::loop();
 }

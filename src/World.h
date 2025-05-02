@@ -55,6 +55,8 @@ namespace World {
         extern bool Flying;
         bool isColliding(float x, float y, float z);
         extern glm::vec3 Pdim;
+        extern glm::vec3 velocity;
+        extern bool onGround;
     }
 
     extern int seed;

@@ -56,8 +56,6 @@ namespace UI {
 			float w,h;
 			Font* f;
 
-			void genMesh ();
-
 		public:
 			Text() = delete;
 			Text(Font* font);

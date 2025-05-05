@@ -74,7 +74,7 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             for (Text* t : m->texts) {
-                t->draw();
+                t->mesh->draw();
             }
             
             if (!Engine::cursorEnabled) continue;
@@ -363,21 +363,6 @@ void genShaders () {
 
         glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
     };
-
-    Shader* textShader = new Shader("textVert.glsl", "textFrag.glsl");
-    World::shaders["text"] = textShader;
-    textShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
-        glDisable(GL_DEPTH_TEST);
-        Shader* menuShader = World::shaders["menu"];
-
-        glm::mat4 model(1);
-        model = glm::translate(model,pos);
-        glUniformMatrix4fv(glGetUniformLocation(menuShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-        glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Engine::width, Engine::height,1,1);
-
-        glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
-    }
 }
 
 void genTextures () {

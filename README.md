@@ -7,6 +7,14 @@
 - Ulisses: Player Controller
 - David: Art and Game Testing
 
+## To compile yourself
+- Install CMake and put into OS's PATH environment variable
+- Make sure some version of g++ is installed and usable
+- Run "CMake .." inside of ./build, using compiler of your choice, and run the compile command
+- Alternatively, run buildFiles.bat or .sh, then compile.bat or .sh
+    - If on windows, Ninja will be required to build using the provided batch files.
+- Run the file "out.exe" or "out" in the root directory
+
 ## Progress Images
 ### First render: <br>
 ![FirstRender](./Refrence/FirstRender.png)

@@ -87,7 +87,35 @@ namespace UI {
 		Text::genMesh();
 	}
 	void Text::genMesh () {
-		
+		vector<float> vertices;
+		vector<unsigned int> indices;
+		vector<unsigned int> attr {2,2,1}; //vec2 pos, vec2 UV, int character ID
+
+		int totalVert = 0;
+		for (int i = 0; i < text.size(); i++) {
+			auto it = find(f->chars.begin(), f->chars.end(), text.at(i));
+			int id;
+			if (it != f->chars.end()) {
+				id = it - f->chars.begin();
+			} else continue;
+			
+			totalVert++;
+			vertices.insert(vertices.end(),{
+				i*w,0,		0,0,	(float)id,
+				i*w,h,		0,1,	(float)id,
+				i*w + w,h,	1,1,	(float)id,
+				i*w + w,0,	1,0,	(float)id
+			});
+			
+			vector<float> ind {0,1,2,	0,2,3};
+			for (float &f : ind) f+=totalVert*4;
+			indices.insert(indices.end(), ind.begin(), ind.end());
+		}
+		mesh->setData(vertices,indices,attr);
+	}
+	void Text::setText (std::string text) {
+		this->text = text;
+		genMesh();
 	}
 
 

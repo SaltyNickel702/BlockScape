@@ -52,7 +52,7 @@ namespace UI {
 		this->onLeave = onLeave;
 	}
 
-	Font::Font (std::string rel, int width, int height) {
+	Font::Font (std::string rel, int width, int height, int length) {
 		w = width;
 		h = height;
 		l = length;
@@ -76,32 +76,6 @@ namespace UI {
 
 		setHeight(h);
 	}
-	void Text::draw () { //modified code of Model::draw bc use same 4 vert for each char, moving pos instead | Allows for Text::text to be set dynamically without function call
-		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0) return;
-		glUseProgram(mesh->shader->ID);
-		
-		for (int i = 0; i < mesh->textures.size(); i++) {
-			glActiveTexture(GL_TEXTURE0+i);
-			glBindTexture(GL_TEXTURE_2D, mesh->textures.at(i));
-			string texName = "tex" + to_string(i);
-			glUniform1i(glGetUniformLocation(mesh->shader->ID,texName.c_str()),i);
-		}
-
-		glUniform1i(glGetUniformLocation(mesh->shader->ID,"fontChars"),f->l);
-
-		glBindVertexArray(mesh->VAO);
-
-		for (int i = 0; i < text.size(); i++) {
-			char c = tolower(text.at(i));
-			int cInd = ((int)c)-97;
-			glUniform1i(glGetUniformLocation(mesh->shader->ID,"charInd"),cInd);
-
-			mesh->shader->uniforms(glm::vec3(x+i*w,y,0),mesh->rot);
-			glDrawElements(GL_TRIANGLES,mesh->totalIndices,GL_UNSIGNED_INT,0);
-		}
-
-		glBindVertexArray(0);
-	}
 	void Text::setHeight (float h) {
 		this->h = h;
 		w = f->w/(float)f->h * h;
@@ -113,18 +87,7 @@ namespace UI {
 		Text::genMesh();
 	}
 	void Text::genMesh () {
-		vector<float> vert {
-			0,0, 0,0,
-			0,h, 0,1,
-			w,h, 1,1,
-			w,0, 1,0
-		};
-		vector<vector<unsigned int> indices {
-			0,1,2,
-			0,2,3
-		};
-		vector<unsigned int> attrib {2,2};
-		mesh->setData(vert,indices,attrib);
+		
 	}
 
 

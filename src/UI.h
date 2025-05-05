@@ -46,12 +46,13 @@ namespace UI {
 			Font() = delete;
 			Font(std::string rel, int width, int height, int length);
 			
+			std::string chars;
+			
 			int w,h,l;
 			unsigned int ID;
 	};
 	class Text {
 		private:
-			Model* mesh;
 			float w,h;
 			Font* f;
 
@@ -61,14 +62,15 @@ namespace UI {
 			Text() = delete;
 			Text(Font* font);
 
-			std::string text;
+			Model* mesh;
+			std::string text; //Do no set, reference only. Use setText method to modify
 			float x,y;
 
 			void setFont (Font* font);
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
 			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
-
-			void draw ();
+			void genMesh ();
+			void setText (std::string text);
 	};
 
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen

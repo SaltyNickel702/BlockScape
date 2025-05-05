@@ -44,11 +44,11 @@ namespace UI {
 	class Font {
 		public:
 			Font() = delete;
-			Font(std::string rel, int width, int height, int length);
+			Font(std::string rel, int width, int height);
 			
 			std::string chars;
 			
-			int w,h,l;
+			int w,h;
 			unsigned int ID;
 	};
 	class Text {
@@ -58,7 +58,7 @@ namespace UI {
 
 		public:
 			Text() = delete;
-			Text(Font* font);
+			Text(Font* font, float x, float y);
 
 			Model* mesh;
 			std::string text; //Do no set, reference only. Use setText method to modify
@@ -69,6 +69,7 @@ namespace UI {
 			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
 			void genMesh ();
 			void setText (std::string text);
+			void setPos (float x, float y);
 	};
 
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen

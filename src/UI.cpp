@@ -52,14 +52,13 @@ namespace UI {
 		this->onLeave = onLeave;
 	}
 
-	Font::Font (std::string rel, int width, int height, int length) {
+	Font::Font (std::string rel, int width, int height) {
 		w = width;
 		h = height;
-		l = length;
 
 		ID = Engine::genTexture(rel);
 	}
-	Text::Text (Font* font) {
+	Text::Text (Font* font, float x, float y) {
 		f = font;
 
 		mesh = new Model();
@@ -93,7 +92,7 @@ namespace UI {
 
 		int totalVert = 0;
 		for (int i = 0; i < text.size(); i++) {
-			auto it = find(f->chars.begin(), f->chars.end(), text.at(i));
+			auto it = find(f->chars.begin(), f->chars.end(), tolower(text.at(i)));
 			int id;
 			if (it != f->chars.end()) {
 				id = it - f->chars.begin();
@@ -116,6 +115,12 @@ namespace UI {
 	void Text::setText (std::string text) {
 		this->text = text;
 		genMesh();
+	}
+	void Text::setPos (float x, float y) {
+		this->x = x;
+		this->y = y;
+
+		mesh->pos = glm::vec3(x,y,0);
 	}
 
 

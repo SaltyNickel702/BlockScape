@@ -290,6 +290,10 @@ void defineMenus () {
     mainMenu->buttons.push_back(startBtn);
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
 
+    Text* text = new Text(World::fonts["main"], Engine::width/2,Engine::height/2);
+    text->setText("Testing");
+    mainMenu->texts.push_back(text);
+
     World::menus["mainMenu"] = mainMenu;
 }
 
@@ -380,6 +384,10 @@ void genTextures () {
 
     unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
     World::textures["startButton"] = startButton;
+
+    UI::Font* mainFont = new UI::Font("Font.png", 16, 30);
+    mainFont->chars = "abcdefghijklmnopqrstuvwxyz";
+    World::fonts["main"] = mainFont;
 }
 
 int main () {
@@ -387,7 +395,7 @@ int main () {
     //Non- OpenGL things first
     DefineBlocks();
     DefineLogicObjects();
-    AddToggleKeybinds(); //for other keybinds that are checked each frame, use logic objects + bool Game::keyDown(GLFW_KEY_)
+    AddToggleKeybinds();
 
     //Initialize OpenGL
     cout << "Initializing GLFW" << endl;

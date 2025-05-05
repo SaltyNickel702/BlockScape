@@ -10,6 +10,8 @@ map<int, Block> World::blockTypes;
 map<string, Shader*> World::shaders;
 map<string, unsigned int*> World::textures;
 map<string, UI::Menu*> World::menus;
+map<string, UI::Font*> World::fonts;
+
 vector<LObject*> World::LogicObjects;
 
 LObject World::Camera;

@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
-vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png","OakPlank.png"};
+vector<string> blockTextures {"GrassSide.png","GrassTop.png","Dirt.png","Stone.png","LogTop.png","LogSide.png","Leaves.png","Sand.png","OakPlank.png","GlassBlock.png"};
 
 
 void DefineBlocks() {
@@ -57,6 +57,13 @@ void DefineBlocks() {
     woodPlank.textureTop = 8;
     woodPlank.textureBottom = 8;
     World::blockTypes[7] = woodPlank;
+
+    Block glassBlock("Glass", 8);
+    glassBlock.tranparent = true;
+    glassBlock.textureSide = 9;
+    glassBlock.textureTop = 9;
+    glassBlock.textureBottom = 9;
+    World::blockTypes[8] = glassBlock;
 }
 
 void DefineLogicObjects() {
@@ -243,9 +250,9 @@ void DefineLogicObjects() {
                 delete bcPtr;
                 World::setBlock(bc.x,bc.y,bc.z,0);
             }
-        }
+        } 
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
-            World::setBlock(p->pos.x,p->pos.y,p->pos.z,5);
+            World::setBlock(p->pos.x,p->pos.y,p->pos.z,8);
         }
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
@@ -391,6 +398,12 @@ int main () {
     genShaders();
 
     defineMenus();
+    // World::menus["mainMenu"]->visible = true;
+
+    // World::loadNew(495804);
+    // World::loadNew(54123453);
+    World::loadFromSave("newWorld");
+    // World::loadNew(time(0));
 
     if (GameState::currentState == GameState::State::PLAYING) {
         // World::loadNew(495804);

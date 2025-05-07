@@ -64,8 +64,11 @@ namespace UI {
 		mesh = new Model();
 		mesh->textures = vector<unsigned int> {f->ID};
 		mesh->shader = World::shaders["text"];
+		mesh->draw();
 
 		setHeight(f->h);
+
+		setPos(x,y);
 	}
 	void Text::setFont (Font* font) {
 		f = font;
@@ -86,6 +89,7 @@ namespace UI {
 		Text::genMesh();
 	}
 	void Text::genMesh () {
+
 		vector<float> vertices;
 		vector<unsigned int> indices;
 		vector<unsigned int> attr {2,2,1}; //vec2 pos, vec2 UV, int character ID

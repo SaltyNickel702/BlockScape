@@ -81,7 +81,7 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             for (Text* t : m->texts) {
-                t->mesh->draw();
+
             }
             
             if (!Engine::cursorEnabled) continue;
@@ -244,7 +244,7 @@ void DefineLogicObjects() {
 
         //Block Placing
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-            glm::vec3* bcPtr = World::Camera.raycast(6,.1);
+            glm::vec3* bcPtr = World::Camera.raycast(6,.02,false);
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
@@ -252,7 +252,12 @@ void DefineLogicObjects() {
             }
         } 
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
-            World::setBlock(p->pos.x,p->pos.y,p->pos.z,8);
+            glm::vec3* bcPtr = World::Camera.raycast(6,.02,true);
+            if (bcPtr != nullptr) {
+                glm::vec3 bc = *bcPtr;
+                delete bcPtr;
+                World::setBlock(bc.x,bc.y,bc.z,1);
+            }
         }
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};

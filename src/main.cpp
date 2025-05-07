@@ -81,7 +81,7 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             for (Text* t : m->texts) {
-
+                // t->mesh->draw();
             }
             
             if (!Engine::cursorEnabled) continue;

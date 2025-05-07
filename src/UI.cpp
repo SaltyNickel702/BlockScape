@@ -64,7 +64,6 @@ namespace UI {
 		mesh = new Model();
 		mesh->textures = vector<unsigned int> {f->ID};
 		mesh->shader = World::shaders["text"];
-		mesh->draw();
 
 		setHeight(f->h);
 

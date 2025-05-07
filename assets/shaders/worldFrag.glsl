@@ -52,5 +52,7 @@ void main ()
 	float fogFactor = (distance - (fogDistance - cutoff))/(.8*cutoff);
 	textureColor = mix(textureColor, vec4(.5,.7,.8,1), clamp(fogFactor,0,1));
 
+	if (textureColor.w < 0.01) discard;
+
 	FragColor = textureColor;
 }

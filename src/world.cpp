@@ -126,12 +126,6 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 		c->genMeshParam();
 		chunkMeshGenQueue.push_back(c->pos);
 	}
-
-
-	switch (block) {
-		default:
-
-	}
 }
 
 

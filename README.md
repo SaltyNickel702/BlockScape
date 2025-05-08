@@ -1,7 +1,7 @@
 # Blockscape
 ## Contributors
-- Niko: Game Engine Creation + Chunk mesh gen
-- Dallin: GUI
+- Niko: Everything Game Engine Related
+- Dallin: Sounds
 - Sean: Terrain Gen / Block creation
 - Jake: Art and Game Testing
 - Ulisses: Player Controller

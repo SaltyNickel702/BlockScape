@@ -164,9 +164,14 @@ namespace UI {
 		glBindVertexArray(0);
 	}
 	
-	Textbox::Textbox (string text, Font* f,  float x, float y) {
+	Textbox::Textbox (string text, Font* f, int maxLength,  float x, float y) {
+		clickable = true;
+
 		this->text = new Text(f, x, y);
 		this->text->setText(text);
+
+		setMaxLength(maxLength);
+		h = this->text->h;
 
 		setPos(x,y);
 	}
@@ -183,14 +188,19 @@ namespace UI {
 	void Textbox::setHeight (float height) {
 		text->setHeight(height);
 
-		w = text->w;
+		w = text->cW * maxCharacterLength;
 		h = text->h;
 	}
 	void Textbox::setWidth (float width) {
 		text->setWidth(width);
 
-		w = text->w;
+		w = text->cW * maxCharacterLength;
 		h = text->h;
+	}
+	void Textbox::setMaxLength (int length) {
+		maxCharacterLength = length;
+
+		w = text->cW * maxCharacterLength;
 	}
 
 

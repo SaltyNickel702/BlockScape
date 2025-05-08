@@ -85,15 +85,15 @@ namespace UI {
 	class Textbox : public Element {
 		public:
 			Textbox() = delete;
-			Textbox(string text, Font* f, float x, float y);
+			Textbox(string text, Font* f, int maxLength, float x, float y);
 
 			Text* text;
 			int maxCharacterLength;
 
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
 			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
-
 			void setPos (float x, float y) override;
+			void setMaxLength (int length);
 
 			void draw () override;
 

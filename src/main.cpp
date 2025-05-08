@@ -78,9 +78,10 @@ void DefineLogicObjects() {
 
 
             for (Element* e : m->elements) {
-                Text* t = dynamic_cast<Text*>(e);
-                if (t) {
-                    //for visible cursor
+                Textbox* tb = dynamic_cast<Textbox*>(e);
+
+                if (tb) { //editting textboxes
+                    Text* t = tb->text;
                     if (t->editing) {
                         bool update = false;
                         if (Engine::keyDownTick[GLFW_KEY_BACKSPACE] && t->text.size() > 0) {
@@ -88,20 +89,24 @@ void DefineLogicObjects() {
 
                             update = true;
                         }
-                        if (Engine::keyDownTick[GLFW_KEY_SPACE]) {
+                        if (Engine::keyDownTick[GLFW_KEY_SPACE] && t->text.size() < tb->maxCharacterLength) {
                             t->text.push_back(' ');
                             update = true;
                         } 
                         for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
                             if (Engine::keyDownTick[i]) {
                                 if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
-                                    t->text.push_back((char)i);
-                                    update = true;
+                                    if (t->text.size() < tb->maxCharacterLength) {
+                                        t->text.push_back((char)i);
+                                        update = true;
+                                    }   
                                 }
                             }
                         }
                         if (update) t->genMesh();
 
+
+                        //Cursor Position Thing
                         t->elapsedTime += Engine::deltaTick;
                         if (t->elapsedTime >= 1/t->cursorTickRate) {
                             t->elapsedTime = 0;
@@ -117,6 +122,7 @@ void DefineLogicObjects() {
                 e->draw();
 
                 if (!Engine::cursorEnabled || !e->clickable) continue;
+                bool clicked = false;
                 if (e->mouseOver()) {
                     hoveringOverButton = true;
                     if (!e->hovering) {
@@ -124,11 +130,21 @@ void DefineLogicObjects() {
                         e->onHover();
                     }
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
+                        clicked = true;
                         e->onClick();
+                        if (tb) {
+                            tb->text->editing = true;
+                            tb->text->cursorVisible = true;
+                            tb->text->genMesh();
+                        }
                     }
                 } else if (e->hovering) {
                     e->hovering = false;
                     e->onLeave();
+                }
+
+                if (tb && Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT] && !clicked) { //clicked something else
+                    tb->text->editing = false;
                 }
             }
         }
@@ -324,12 +340,15 @@ void defineMenus () {
     Image* startBtn = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
     startBtn->clickable = true;
     startBtn->onClick = [&]() {
-        cout << "onClick Function Running" << endl;
         GameState::currentState = GameState::State::PLAYING;
         World::loadFromSave("newWorld");
     };
     startBtn->center();
     mainMenu->elements.push_back(startBtn);
+
+    Textbox* tb = new Textbox("test", World::fonts["main"], 20, Engine::width/2, Engine::height/2);
+    tb->center();
+    mainMenu->elements.push_back(tb);
 
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;

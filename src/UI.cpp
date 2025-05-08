@@ -62,7 +62,6 @@ namespace UI {
 		f = font;
 
 		mesh = new Model();
-		mesh->textures = vector<unsigned int> {f->ID};
 		mesh->shader = World::shaders["text"];
 
 		setHeight(f->h);
@@ -73,7 +72,6 @@ namespace UI {
 		f = font;
 
 		if (mesh != nullptr) mesh = new Model();
-		mesh->textures = vector<unsigned int> {f->ID};
 
 		setHeight(h);
 	}
@@ -101,7 +99,6 @@ namespace UI {
 				id = it - f->chars.begin();
 			} else continue;
 			
-			totalVert++;
 			vertices.insert(vertices.end(),{
 				i*w,0,		0,0,	(float)id,
 				i*w,h,		0,1,	(float)id,
@@ -112,6 +109,7 @@ namespace UI {
 			vector<float> ind {0,1,2,	0,2,3};
 			for (float &f : ind) f+=totalVert*4;
 			indices.insert(indices.end(), ind.begin(), ind.end());
+			totalVert++;
 		}
 		mesh->setData(vertices,indices,attr);
 	}
@@ -124,6 +122,24 @@ namespace UI {
 		this->y = y;
 
 		mesh->pos = glm::vec3(x,y,0);
+	}
+	void Text::draw () {
+		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0) return;
+		glUseProgram(mesh->shader->ID);
+		mesh->shader->uniforms(mesh->pos,mesh->rot);
+
+		glUniform1f(glGetUniformLocation(mesh->shader->ID, "len"), f->chars.size());
+
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, f->ID);
+		glUniform1i(glGetUniformLocation(mesh->shader->ID,"tex0"),0);
+
+
+		glBindVertexArray(mesh->VAO);
+		glDrawElements(GL_TRIANGLES,mesh->totalIndices,GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
 	}
 
 

@@ -70,6 +70,8 @@ namespace UI {
 			void genMesh ();
 			void setText (std::string text);
 			void setPos (float x, float y);
+
+			void draw ();
 	};
 
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen

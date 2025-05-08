@@ -1,15 +1,16 @@
 #version 330 core
 
-in vec2 UV;
-
 uniform sampler2D tex0;
-unifrom int charInd;
-uniform int fontChars;
+uniform float len;
+
+in vec2 UV;
+in float charNum;
 
 out vec4 FragColor;
 
 void main()
 {
-    UV.x = 1/(float)fontChars*(charInd + UV.x);
-    FragColor = texture(tex0, UV);
+    vec2 newUV = vec2((charNum + UV.x)/len,UV.y);
+    FragColor = texture(tex0, newUV);
+    if (FragColor.w == 0) discard;
 }

@@ -81,7 +81,7 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             for (Text* t : m->texts) {
-                // t->mesh->draw();
+                t->draw();
             }
             
             if (!Engine::cursorEnabled) continue;
@@ -292,13 +292,13 @@ void defineMenus () {
         World::loadFromSave("newWorld");
         GameState::currentState = GameState::State::PLAYING;
     };
-    mainMenu->buttons.push_back(startBtn);
-    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
+    // mainMenu->buttons.push_back(startBtn);
 
     Text* text = new Text(World::fonts["main"], Engine::width/2,Engine::height/2);
     text->setText("Testing");
     mainMenu->texts.push_back(text);
 
+    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;
 }
 
@@ -378,6 +378,21 @@ void genShaders () {
         glUniform4f(glGetUniformLocation(menuShader->ID, "screen"), Engine::width, Engine::height,1,1);
 
         glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
+    };
+
+    Shader* textShader = new Shader("textVert.glsl", "textFrag.glsl");
+    World::shaders["text"] = textShader;
+    textShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        glDisable(GL_DEPTH_TEST);
+        Shader* textShader = World::shaders["text"];
+
+        glm::mat4 model(1);
+        model = glm::translate(model,pos);
+        glUniformMatrix4fv(glGetUniformLocation(textShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        glUniform4f(glGetUniformLocation(textShader->ID, "screen"), Engine::width, Engine::height,1,1);
+
+        glUniform1f(glGetUniformLocation(textShader->ID,"time"), glfwGetTime());
     };
 }
 

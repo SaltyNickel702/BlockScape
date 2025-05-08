@@ -9,4 +9,5 @@ out vec4 FragColor;
 void main()
 {
     FragColor = texture(tex0, UV);
+    if (FragColor.w == 0) discard;
 }

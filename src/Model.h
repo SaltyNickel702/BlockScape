@@ -10,7 +10,7 @@
 //Container for OpenGL mesh data
 class Model {
     public:
-        Model () : pos(glm::vec3(0)),rot(glm::vec2(0)) {};
+        Model () : pos(glm::vec3(0)),rot(glm::vec2(0)), dataFormatted(false) {};
         Model (const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<unsigned int>& attribLengths);
         void setData (const vector<float>& vVert, const vector<unsigned int>& vIndices, const vector<unsigned int>& vAttribLengths);
         void cleanData ();
@@ -20,7 +20,6 @@ class Model {
 
         float* vertices;
         unsigned int* indices;
-
         unsigned int* attribLen;
 
         std::vector<float> verticesVec;
@@ -42,6 +41,10 @@ class Model {
 
 
         static Model joinModels (Model* models);
+
+        ~Model () {
+            cleanData();
+        }
 };
 
 #endif

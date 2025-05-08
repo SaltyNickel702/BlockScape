@@ -8,16 +8,35 @@ namespace UI {
 	LObject menuTick;
 	bool hoveringOverButton = false;
 
-	Image::Image (unsigned int textureID, float x, float y, float w, float h) : imgMesh(new Model()) {
-		imgMesh->shader = World::shaders["menu"];
-		imgMesh->textures.push_back(textureID);
+
+	bool Element::mouseOver () {
+		if (!Engine::cursorEnabled) return false;
+		glm::vec2 c = Engine::cursorPos;
+		if (c.x >= x && c.x <= x + w && c.y >= y && c.y <= y + h) return true;
+		return false;
+	}
+	void Element::setPos (float x, float y) {
+		this->x = x;
+		this->y = y;
+		mesh->pos = glm::vec3(x,y,0);
+	}
+	void Element::center () {
+		glm::vec2 newPos = glm::vec2(x,y) - .5f*glm::vec2(w,h);
+		setPos(newPos.x, newPos.y);
+	}
+
+	Image::Image (unsigned int textureID, float x, float y, float w, float h) {
+		mesh->shader = World::shaders["menu"];
+		mesh->textures.push_back(textureID);
 
 		setDim(w,h);
 		setPos(x,y);
 	}
 	void Image::setDim (float w, float h) {
-		dim = glm::vec2(w,h);
-		setPos(pos.x,pos.y);
+		this->w = w;
+		this->h = h;
+		glm::vec2 dim = glm::vec2(w,h);
+		setPos(x,y);
 
 		vector<float> vert {
 			0,0,	0,0,
@@ -33,24 +52,12 @@ namespace UI {
 			2,2
 		};
 		
-		imgMesh->setData(vert,indices,attr);
+		mesh->setData(vert,indices,attr);
 	}
-	void Image::setPos (float x, float y) {
-		pos = glm::vec2(x,y);
-		imgMesh->pos = glm::vec3(pos - .5f*dim,0);
+	void Image::draw () {
+		mesh->draw();
 	}
 
-
-	Button::Button (Image* img) : currentImg(0), hovering(false), onClick([&](){}), onHover([&](){}), onLeave([&](){}) {
-		images.push_back(img);
-	}
-	Button::Button (Image* img, function<void()> onClick, function<void()> onHover, function<void()> onLeave) : currentImg(0), hovering(false) {
-		images.push_back(img);
-
-		this->onClick = onClick;
-		this->onHover = onHover;
-		this->onLeave = onLeave;
-	}
 
 	Font::Font (std::string rel, int width, int height) {
 		w = width;
@@ -58,7 +65,7 @@ namespace UI {
 
 		ID = Engine::genTexture(rel);
 	}
-	Text::Text (Font* font, float x, float y) {
+	Text::Text (Font* font, float x, float y) : text("") {
 		f = font;
 
 		mesh = new Model();
@@ -76,16 +83,25 @@ namespace UI {
 		setHeight(h);
 	}
 	void Text::setHeight (float h) {
+		cH = h;
+		cW = f->w/(float)f->h * cH;
+
 		this->h = h;
-		w = f->w/(float)f->h * h;
+		this->w = cW * text.size();
+
 		Text::genMesh();
 	}
 	void Text::setWidth (float w) {
-		this->w = w;
-		h = f->h/(float)f->w * w;
+		cW = w;
+		cH = f->h/(float)f->w * cW;
+
+		this->h = cH;
+		this->w = cW * text.size();
+
 		Text::genMesh();
 	}
 	void Text::genMesh () {
+		this->w = cW * text.size();
 
 		vector<float> vertices;
 		vector<unsigned int> indices;
@@ -100,23 +116,23 @@ namespace UI {
 			} else continue;
 			
 			vertices.insert(vertices.end(),{
-				i*w,0,		0,0,	(float)id,
-				i*w,h,		0,1,	(float)id,
-				i*w + w,h,	1,1,	(float)id,
-				i*w + w,0,	1,0,	(float)id
+				i*cW,0,			0,0,	(float)id,
+				i*cW,cH,		0,1,	(float)id,
+				i*cW + cW,cH,	1,1,	(float)id,
+				i*cW + cW,0,	1,0,	(float)id
 			});
 			
 			vector<float> ind {0,1,2,	0,2,3};
-			for (float &f : ind) f+=totalVert*4;
+			for (float &v : ind) v+=totalVert*4;
 			indices.insert(indices.end(), ind.begin(), ind.end());
 			totalVert++;
 		}
 		if (cursorVisible) {
 			vertices.insert(vertices.end(),{
-				0.15f*w + text.size()*w,0,					0,0,	(float)-1,
-				0.15f*w + text.size()*w,.9f*h,				0,1,	(float)-1,
-				0.15f*w + text.size()*w + 0.15f*w,.9f*h,	1,1,	(float)-1,
-				0.15f*w + text.size()*w + 0.15f*w,0,		1,0,	(float)-1,
+				0.15f*cW + text.size()*cW,0,					0,0,	(float)-1,
+				0.15f*cW + text.size()*cW,.9f*cH,				0,1,	(float)-1,
+				0.15f*cW + text.size()*cW + 0.15f*cW,.9f*cH,	1,1,	(float)-1,
+				0.15f*cW + text.size()*cW + 0.15f*cW,0,			1,0,	(float)-1,
 			});
 			
 			vector<float> ind {0,1,2,	0,2,3};
@@ -129,14 +145,8 @@ namespace UI {
 		this->text = text;
 		genMesh();
 	}
-	void Text::setPos (float x, float y) {
-		this->x = x;
-		this->y = y;
-
-		mesh->pos = glm::vec3(x,y,0);
-	}
 	void Text::draw () {
-		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0) return;
+		if (!mesh->dataFormatted || mesh->VAO == 0 || mesh->totalIndices == 0 || f == nullptr) return;
 		glUseProgram(mesh->shader->ID);
 		mesh->shader->uniforms(mesh->pos,mesh->rot);
 
@@ -153,9 +163,34 @@ namespace UI {
 
 		glBindVertexArray(0);
 	}
-	void Text::center () {
-		float width = w*text.size();
-		setPos(x-width/2,y-h/2);
+	
+	Textbox::Textbox (string text, Font* f,  float x, float y) {
+		this->text = new Text(f, x, y);
+		this->text->setText(text);
+
+		setPos(x,y);
+	}
+	void Textbox::draw () {
+		text->draw();
+	}
+	void Textbox::setPos (float x, float y) {
+		this->x = x;
+		this->y = y;
+		mesh->pos = glm::vec3(x,y,0);
+
+		text->setPos(x,y);
+	}
+	void Textbox::setHeight (float height) {
+		text->setHeight(height);
+
+		w = text->w;
+		h = text->h;
+	}
+	void Textbox::setWidth (float width) {
+		text->setWidth(width);
+
+		w = text->w;
+		h = text->h;
 	}
 
 

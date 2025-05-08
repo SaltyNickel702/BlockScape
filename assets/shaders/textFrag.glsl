@@ -16,5 +16,6 @@ void main()
         vec2 newUV = vec2((charNum + UV.x)/len,UV.y);
         FragColor = texture(tex0, newUV);
     }
+    // FragColor = vec4(UV, 0, 1);
     if (FragColor.w == 0) discard;
 }

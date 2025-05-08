@@ -76,67 +76,59 @@ void DefineLogicObjects() {
             if (!(m->visible || find(m->activeStates.begin(),m->activeStates.end(),GameState::currentState) != m->activeStates.end())) continue;
             if (m->onTick) m->onTick();
 
-            for (Image* i : m->images) {
-                i->imgMesh->draw();
-            }
-            for (Button* b : m->buttons) {
-                b->images.at(b->currentImg)->imgMesh->draw();
-            }
-            for (Text* t : m->texts) {
-                //for visible cursor
-                if (t->editing) {
-                    bool update = false;
-                    if (Engine::keyDownTick[GLFW_KEY_BACKSPACE] && t->text.size() > 0) {
-                        t->text.pop_back();
 
-                        update = true;
-                    }
-                    if (Engine::keyDownTick[GLFW_KEY_SPACE]) {
-                        t->text.push_back(' ');
-                        update = true;
-                    } 
-                    for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
-                        if (Engine::keyDownTick[i]) {
-                            if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
-                                t->text.push_back((char)i);
-                                update = true;
+            for (Element* e : m->elements) {
+                Text* t = dynamic_cast<Text*>(e);
+                if (t) {
+                    //for visible cursor
+                    if (t->editing) {
+                        bool update = false;
+                        if (Engine::keyDownTick[GLFW_KEY_BACKSPACE] && t->text.size() > 0) {
+                            t->text.pop_back();
+
+                            update = true;
+                        }
+                        if (Engine::keyDownTick[GLFW_KEY_SPACE]) {
+                            t->text.push_back(' ');
+                            update = true;
+                        } 
+                        for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
+                            if (Engine::keyDownTick[i]) {
+                                if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
+                                    t->text.push_back((char)i);
+                                    update = true;
+                                }
                             }
                         }
-                    }
-                    if (update) t->genMesh();
+                        if (update) t->genMesh();
 
-                    t->elapsedTime += Engine::deltaTick;
-                    if (t->elapsedTime >= 1/t->cursorTickRate) {
-                        t->elapsedTime = 0;
-                        t->cursorVisible ^= true; //flips value
+                        t->elapsedTime += Engine::deltaTick;
+                        if (t->elapsedTime >= 1/t->cursorTickRate) {
+                            t->elapsedTime = 0;
+                            t->cursorVisible ^= true; //flips value
+                            t->genMesh();
+                        }
+                    } else if (t->cursorVisible) {
+                        t->cursorVisible = false;
                         t->genMesh();
+                    };
+                }
+
+                e->draw();
+
+                if (!Engine::cursorEnabled || !e->clickable) continue;
+                if (e->mouseOver()) {
+                    hoveringOverButton = true;
+                    if (!e->hovering) {
+                        e->hovering = true;
+                        e->onHover();
                     }
-                } else if (t->cursorVisible) {
-                    t->cursorVisible = false;
-                    t->genMesh();
-                };
-
-
-                t->draw();
-            }
-            
-            if (!Engine::cursorEnabled) continue;
-            for (Button* b : m->buttons) {
-                glm::vec2 c = Engine::cursorPos;
-                glm::vec2 p = b->images.at(b->currentImg)->pos;
-                glm::vec2 d = b->images.at(b->currentImg)->dim;
-                if (c.x >= p.x - .5*d.x && c.x <= p.x + .5*d.x && c.y >= p.y - .5*d.y && c.y <= p.y + .5*d.y) {
-                    UI::hoveringOverButton = true;
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-                        Engine::tickQueue.push_back(b->onClick);
+                        e->onClick();
                     }
-                    if (!b->hovering) {
-                        b->hovering = true;
-                        Engine::tickQueue.push_back(b->onHover);
-                    }
-                } else if (b->hovering) {
-                    b->hovering = false;
-                    Engine::tickQueue.push_back(b->onLeave);
+                } else if (e->hovering) {
+                    e->hovering = false;
+                    e->onLeave();
                 }
             }
         }
@@ -320,8 +312,6 @@ void defineMenus () {
     using namespace UI;
 
     Image* menuBackground = new Image(*World::textures["menuBackground"], Engine::width/2, Engine::height/2, 800, 600);
-
-    
     
     Menu* mainMenu = new Menu();
 
@@ -329,57 +319,20 @@ void defineMenus () {
     titleText->setHeight(200);
     titleText->setText("BlockScape");
     titleText->center();
-    mainMenu->texts.push_back(titleText);
+    mainMenu->elements.push_back(titleText);
     
-    Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
-    Button* startBtn = new Button(start);
+    Image* startBtn = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
+    startBtn->clickable = true;
     startBtn->onClick = [&]() {
-        GameState::currentState = GameState::State::GAME_SELECT;
+        cout << "onClick Function Running" << endl;
+        GameState::currentState = GameState::State::PLAYING;
+        World::loadFromSave("newWorld");
     };
-    mainMenu->buttons.push_back(startBtn);
+    startBtn->center();
+    mainMenu->elements.push_back(startBtn);
 
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;
-
-
-    
-    Menu* gameSelect = new Menu();
-
-    gameSelect->images.push_back(menuBackground);
-
-    Text* seedPrompt = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50); //.at(0)
-    seedPrompt->setText("Seed: ");
-    seedPrompt->setPos(seedPrompt->x - seedPrompt->f->w*seedPrompt->text.size(), seedPrompt->y);
-    gameSelect->texts.push_back(seedPrompt);
-    Text* seedField = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50); //.at(1)
-    seedField->editing = true;
-    gameSelect->texts.push_back(seedField);
-
-    Image* seedTextbox = new Image(*World::textures["textbox"], Engine::width/5*2 + 350/2 - 2.5, Engine::height/2 - 300 + 50 + 35/2 - 2.5, 350, 35);
-    Button* seedTextButton = new Button(seedTextbox);
-    gameSelect->buttons.push_back(seedTextButton);
-
-
-    Text* namePrompt = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50 + 40); //.at(2)
-    namePrompt->setText("Name: ");
-    namePrompt->setPos(namePrompt->x - namePrompt->f->w*namePrompt->text.size(), namePrompt->y);
-    gameSelect->texts.push_back(namePrompt);
-    Text* nameField = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50 + 40); //.at(3)
-    gameSelect->texts.push_back(nameField);
-
-    Image* nameTextbox = new Image(*World::textures["textbox"], Engine::width/5*2 + 350/2 - 2.5, Engine::height/2 - 300 + 40 + 50 + 35/2 - 2.5, 350, 35);
-    Button* nameTextButton = new Button(nameTextbox);
-    gameSelect->buttons.push_back(nameTextButton);
-
-    gameSelect->activeStates = vector<GameState::State> {GameState::State::GAME_SELECT};
-    World::menus["gameSelect"] = gameSelect;
-
-
-
-    Menu* gameLoad = new Menu();
-    gameLoad->images.push_back(menuBackground);
-
-    gameLoad->activeStates = vector<GameState::State> {GameState::State::GAME_LOAD_SCREEN};
 }
 
 void AddToggleKeybinds () { //things like menu opening
@@ -513,6 +466,8 @@ int main () {
     genTextures();
     genShaders();
 
+
+    cout << "Defining Menus" << endl;
     defineMenus();
     // World::menus["mainMenu"]->visible = true;
 

@@ -113,10 +113,10 @@ namespace UI {
 		}
 		if (cursorVisible) {
 			vertices.insert(vertices.end(),{
-				0.15f*w + text.size()*w,0,		0,0,	(float)-1,
-				0.15f*w + text.size()*w,.9f*h,		0,1,	(float)-1,
+				0.15f*w + text.size()*w,0,					0,0,	(float)-1,
+				0.15f*w + text.size()*w,.9f*h,				0,1,	(float)-1,
 				0.15f*w + text.size()*w + 0.15f*w,.9f*h,	1,1,	(float)-1,
-				0.15f*w + text.size()*w + 0.15f*w,0,	1,0,	(float)-1,
+				0.15f*w + text.size()*w + 0.15f*w,0,		1,0,	(float)-1,
 			});
 			
 			vector<float> ind {0,1,2,	0,2,3};

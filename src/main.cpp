@@ -269,7 +269,7 @@ void DefineLogicObjects() {
                 }
                 // jumping
                 if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
-                    velocity.y = 10.0f; // jump speed. val to change for diff grav phys
+                    velocity.y = 10.3f; // jump speed. val to change for diff grav phys
                     onGround = false;
                 }
             }
@@ -289,7 +289,7 @@ void DefineLogicObjects() {
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
-                World::setBlock(bc.x,bc.y,bc.z,1);
+                World::setBlock(bc.x,bc.y,bc.z,5);
             }
         }
     };

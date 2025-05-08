@@ -5,6 +5,8 @@
 struct GameState {
 	enum class State {
 		MENU,
+		GAME_SELECT,
+		GAME_LOAD_SCREEN,
 		PAUSE,
 		PLAYING
 	};

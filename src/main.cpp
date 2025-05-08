@@ -111,7 +111,10 @@ void DefineLogicObjects() {
                         t->cursorVisible ^= true; //flips value
                         t->genMesh();
                     }
-                }
+                } else if (t->cursorVisible) {
+                    t->cursorVisible = false;
+                    t->genMesh();
+                };
 
 
                 t->draw();
@@ -316,6 +319,9 @@ void DefineLogicObjects() {
 void defineMenus () {
     using namespace UI;
 
+    Image* menuBackground = new Image(*World::textures["menuBackground"], Engine::width/2, Engine::height/2, 800, 600);
+
+    
     
     Menu* mainMenu = new Menu();
 
@@ -328,13 +334,52 @@ void defineMenus () {
     Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
     Button* startBtn = new Button(start);
     startBtn->onClick = [&]() {
-        World::loadFromSave("newWorld");
-        GameState::currentState = GameState::State::PLAYING;
+        GameState::currentState = GameState::State::GAME_SELECT;
     };
     mainMenu->buttons.push_back(startBtn);
 
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;
+
+
+    
+    Menu* gameSelect = new Menu();
+
+    gameSelect->images.push_back(menuBackground);
+
+    Text* seedPrompt = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50); //.at(0)
+    seedPrompt->setText("Seed: ");
+    seedPrompt->setPos(seedPrompt->x - seedPrompt->f->w*seedPrompt->text.size(), seedPrompt->y);
+    gameSelect->texts.push_back(seedPrompt);
+    Text* seedField = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50); //.at(1)
+    seedField->editing = true;
+    gameSelect->texts.push_back(seedField);
+
+    Image* seedTextbox = new Image(*World::textures["textbox"], Engine::width/5*2 + 350/2 - 2.5, Engine::height/2 - 300 + 50 + 35/2 - 2.5, 350, 35);
+    Button* seedTextButton = new Button(seedTextbox);
+    gameSelect->buttons.push_back(seedTextButton);
+
+
+    Text* namePrompt = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50 + 40); //.at(2)
+    namePrompt->setText("Name: ");
+    namePrompt->setPos(namePrompt->x - namePrompt->f->w*namePrompt->text.size(), namePrompt->y);
+    gameSelect->texts.push_back(namePrompt);
+    Text* nameField = new Text(World::fonts["main"],Engine::width/5*2,Engine::height/2 - 300 + 50 + 40); //.at(3)
+    gameSelect->texts.push_back(nameField);
+
+    Image* nameTextbox = new Image(*World::textures["textbox"], Engine::width/5*2 + 350/2 - 2.5, Engine::height/2 - 300 + 40 + 50 + 35/2 - 2.5, 350, 35);
+    Button* nameTextButton = new Button(nameTextbox);
+    gameSelect->buttons.push_back(nameTextButton);
+
+    gameSelect->activeStates = vector<GameState::State> {GameState::State::GAME_SELECT};
+    World::menus["gameSelect"] = gameSelect;
+
+
+
+    Menu* gameLoad = new Menu();
+    gameLoad->images.push_back(menuBackground);
+
+    gameLoad->activeStates = vector<GameState::State> {GameState::State::GAME_LOAD_SCREEN};
 }
 
 void AddToggleKeybinds () { //things like menu opening
@@ -436,13 +481,21 @@ void genTextures () {
 
     unsigned int* atlas = new unsigned int(Engine::genTextureAtlas(blockTextures));
     World::textures["atlas"] = atlas;
+    
+    unsigned int* menuBackground = new unsigned int(Engine::genTexture("MenuBackground.png"));
+    World::textures["menuBackground"] = menuBackground;
 
     unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
     World::textures["startButton"] = startButton;
+    
+    unsigned int* textbox = new unsigned int(Engine::genTexture("textbox.png"));
+    World::textures["textbox"] = textbox; //why does this one have a weird UV?
+
 
     UI::Font* mainFont = new UI::Font("Font.png", 16, 30);
     mainFont->chars = "abcdefghijklmnopqrstuvwxyz";
     World::fonts["main"] = mainFont;
+
 }
 
 int main () {

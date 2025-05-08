@@ -10,7 +10,11 @@ out vec4 FragColor;
 
 void main()
 {
-    vec2 newUV = vec2((charNum + UV.x)/len,UV.y);
-    FragColor = texture(tex0, newUV);
+    if (charNum == -1) {
+        FragColor = vec4(1);
+    } else {
+        vec2 newUV = vec2((charNum + UV.x)/len,UV.y);
+        FragColor = texture(tex0, newUV);
+    }
     if (FragColor.w == 0) discard;
 }

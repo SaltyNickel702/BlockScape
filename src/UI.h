@@ -54,15 +54,20 @@ namespace UI {
 	class Text {
 		private:
 			float w,h;
-			Font* f;
 
 		public:
 			Text() = delete;
 			Text(Font* font, float x, float y);
 
+			Font* f;
 			Model* mesh;
 			std::string text; //Do no set, reference only. Use setText method to modify
 			float x,y;
+
+			bool editing = false;
+			bool cursorVisible = false;
+			float elapsedTime = 0;
+			float cursorTickRate = 2;
 
 			void setFont (Font* font);
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
@@ -72,6 +77,7 @@ namespace UI {
 			void setPos (float x, float y);
 
 			void draw ();
+			void center ();
 	};
 
 	class Menu { //Collection of Buttons and Images that should be drawn to the screen
@@ -84,6 +90,8 @@ namespace UI {
 
 			bool visible;
 			vector<GameState::State> activeStates;
+
+			function<void()> onTick;
 	};
 
 	extern vector<Menu*> menus;

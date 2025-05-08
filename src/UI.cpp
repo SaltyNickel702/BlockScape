@@ -111,6 +111,18 @@ namespace UI {
 			indices.insert(indices.end(), ind.begin(), ind.end());
 			totalVert++;
 		}
+		if (cursorVisible) {
+			vertices.insert(vertices.end(),{
+				0.15f*w + text.size()*w,0,		0,0,	(float)-1,
+				0.15f*w + text.size()*w,.9f*h,		0,1,	(float)-1,
+				0.15f*w + text.size()*w + 0.15f*w,.9f*h,	1,1,	(float)-1,
+				0.15f*w + text.size()*w + 0.15f*w,0,	1,0,	(float)-1,
+			});
+			
+			vector<float> ind {0,1,2,	0,2,3};
+			for (float &f : ind) f+=totalVert*4;
+			indices.insert(indices.end(), ind.begin(), ind.end());
+		}
 		mesh->setData(vertices,indices,attr);
 	}
 	void Text::setText (std::string text) {
@@ -140,6 +152,10 @@ namespace UI {
 		glDrawElements(GL_TRIANGLES,mesh->totalIndices,GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
+	}
+	void Text::center () {
+		float width = w*text.size();
+		setPos(x-width/2,y-h/2);
 	}
 
 

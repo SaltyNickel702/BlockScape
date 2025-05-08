@@ -74,6 +74,8 @@ void DefineLogicObjects() {
 
         for (Menu* m : menus) {
             if (!(m->visible || find(m->activeStates.begin(),m->activeStates.end(),GameState::currentState) != m->activeStates.end())) continue;
+            if (m->onTick) m->onTick();
+
             for (Image* i : m->images) {
                 i->imgMesh->draw();
             }
@@ -81,6 +83,37 @@ void DefineLogicObjects() {
                 b->images.at(b->currentImg)->imgMesh->draw();
             }
             for (Text* t : m->texts) {
+                //for visible cursor
+                if (t->editing) {
+                    bool update = false;
+                    if (Engine::keyDownTick[GLFW_KEY_BACKSPACE] && t->text.size() > 0) {
+                        t->text.pop_back();
+
+                        update = true;
+                    }
+                    if (Engine::keyDownTick[GLFW_KEY_SPACE]) {
+                        t->text.push_back(' ');
+                        update = true;
+                    } 
+                    for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
+                        if (Engine::keyDownTick[i]) {
+                            if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
+                                t->text.push_back((char)i);
+                                update = true;
+                            }
+                        }
+                    }
+                    if (update) t->genMesh();
+
+                    t->elapsedTime += Engine::deltaTick;
+                    if (t->elapsedTime >= 1/t->cursorTickRate) {
+                        t->elapsedTime = 0;
+                        t->cursorVisible ^= true; //flips value
+                        t->genMesh();
+                    }
+                }
+
+
                 t->draw();
             }
             
@@ -285,18 +318,20 @@ void defineMenus () {
 
     
     Menu* mainMenu = new Menu(); //Temporary
+
+    Text* titleText = new Text(World::fonts["main"],Engine::width/2, Engine::height/3);
+    titleText->setHeight(200);
+    titleText->setText("BlockScape");
+    titleText->center();
+    mainMenu->texts.push_back(titleText);
     
-    Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
+    Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
     Button* startBtn = new Button(start);
     startBtn->onClick = [&]() {
         World::loadFromSave("newWorld");
         GameState::currentState = GameState::State::PLAYING;
     };
-    // mainMenu->buttons.push_back(startBtn);
-
-    Text* text = new Text(World::fonts["main"], Engine::width/2,Engine::height/2);
-    text->setText("Testing");
-    mainMenu->texts.push_back(text);
+    mainMenu->buttons.push_back(startBtn);
 
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;

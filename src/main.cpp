@@ -317,7 +317,7 @@ void defineMenus () {
     using namespace UI;
 
     
-    Menu* mainMenu = new Menu(); //Temporary
+    Menu* mainMenu = new Menu();
 
     Text* titleText = new Text(World::fonts["main"],Engine::width/2, Engine::height/3);
     titleText->setHeight(200);
@@ -465,7 +465,6 @@ int main () {
 
     // World::loadNew(495804);
     // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     if (GameState::currentState == GameState::State::PLAYING) {

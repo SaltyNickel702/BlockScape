@@ -83,23 +83,28 @@ namespace UI {
 			void draw () override;
 	};
 	class Textbox : public Element {
+		private:
+			void updateBackground();
 		public:
 			Textbox() = delete;
 			Textbox(string text, Font* f, int maxLength, float x, float y);
 
 			Text* text;
+			Image* background;
 			int maxCharacterLength;
 
 			void setHeight (float height); //Sets height, and adjusts width to maintain font aspect ratio
 			void setWidth (float width); //Sets width, and adjusts height to maintain font aspect ratio
 			void setPos (float x, float y) override;
 			void setMaxLength (int length);
+			void setBackground (unsigned int id);
 
 			void draw () override;
 
 			~Textbox () override {
 				delete mesh;
 				delete text;
+				if (background) delete background;
 			};
 	};
 

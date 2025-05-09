@@ -379,7 +379,9 @@ void defineMenus () {
     using namespace UI;
 
     Image* menuBackground = new Image(*World::textures["menuBackground"], Engine::width/2, Engine::height/2, 800, 600);
-    
+    menuBackground->center();
+
+    #pragma region "Main Menu"
     Menu* mainMenu = new Menu();
 
     Text* titleText = new Text(World::fonts["main"],Engine::width/2, Engine::height/3);
@@ -391,18 +393,58 @@ void defineMenus () {
     Image* startBtn = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
     startBtn->clickable = true;
     startBtn->onClick = [&]() {
-        GameState::currentState = GameState::State::PLAYING;
-        World::loadFromSave("newWorld");
+        GameState::currentState = GameState::State::LOAD_SELECT;
     };
     startBtn->center();
     mainMenu->elements.push_back(startBtn);
 
-    Textbox* tb = new Textbox("test", World::fonts["main"], 20, Engine::width/2, Engine::height/2);
-    tb->center();
-    mainMenu->elements.push_back(tb);
-
     mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
     World::menus["mainMenu"] = mainMenu;
+    #pragma endregion
+
+    #pragma region "Load Method Selection"
+    Menu* loadSelect = new Menu();
+
+    loadSelect->elements.push_back(menuBackground);
+
+    Text* newWorldBtn = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 - 50);
+    newWorldBtn->setText("New World");
+    newWorldBtn->setHeight(50);
+    newWorldBtn->center();
+    newWorldBtn->clickable = true;
+    newWorldBtn->onClick = [&]() {
+        GameState::currentState = GameState::State::LOAD_NEW;
+    };
+    loadSelect->elements.push_back(newWorldBtn);
+
+    Text* loadWorldBtn = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 + 50);
+    loadWorldBtn->setText("Load World");
+    loadWorldBtn->setHeight(50);
+    loadWorldBtn->center();
+    loadWorldBtn->clickable = true;
+    loadWorldBtn->onClick = [&]() {
+        // GameState::currentState = GameState::State::LOAD_FROM_SAVE;
+        World::loadFromSave("newWorld");
+        GameState::currentState = GameState::State::PLAYING;
+    };
+    loadSelect->elements.push_back(loadWorldBtn);
+
+    loadSelect->activeStates = vector<GameState::State> {GameState::State::LOAD_SELECT};
+    World::menus["loadSelect"] = loadSelect;
+    #pragma endregion
+
+
+    #pragma region "GUI"
+    Menu* GUI = new Menu();
+
+    Image* Crosshair = new Image(*World::textures["Crosshair"],Engine::width/2, Engine::height/2, 16, 16);
+    Crosshair->center();
+    GUI->elements.push_back(Crosshair);
+
+    GUI->activeStates = vector<GameState::State> {GameState::State::PLAYING, GameState::State::PAUSE};
+    GUI->visible = true;
+    World::menus["GUI"] = GUI;
+    #pragma endregion
 }
 
 void AddToggleKeybinds () { //things like menu opening
@@ -511,8 +553,12 @@ void genTextures () {
     unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
     World::textures["startButton"] = startButton;
     
-    unsigned int* textbox = new unsigned int(Engine::genTexture("textbox.png"));
-    World::textures["textbox"] = textbox; //why does this one have a weird UV?
+    unsigned int* textbox = new unsigned int(Engine::genTexture("Textbox.png"));
+    World::textures["Textbox"] = textbox;
+
+    unsigned int* crosshair = new unsigned int(Engine::genTexture("Crosshair1.png"));
+    World::textures["Crosshair"] = crosshair;
+
 
 
     UI::Font* mainFont = new UI::Font("Font.png", 16, 30);

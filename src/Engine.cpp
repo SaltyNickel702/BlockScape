@@ -67,7 +67,8 @@ namespace {
 		}
 
 		int objs = 0;
-		for (LObject *o: World::LogicObjects) {
+		for (int i = World::LogicObjects.size() - 1; i >= 0; i--) {
+			LObject* o = World::LogicObjects.at(i);
 			if ((o->active || find(o->activeStates.begin(),o->activeStates.end(), GameState::currentState) != o->activeStates.end()) && o->onTick) {
 				o->onTick();
 			}
@@ -115,33 +116,29 @@ namespace Engine {
 		return atlasTex;
 	};
 
-	unsigned int genTexture (string ImgName) { //make sure to set active texture before loading
+	unsigned int genTexture(string ImgName) {
 		unsigned int texture;
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
+		// Set wrapping and filtering
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //use closest pixel color, not mixed
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+		// Load image
 		string ImgRel = "./assets/textures/" + ImgName;
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(ImgRel.c_str(), &width, &height, &nrChannels, 0);
 		if (data) {
-			int format;
-			if (nrChannels == 4) {
-				format = GL_RGBA;
-			} else if (nrChannels == 3) {
-				format = GL_RGB;
-			} else if (nrChannels == 1) {
-				format = GL_RED;
-			}
+			GLenum format = (nrChannels == 4) ? GL_RGBA :
+							(nrChannels == 3) ? GL_RGB :
+							(nrChannels == 1) ? GL_RED : GL_RGB;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		} else {
-			cout << "Failed to Load Texture: " << ImgName << endl;
+			std::cout << "Failed to load texture: " << ImgName << std::endl;
 		}
 		stbi_image_free(data);
 		glBindTexture(GL_TEXTURE_2D, 0);

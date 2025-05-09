@@ -390,7 +390,8 @@ void defineMenus () {
     Image* menuBackground = new Image(*World::textures["menuBackground"], Engine::width/2, Engine::height/2, 800, 600);
     menuBackground->center();
 
-    #pragma region "Main Menu"
+    //Main Menu
+    #pragma region
     Menu* mainMenu = new Menu();
 
     Text* titleText = new Text(World::fonts["main"],Engine::width/2, Engine::height/3);
@@ -411,7 +412,8 @@ void defineMenus () {
     World::menus["mainMenu"] = mainMenu;
     #pragma endregion
 
-    #pragma region "Load Method Selection"
+    //Load Method Selection
+    #pragma region
     Menu* loadSelect = new Menu();
 
     loadSelect->elements.push_back(menuBackground);
@@ -443,7 +445,8 @@ void defineMenus () {
     #pragma endregion
 
 
-    #pragma region "GUI"
+    //GUI
+    #pragma region
     Menu* GUI = new Menu();
 
     Image* Crosshair = new Image(*World::textures["Crosshair"],Engine::width/2, Engine::height/2, 16, 16);

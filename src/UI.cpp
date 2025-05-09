@@ -164,7 +164,7 @@ namespace UI {
 		glBindVertexArray(0);
 	}
 	
-	Textbox::Textbox (string text, Font* f, int maxLength,  float x, float y) {
+	Textbox::Textbox (string text, Font* f, int maxLength,  float x, float y) : background(nullptr) {
 		clickable = true;
 
 		this->text = new Text(f, x, y);
@@ -176,6 +176,7 @@ namespace UI {
 		setPos(x,y);
 	}
 	void Textbox::draw () {
+		if (background) background->draw();
 		text->draw();
 	}
 	void Textbox::setPos (float x, float y) {
@@ -190,17 +191,32 @@ namespace UI {
 
 		w = text->cW * maxCharacterLength;
 		h = text->h;
+		updateBackground();
 	}
 	void Textbox::setWidth (float width) {
 		text->setWidth(width);
 
 		w = text->cW * maxCharacterLength;
 		h = text->h;
+		updateBackground();
 	}
 	void Textbox::setMaxLength (int length) {
 		maxCharacterLength = length;
 
 		w = text->cW * maxCharacterLength;
+		updateBackground();
+	}
+	void Textbox::setBackground (unsigned int id) {
+		if (background) delete background;
+		background = new Image(id,x,y,w,h);
+		Textbox::updateBackground();
+	}
+	void Textbox::updateBackground () {
+		if (!background) return;
+		float padding = 0.15 * (w > h ? h : w);
+
+		background->setPos(x - padding,y - padding);
+		background->setDim(w + 2*padding,h + 2*padding);
 	}
 
 

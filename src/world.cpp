@@ -259,15 +259,24 @@ void World::saveGame (string saveFolder) {
 	}
 
 	
+	//Player File Writing
 	#pragma region 
 	ofstream playerBSF(sF+"/player.ini",ofstream::trunc); //erase previous contents
-	vector<string> playerBS;
+	vector<string> playerBS; //add lines into this vector, it will be auto added to player.ini
 
 	string posData = "pos=" + to_string(World::Player.pos.x) + "," + to_string(World::Player.pos.y) + "," + to_string(World::Player.pos.z);
 	playerBS.push_back(posData);
 	
 	string rotData = "rot=" + to_string(World::Player.rot.x) + "," + to_string(World::Player.rot.y);
 	playerBS.push_back(rotData);
+
+	string gamemodeData = "gamemode=" + to_string(static_cast<int>(World::PlayerData::CurrentMode));
+	playerBS.push_back(gamemodeData);
+
+	string flyingBool = "flying=" + to_string(World::PlayerData::Flying);
+	playerBS.push_back(flyingBool);
+
+
 
 	if (playerBSF.is_open()) {
 		for (int i = 0; i < playerBS.size(); i++) {
@@ -281,6 +290,7 @@ void World::saveGame (string saveFolder) {
 	#pragma endregion
 
 
+	//Config File Writing
 	#pragma region
 	ofstream configBSF(sF+"/config.ini",ofstream::trunc);
 	vector<string> configBS;
@@ -300,6 +310,7 @@ void World::saveGame (string saveFolder) {
 	#pragma endregion
 
 
+	//World File writing
 	#pragma region
 	ofstream worldBSF(sF + "/world.dat", ios::binary | ofstream::trunc);
 
@@ -369,6 +380,8 @@ int World::loadFromSave (string saveFolder) {
 		return -1;
 	}
 
+
+	//Config File Reading
 	#pragma region 
 	map<string, string> config = readIniFile(sF + "/config.ini");
 	for (auto& [id, content] : config) {
@@ -384,6 +397,7 @@ int World::loadFromSave (string saveFolder) {
 	#pragma endregion
 
 
+	//Player File Reading
 	#pragma region 
 	map<string, string> playerDat = readIniFile(sF + "/player.ini");
 	for (auto& [id, content] : playerDat) {
@@ -407,10 +421,10 @@ int World::loadFromSave (string saveFolder) {
 				World::Player.pos.x = pos[0];
 				World::Player.pos.y = pos[1];
 				World::Player.pos.z = pos[2];
-			} catch (const std::invalid_argument& e) {
-			} catch (const std::out_of_range& e) {
+			} catch (const std::invalid_argument& e) {//For stof(), which will error if it doesn't find a perfect float in the string
+			} catch (const std::out_of_range& e) { //For running through all chars in content, and finding more array items than intended
 			}
-		} else {
+		} else if (id == "rot") {
 			try {
 				string strs[2];
 				int i = 0;
@@ -428,13 +442,27 @@ int World::loadFromSave (string saveFolder) {
 				}
 				World::Player.rot.x = rot[0];
 				World::Player.rot.y = rot[1];
+			} catch (const std::invalid_argument& e) { //For stof(), which will error if it doesn't find a perfect float in the string
+			} catch (const std::out_of_range& e) { //For running through all chars in content, and finding more array items than intended
+			}
+		} else if (id == "gamemode") {
+			try {
+				int mode = stoi(content);
+				World::PlayerData::GameMode gmEnum = static_cast<World::PlayerData::GameMode>(mode);
+				World::PlayerData::CurrentMode = gmEnum;
 			} catch (const std::invalid_argument& e) {
 			} catch (const std::out_of_range& e) {
 			}
+		} else if (id == "flying") {
+			char boolVal = content.at(0);
+			if (boolVal == '0') World::PlayerData::Flying = false;
+			if (boolVal == '1') World::PlayerData::Flying = true;
 		}
 	}
 	#pragma endregion
 
+
+	//World file reading
 	#pragma region
 	ifstream world(sF + "/world.dat", std::ios::binary);
 

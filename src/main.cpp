@@ -235,52 +235,103 @@ void DefineLogicObjects() {
             } else {        //Survival + Creative walking
                 glm::vec3 previousPos = p->pos;
                 if (!onGround) {
-                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for diff grav phys
+                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for different physics.
                 }
-                if (velocity.y < -22.0f) velocity.y = -22.0f; // settign a max fall speed. val to change for diff grav phys
+                if (velocity.y < -22.0f) velocity.y = -22.0f; // max fall speed. val to change for different physics.
                 
                 glm::vec3 walkDir = glm::vec3(0.0f);
+                glm::vec3 acceleration = glm::vec3(0.0f);
+                float baseAccel;
 
-                // change these to an inWater bool 
-                // if we ever get water that isint just below a certain level
-                float pspeed;
                 if (p->pos.y <= 29){
-                    pspeed = 2.3f; // below water. val to change for diff grav phys
-                } else if (p->pos.y > 29){
-                    pspeed = 5.5f; // above water . val to change for diff grav phys
+                    baseAccel = 20.0f; // in water. val to change for different physics.
+                } else {
+                    baseAccel = 70.0f; // on ground. val to change for different physics.
                 }
-                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) pspeed *= 1.5f; // "running" multiplier (its a brisk walk at best)
-                if (Engine::keyDown[GLFW_KEY_W]) walkDir += forwardVec;
-                if (Engine::keyDown[GLFW_KEY_S]) walkDir -= forwardVec;
-                if (Engine::keyDown[GLFW_KEY_A]) walkDir += sideVec;
-                if (Engine::keyDown[GLFW_KEY_D]) walkDir -= sideVec;
 
-                if (glm::length(walkDir) > 0) {
-                    walkDir = glm::normalize(walkDir) * pspeed * Engine::deltaTick;
+                // Apply acceleration based on input
+                if (Engine::keyDown[GLFW_KEY_W] && onGround) {acceleration += forwardVec;}
+                else if (Engine::keyDown[GLFW_KEY_W] && !onGround) {acceleration += forwardVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_S] && onGround) {acceleration -= forwardVec;}
+                else if (Engine::keyDown[GLFW_KEY_S] && !onGround) {acceleration -= forwardVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_A] && onGround) {acceleration += sideVec;}
+                else if (Engine::keyDown[GLFW_KEY_A] && !onGround) {acceleration += sideVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_D] && onGround) {acceleration -= sideVec;}
+                else if (Engine::keyDown[GLFW_KEY_D] && !onGround) {acceleration -= sideVec * 0.5f;}
+
+                if (glm::length(acceleration) > 0) {
+                    acceleration = glm::normalize(acceleration) * baseAccel;
+                    if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL] && onGround) acceleration *= 1.5f;
                 }
-                p->pos.x += walkDir.x;
-                p->pos.z += walkDir.z;
+
+                // Apply friction when not accelerating or in water
+                float friction;
+                if (p->pos.y <= 29) {
+                    friction = 3.0f;  // In water. val to change for different physics.
+                } else {
+                    if (onGround) {
+                        friction = 20.0f;  // On ground. val to change for different physics.
+                    } else {
+                        friction = 1.0f;  // In air. val to change for different physics.
+                    }
+                }
+                glm::vec3 horizontalVel = glm::vec3(velocity.x, 0.0f, velocity.z);
+                float speedSq = glm::dot(horizontalVel, horizontalVel);
+                
+                if (speedSq > 0) {
+                    glm::vec3 frictionForce = -horizontalVel * friction * Engine::deltaTick;
+                    velocity += frictionForce;
+                }
+
+                // Apply acceleration to velocity
+                velocity += acceleration * Engine::deltaTick;
+
+                // Clamp horizontal speed
+                float maxSpeed;
+                if (p->pos.y <= 29){
+                    maxSpeed = 2.3f; //val to change for different physics.
+                } else {
+                    maxSpeed = 5.5f; //val to change for different physics.
+                }
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) maxSpeed *= 1.5f;
+                
+                horizontalVel = glm::vec3(velocity.x, 0.0f, velocity.z);
+                if (glm::length(horizontalVel) > maxSpeed) {
+                    horizontalVel = glm::normalize(horizontalVel) * maxSpeed;
+                    velocity.x = horizontalVel.x;
+                    velocity.z = horizontalVel.z;
+                }
+
+                // X axis
+                p->pos.x += velocity.x * Engine::deltaTick;
                 if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
                     p->pos.x = previousPos.x;
+                    velocity.x = 0; // Stop horizontal momentum on collision
                 }
+
+                // Z axis
+                p->pos.z += velocity.z * Engine::deltaTick;
                 if (isColliding(p->pos.x, previousPos.y, p->pos.z)) {
                     p->pos.z = previousPos.z;
+                    velocity.z = 0; // Stop horizontal momentum on collision
                 }
+
+                // Y axis
                 p->pos.y += velocity.y * Engine::deltaTick;
                 onGround = false;
                 if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
                     if (velocity.y < 0) { // Moving down
                         p->pos.y = floor(previousPos.y) + 0.6f; // snap to ground
                         onGround = true;
-                        velocity.y = 0;
                     } else { // moving up
                         p->pos.y = previousPos.y;
-                        velocity.y = 0;
                     }
+                    velocity.y = 0;
                 }
+
                 // jumping
                 if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
-                    velocity.y = 10.3f; // jump speed. val to change for diff grav phys
+                    velocity.y = 10.3f; // jump speed. val to change for different physics.
                     onGround = false;
                 }
             }

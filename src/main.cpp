@@ -162,6 +162,8 @@ void DefineLogicObjects() {
 
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
 
+        float waterLevel = 29 + 6/16.0f;
+
         //Temp Camera Rotation
         float rotSpeed = 90*Engine::deltaTick;
         if (Engine::cursorEnabled) {
@@ -235,7 +237,9 @@ void DefineLogicObjects() {
             } else {        //Survival + Creative walking
                 glm::vec3 previousPos = p->pos;
                 if (!onGround) {
-                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for different physics.
+                    float gravAccel = 35;
+                    // if (p->pos.y <= waterLevel) gravAccel *= .5;
+                    velocity.y -= gravAccel * Engine::deltaTick; // gravity. val to change for different physics.
                 }
                 if (velocity.y < -22.0f) velocity.y = -22.0f; // max fall speed. val to change for different physics.
                 
@@ -243,7 +247,7 @@ void DefineLogicObjects() {
                 glm::vec3 acceleration = glm::vec3(0.0f);
                 float baseAccel;
 
-                if (p->pos.y <= 29){
+                if (p->pos.y <= waterLevel){
                     baseAccel = 20.0f; // in water. val to change for different physics.
                 } else {
                     baseAccel = 70.0f; // on ground. val to change for different physics.
@@ -266,7 +270,7 @@ void DefineLogicObjects() {
 
                 // Apply friction when not accelerating or in water
                 float friction;
-                if (p->pos.y <= 29) {
+                if (p->pos.y <= waterLevel) {
                     friction = 3.0f;  // In water. val to change for different physics.
                 } else {
                     if (onGround) {
@@ -275,7 +279,7 @@ void DefineLogicObjects() {
                         friction = 1.0f;  // In air. val to change for different physics.
                     }
                 }
-                glm::vec3 horizontalVel = glm::vec3(velocity.x, 0.0f, velocity.z);
+                glm::vec3 horizontalVel = glm::vec3(velocity.x, velocity.y, velocity.z);
                 float speedSq = glm::dot(horizontalVel, horizontalVel);
                 
                 if (speedSq > 0) {
@@ -331,8 +335,13 @@ void DefineLogicObjects() {
 
                 // jumping
                 if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
-                    velocity.y = 10.3f; // jump speed. val to change for different physics.
+                    velocity.y = 10.5f; // jump speed. val to change for different physics.
                     onGround = false;
+                }
+
+                //swimming upward
+                if (p->pos.y <= waterLevel && Engine::keyDown[GLFW_KEY_SPACE]) {
+                    velocity.y = 5.5f; // swim speed. val to change for different physics.
                 }
             }
         }
@@ -442,7 +451,6 @@ void defineMenus () {
     GUI->elements.push_back(Crosshair);
 
     GUI->activeStates = vector<GameState::State> {GameState::State::PLAYING, GameState::State::PAUSE};
-    GUI->visible = true;
     World::menus["GUI"] = GUI;
     #pragma endregion
 }

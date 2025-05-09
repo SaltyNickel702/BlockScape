@@ -1,12 +1,14 @@
 #version 330 core
 layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 UVin;
+layout (location = 2) in float charIn;
 
 uniform mat4 model;
 uniform vec4 screen;
 uniform float time;
 
 out vec2 UV;
+out float charNum;
 
 void main()
 {
@@ -18,4 +20,5 @@ void main()
     gl_Position = vec4(mapToScreen.xy,0,1);
 
     UV = UVin;
+    charNum = charIn;
 }

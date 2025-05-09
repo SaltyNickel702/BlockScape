@@ -94,6 +94,7 @@
 		"__tree": "cpp",
 		"__verbose_abort": "cpp",
 		"bitset": "cpp",
-		"mutex": "cpp"
+		"mutex": "cpp",
+		"codecvt": "cpp"
 	}
 }

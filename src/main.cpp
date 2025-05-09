@@ -74,33 +74,77 @@ void DefineLogicObjects() {
 
         for (Menu* m : menus) {
             if (!(m->visible || find(m->activeStates.begin(),m->activeStates.end(),GameState::currentState) != m->activeStates.end())) continue;
-            for (Image* i : m->images) {
-                i->imgMesh->draw();
-            }
-            for (Button* b : m->buttons) {
-                b->images.at(b->currentImg)->imgMesh->draw();
-            }
-            for (Text* t : m->texts) {
-                t->mesh->draw();
-            }
-            
-            if (!Engine::cursorEnabled) continue;
-            for (Button* b : m->buttons) {
-                glm::vec2 c = Engine::cursorPos;
-                glm::vec2 p = b->images.at(b->currentImg)->pos;
-                glm::vec2 d = b->images.at(b->currentImg)->dim;
-                if (c.x >= p.x - .5*d.x && c.x <= p.x + .5*d.x && c.y >= p.y - .5*d.y && c.y <= p.y + .5*d.y) {
-                    UI::hoveringOverButton = true;
+            if (m->onTick) m->onTick();
+
+
+            for (Element* e : m->elements) {
+                Textbox* tb = dynamic_cast<Textbox*>(e);
+
+                if (tb) { //editting textboxes
+                    Text* t = tb->text;
+                    if (t->editing) {
+                        bool update = false;
+                        if (Engine::keyDownTick[GLFW_KEY_BACKSPACE] && t->text.size() > 0) {
+                            t->text.pop_back();
+
+                            update = true;
+                        }
+                        if (Engine::keyDownTick[GLFW_KEY_SPACE] && t->text.size() < tb->maxCharacterLength) {
+                            t->text.push_back(' ');
+                            update = true;
+                        } 
+                        for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
+                            if (Engine::keyDownTick[i]) {
+                                if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
+                                    if (t->text.size() < tb->maxCharacterLength) {
+                                        t->text.push_back((char)i);
+                                        update = true;
+                                    }   
+                                }
+                            }
+                        }
+                        if (update) t->genMesh();
+
+
+                        //Cursor Position Thing
+                        t->elapsedTime += Engine::deltaTick;
+                        if (t->elapsedTime >= 1/t->cursorTickRate) {
+                            t->elapsedTime = 0;
+                            t->cursorVisible ^= true; //flips value
+                            t->genMesh();
+                        }
+                    } else if (t->cursorVisible) {
+                        t->cursorVisible = false;
+                        t->genMesh();
+                    };
+                }
+
+                e->draw();
+
+                if (!Engine::cursorEnabled || !e->clickable) continue;
+                bool clicked = false;
+                if (e->mouseOver()) {
+                    hoveringOverButton = true;
+                    if (!e->hovering) {
+                        e->hovering = true;
+                        e->onHover();
+                    }
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-                        Engine::tickQueue.push_back(b->onClick);
+                        clicked = true;
+                        e->onClick();
+                        if (tb) {
+                            tb->text->editing = true;
+                            tb->text->cursorVisible = true;
+                            tb->text->genMesh();
+                        }
                     }
-                    if (!b->hovering) {
-                        b->hovering = true;
-                        Engine::tickQueue.push_back(b->onHover);
-                    }
-                } else if (b->hovering) {
-                    b->hovering = false;
-                    Engine::tickQueue.push_back(b->onLeave);
+                } else if (e->hovering) {
+                    e->hovering = false;
+                    e->onLeave();
+                }
+
+                if (tb && Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT] && !clicked) { //clicked something else
+                    tb->text->editing = false;
                 }
             }
         }
@@ -117,6 +161,8 @@ void DefineLogicObjects() {
         using namespace World::PlayerData;
 
         LObject* p = &World::Player; //shortcut for not having to write World::Player each time; to access player attributes, use p->attribute, not p.attribute
+
+        float waterLevel = 29 + 6/16.0f;
 
         //Temp Camera Rotation
         float rotSpeed = 90*Engine::deltaTick;
@@ -191,60 +237,118 @@ void DefineLogicObjects() {
             } else {        //Survival + Creative walking
                 glm::vec3 previousPos = p->pos;
                 if (!onGround) {
-                    velocity.y -= 35.0f * Engine::deltaTick; // gravity. val to change for diff grav phys
+                    float gravAccel = 35;
+                    // if (p->pos.y <= waterLevel) gravAccel *= .5;
+                    velocity.y -= gravAccel * Engine::deltaTick; // gravity. val to change for different physics.
                 }
-                if (velocity.y < -22.0f) velocity.y = -22.0f; // settign a max fall speed. val to change for diff grav phys
+                if (velocity.y < -22.0f) velocity.y = -22.0f; // max fall speed. val to change for different physics.
                 
                 glm::vec3 walkDir = glm::vec3(0.0f);
+                glm::vec3 acceleration = glm::vec3(0.0f);
+                float baseAccel;
 
-                // change these to an inWater bool 
-                // if we ever get water that isint just below a certain level
-                float pspeed;
+                if (p->pos.y <= waterLevel){
+                    baseAccel = 20.0f; // in water. val to change for different physics.
+                } else {
+                    baseAccel = 70.0f; // on ground. val to change for different physics.
+                }
+
+                // Apply acceleration based on input
+                if (Engine::keyDown[GLFW_KEY_W] && onGround) {acceleration += forwardVec;}
+                else if (Engine::keyDown[GLFW_KEY_W] && !onGround) {acceleration += forwardVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_S] && onGround) {acceleration -= forwardVec;}
+                else if (Engine::keyDown[GLFW_KEY_S] && !onGround) {acceleration -= forwardVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_A] && onGround) {acceleration += sideVec;}
+                else if (Engine::keyDown[GLFW_KEY_A] && !onGround) {acceleration += sideVec * 0.5f;}
+                if (Engine::keyDown[GLFW_KEY_D] && onGround) {acceleration -= sideVec;}
+                else if (Engine::keyDown[GLFW_KEY_D] && !onGround) {acceleration -= sideVec * 0.5f;}
+
+                if (glm::length(acceleration) > 0) {
+                    acceleration = glm::normalize(acceleration) * baseAccel;
+                    if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL] && onGround) acceleration *= 1.5f;
+                }
+
+                // Apply friction when not accelerating or in water
+                float friction;
+                if (p->pos.y <= waterLevel) {
+                    friction = 3.0f;  // In water. val to change for different physics.
+                } else {
+                    if (onGround) {
+                        friction = 20.0f;  // On ground. val to change for different physics.
+                    } else {
+                        friction = 1.0f;  // In air. val to change for different physics.
+                    }
+                }
+                glm::vec3 horizontalVel = glm::vec3(velocity.x, velocity.y, velocity.z);
+                float speedSq = glm::dot(horizontalVel, horizontalVel);
+                
+                if (speedSq > 0) {
+                    glm::vec3 frictionForce = -horizontalVel * friction * Engine::deltaTick;
+                    velocity += frictionForce;
+                }
+
+                // Apply acceleration to velocity
+                velocity += acceleration * Engine::deltaTick;
+
+                // Clamp horizontal speed
+                float maxSpeed;
                 if (p->pos.y <= 29){
-                    pspeed = 2.3f; // below water. val to change for diff grav phys
-                } else if (p->pos.y > 29){
-                    pspeed = 5.5f; // above water . val to change for diff grav phys
+                    maxSpeed = 2.3f; //val to change for different physics.
+                } else {
+                    maxSpeed = 5.5f; //val to change for different physics.
                 }
-                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) pspeed *= 1.5f; // "running" multiplier (its a brisk walk at best)
-                if (Engine::keyDown[GLFW_KEY_W]) walkDir += forwardVec;
-                if (Engine::keyDown[GLFW_KEY_S]) walkDir -= forwardVec;
-                if (Engine::keyDown[GLFW_KEY_A]) walkDir += sideVec;
-                if (Engine::keyDown[GLFW_KEY_D]) walkDir -= sideVec;
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) maxSpeed *= 1.5f;
+                
+                horizontalVel = glm::vec3(velocity.x, 0.0f, velocity.z);
+                if (glm::length(horizontalVel) > maxSpeed) {
+                    horizontalVel = glm::normalize(horizontalVel) * maxSpeed;
+                    velocity.x = horizontalVel.x;
+                    velocity.z = horizontalVel.z;
+                }
 
-                if (glm::length(walkDir) > 0) {
-                    walkDir = glm::normalize(walkDir) * pspeed * Engine::deltaTick;
-                }
-                p->pos.x += walkDir.x;
-                p->pos.z += walkDir.z;
+                // X axis
+                p->pos.x += velocity.x * Engine::deltaTick;
                 if (isColliding(p->pos.x, previousPos.y, previousPos.z)) {
                     p->pos.x = previousPos.x;
+                    velocity.x = 0; // Stop horizontal momentum on collision
                 }
+
+                // Z axis
+                p->pos.z += velocity.z * Engine::deltaTick;
                 if (isColliding(p->pos.x, previousPos.y, p->pos.z)) {
                     p->pos.z = previousPos.z;
+                    velocity.z = 0; // Stop horizontal momentum on collision
                 }
+
+                // Y axis
                 p->pos.y += velocity.y * Engine::deltaTick;
                 onGround = false;
                 if (isColliding(p->pos.x, p->pos.y, p->pos.z)) {
                     if (velocity.y < 0) { // Moving down
                         p->pos.y = floor(previousPos.y) + 0.6f; // snap to ground
                         onGround = true;
-                        velocity.y = 0;
                     } else { // moving up
                         p->pos.y = previousPos.y;
-                        velocity.y = 0;
                     }
+                    velocity.y = 0;
                 }
+
                 // jumping
                 if (onGround && Engine::keyDown[GLFW_KEY_SPACE]) {
-                    velocity.y = 10.0f; // jump speed. val to change for diff grav phys
+                    velocity.y = 10.5f; // jump speed. val to change for different physics.
                     onGround = false;
+                }
+
+                //swimming upward
+                if (p->pos.y <= waterLevel && Engine::keyDown[GLFW_KEY_SPACE]) {
+                    velocity.y = 5.5f; // swim speed. val to change for different physics.
                 }
             }
         }
 
         //Block Placing
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
-            glm::vec3* bcPtr = World::Camera.raycast(6,.1);
+            glm::vec3* bcPtr = World::Camera.raycast(6,.02,false);
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
@@ -252,7 +356,12 @@ void DefineLogicObjects() {
             }
         } 
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
-            World::setBlock(p->pos.x,p->pos.y,p->pos.z,8);
+            glm::vec3* bcPtr = World::Camera.raycast(6,.02,true);
+            if (bcPtr != nullptr) {
+                glm::vec3 bc = *bcPtr;
+                delete bcPtr;
+                World::setBlock(bc.x,bc.y,bc.z,5);
+            }
         }
     };
     World::Player.activeStates = vector<GameState::State> {GameState::State::PLAYING};
@@ -278,23 +387,75 @@ void DefineLogicObjects() {
 void defineMenus () {
     using namespace UI;
 
+    Image* menuBackground = new Image(*World::textures["menuBackground"], Engine::width/2, Engine::height/2, 800, 600);
+    menuBackground->center();
+
+    //Main Menu
+    #pragma region
+    Menu* mainMenu = new Menu();
+
+    Text* titleText = new Text(World::fonts["main"],Engine::width/2, Engine::height/3);
+    titleText->setHeight(200);
+    titleText->setText("BlockScape");
+    titleText->center();
+    mainMenu->elements.push_back(titleText);
     
-    Menu* mainMenu = new Menu(); //Temporary
-    
-    Image* start = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/2,46*10,16*10);
-    Button* startBtn = new Button(start);
+    Image* startBtn = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
+    startBtn->clickable = true;
     startBtn->onClick = [&]() {
+        GameState::currentState = GameState::State::LOAD_SELECT;
+    };
+    startBtn->center();
+    mainMenu->elements.push_back(startBtn);
+
+    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
+    World::menus["mainMenu"] = mainMenu;
+    #pragma endregion
+
+    //Load Method Selection
+    #pragma region
+    Menu* loadSelect = new Menu();
+
+    loadSelect->elements.push_back(menuBackground);
+
+    Text* newWorldBtn = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 - 50);
+    newWorldBtn->setText("New World");
+    newWorldBtn->setHeight(50);
+    newWorldBtn->center();
+    newWorldBtn->clickable = true;
+    newWorldBtn->onClick = [&]() {
+        GameState::currentState = GameState::State::LOAD_NEW;
+    };
+    loadSelect->elements.push_back(newWorldBtn);
+
+    Text* loadWorldBtn = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 + 50);
+    loadWorldBtn->setText("Load World");
+    loadWorldBtn->setHeight(50);
+    loadWorldBtn->center();
+    loadWorldBtn->clickable = true;
+    loadWorldBtn->onClick = [&]() {
+        // GameState::currentState = GameState::State::LOAD_FROM_SAVE;
         World::loadFromSave("newWorld");
         GameState::currentState = GameState::State::PLAYING;
     };
-    mainMenu->buttons.push_back(startBtn);
-    mainMenu->activeStates = vector<GameState::State> {GameState::State::MENU};
+    loadSelect->elements.push_back(loadWorldBtn);
 
-    Text* text = new Text(World::fonts["main"], Engine::width/2,Engine::height/2);
-    text->setText("Testing");
-    mainMenu->texts.push_back(text);
+    loadSelect->activeStates = vector<GameState::State> {GameState::State::LOAD_SELECT};
+    World::menus["loadSelect"] = loadSelect;
+    #pragma endregion
 
-    World::menus["mainMenu"] = mainMenu;
+
+    //GUI
+    #pragma region
+    Menu* GUI = new Menu();
+
+    Image* Crosshair = new Image(*World::textures["Crosshair"],Engine::width/2, Engine::height/2, 16, 16);
+    Crosshair->center();
+    GUI->elements.push_back(Crosshair);
+
+    GUI->activeStates = vector<GameState::State> {GameState::State::PLAYING, GameState::State::PAUSE};
+    World::menus["GUI"] = GUI;
+    #pragma endregion
 }
 
 void AddToggleKeybinds () { //things like menu opening
@@ -374,6 +535,21 @@ void genShaders () {
 
         glUniform1f(glGetUniformLocation(menuShader->ID,"time"),glfwGetTime());
     };
+
+    Shader* textShader = new Shader("textVert.glsl", "textFrag.glsl");
+    World::shaders["text"] = textShader;
+    textShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+        glDisable(GL_DEPTH_TEST);
+        Shader* textShader = World::shaders["text"];
+
+        glm::mat4 model(1);
+        model = glm::translate(model,pos);
+        glUniformMatrix4fv(glGetUniformLocation(textShader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        glUniform4f(glGetUniformLocation(textShader->ID, "screen"), Engine::width, Engine::height,1,1);
+
+        glUniform1f(glGetUniformLocation(textShader->ID,"time"), glfwGetTime());
+    };
 }
 
 void genTextures () {
@@ -381,13 +557,25 @@ void genTextures () {
 
     unsigned int* atlas = new unsigned int(Engine::genTextureAtlas(blockTextures));
     World::textures["atlas"] = atlas;
+    
+    unsigned int* menuBackground = new unsigned int(Engine::genTexture("MenuBackground.png"));
+    World::textures["menuBackground"] = menuBackground;
 
     unsigned int* startButton = new unsigned int(Engine::genTexture("StartButton.png"));
     World::textures["startButton"] = startButton;
+    
+    unsigned int* textbox = new unsigned int(Engine::genTexture("Textbox.png"));
+    World::textures["Textbox"] = textbox;
+
+    unsigned int* crosshair = new unsigned int(Engine::genTexture("Crosshair1.png"));
+    World::textures["Crosshair"] = crosshair;
+
+
 
     UI::Font* mainFont = new UI::Font("Font.png", 16, 30);
     mainFont->chars = "abcdefghijklmnopqrstuvwxyz";
     World::fonts["main"] = mainFont;
+
 }
 
 int main () {
@@ -405,12 +593,13 @@ int main () {
     genTextures();
     genShaders();
 
+
+    cout << "Defining Menus" << endl;
     defineMenus();
     // World::menus["mainMenu"]->visible = true;
 
     // World::loadNew(495804);
     // World::loadNew(54123453);
-    World::loadFromSave("newWorld");
     // World::loadNew(time(0));
 
     if (GameState::currentState == GameState::State::PLAYING) {

@@ -341,7 +341,7 @@ void DefineLogicObjects() {
 
                 //swimming upward
                 if (p->pos.y <= waterLevel && Engine::keyDown[GLFW_KEY_SPACE]) {
-                    velocity.y = 5.5f; // swim speed. val to change for different physics.
+                    velocity.y = 4.0f; // swim speed. val to change for different physics.
                 }
             }
         }

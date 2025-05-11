@@ -1,3 +1,8 @@
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h> //This and above is important for sound to work
+#include "Sound.h" //Only put this where you need to play sounds (not important here)
+
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
@@ -578,6 +583,18 @@ void genTextures () {
 
 }
 
+void initSound(){
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        std::cerr << "SDL_Init error: " << SDL_GetError() << "\n";
+        return;
+    }
+
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "Mix_OpenAudio error: " << Mix_GetError() << "\n";
+        return;
+    }
+}
+
 int main () {
     //Load Game First
     //Non- OpenGL things first
@@ -589,10 +606,12 @@ int main () {
     cout << "Initializing GLFW" << endl;
     Engine::init(1200,800);
 
-
     genTextures();
     genShaders();
 
+    initSound(); //Important for sound
+    loadSounds();      //I'm not sure where
+    playSound("goofy"); //to put these
 
     cout << "Defining Menus" << endl;
     defineMenus();

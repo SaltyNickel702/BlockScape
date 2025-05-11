@@ -95,6 +95,10 @@
 		"__verbose_abort": "cpp",
 		"bitset": "cpp",
 		"mutex": "cpp",
-		"codecvt": "cpp"
+		"codecvt": "cpp",
+		"chrono": "cpp",
+		"filesystem": "cpp",
+		"forward_list": "cpp",
+		"queue": "cpp"
 	}
 }

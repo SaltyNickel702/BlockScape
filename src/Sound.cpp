@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <thread>
 
 using namespace std;
 
@@ -32,8 +33,15 @@ void playSound(string sound){
 void playSound(string sound, float volume){
     Mix_Chunk* soundEffect = Mix_LoadWAV("sound_effect.wav");
     Mix_VolumeChunk(soundEffect, MIX_MAX_VOLUME / 2); // Set sound effect volume to 50%
+    while (Mix_PlayingMusic()) {
+        SDL_Delay(100);
+    }
 }
 
 void changeVolume(float volume){
     Mix_VolumeMusic(MIX_MAX_VOLUME / (100.0 / volume));
+}
+
+void loopSound(string sound){
+    Mix_PlayMusic(loadedSounds[sound], -1);
 }

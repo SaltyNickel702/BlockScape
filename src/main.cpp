@@ -610,8 +610,8 @@ int main () {
     genShaders();
 
     initSound(); //Important for sound
-    loadSounds();      //I'm not sure where
-    playSound("goofy"); //to put these
+    loadSounds();       //I'm not sure where
+    loopSound("goofy"); //to put these
 
     cout << "Defining Menus" << endl;
     defineMenus();

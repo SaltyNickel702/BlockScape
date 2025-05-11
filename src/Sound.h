@@ -6,6 +6,7 @@
 void loadSounds();
 void playSound(std::string sound);
 void playSound(std::string, float volume); //for louder or quieter sounds
+void loopSound(std::string sound);
 void changeVolume(float volume);
 
 #endif

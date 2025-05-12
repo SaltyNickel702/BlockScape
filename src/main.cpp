@@ -609,9 +609,11 @@ int main () {
     genTextures();
     genShaders();
 
+    //We should create a Class Sound that has initSound and loadSounds as static methods
+    //For each instance of a Sound, have methods for looping
     initSound(); //Important for sound
     loadSounds();       //I'm not sure where
-    loopSound("goofy"); //to put these
+    // loopSound("goofy"); //to put these
 
     cout << "Defining Menus" << endl;
     defineMenus();

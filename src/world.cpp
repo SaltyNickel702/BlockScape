@@ -11,6 +11,7 @@ map<string, Shader*> World::shaders;
 map<string, unsigned int*> World::textures;
 map<string, UI::Menu*> World::menus;
 map<string, UI::Font*> World::fonts;
+map<string, Sound*> World::sounds;
 
 vector<LObject*> World::LogicObjects;
 
@@ -97,6 +98,7 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 
 	int* blck = getBlock(x,y,z);
 	if (*blck == block) return;
+	int oldBlock = *blck;
 	*blck = block;
 	
 	//Update Current Chunk
@@ -126,6 +128,12 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 		c->genMeshParam();
 		chunkMeshGenQueue.push_back(c->pos);
 	}
+
+	Block* oldBlockT = &blockTypes[oldBlock];
+	if (oldBlockT->breakSound) oldBlockT->breakSound->play();
+	
+	Block* newBlockT = &blockTypes[block];
+	if (newBlockT->placeSound) newBlockT->placeSound->play();
 }
 
 

@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include "Sound.h"
 
 using namespace std;
 
@@ -22,6 +23,9 @@ class Block {
         unsigned int textureBottom;
 
         bool tranparent;
+
+        Sound* breakSound;
+        Sound* placeSound;
 };
 
 

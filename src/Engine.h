@@ -28,6 +28,7 @@
 #include "Logic.h"
 #include "UI.h"
 #include "GameState.h"
+#include "Sound.h"
 
 
 using namespace std;

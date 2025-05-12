@@ -30,6 +30,7 @@ namespace World {
     extern map<string, unsigned int*> textures;
     extern map<string, UI::Menu*> menus;
     extern map<string, UI::Font*> fonts;
+    extern map<string, Sound*> sounds;
 
     extern vector<Model*> models;
     extern vector<LObject*> LogicObjects;

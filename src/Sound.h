@@ -3,10 +3,22 @@
 
 #include <string>
 
-void loadSounds();
-void playSound(std::string sound);
-void playSound(std::string, float volume); //for louder or quieter sounds
-void loopSound(std::string sound);
-void changeVolume(float volume);
+class Sound {
+    public:
+        Sound () = delete;
+        Sound (std::string fileName);
+        Mix_Music* mixMusic;
+
+        void play ();
+        void play (int loops);
+        void loop ();
+
+        static void setVolume (float volume);
+};
+
+// void loadSounds();
+// void playSound(std::string sound);
+// void loopSound(std::string sound);
+// void changeVolume(float volume);
 
 #endif

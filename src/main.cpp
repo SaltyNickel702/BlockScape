@@ -409,6 +409,7 @@ void defineMenus () {
     startBtn->clickable = true;
     startBtn->onClick = [&]() {
         GameState::currentState = GameState::State::LOAD_SELECT;
+        World::sounds["goofy"]->play();
     };
     startBtn->center();
     mainMenu->elements.push_back(startBtn);
@@ -583,6 +584,11 @@ void genTextures () {
 
 }
 
+void loadSounds () {
+    Sound* goofySound = new Sound("goofy.mp3");
+    World::sounds["goofy"] = goofySound;
+}
+
 void initSound(){
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         std::cerr << "SDL_Init error: " << SDL_GetError() << "\n";
@@ -611,9 +617,10 @@ int main () {
 
     //We should create a Class Sound that has initSound and loadSounds as static methods
     //For each instance of a Sound, have methods for looping
-    initSound(); //Important for sound
-    loadSounds();       //I'm not sure where
+    // initSound(); //Important for sound
+    // loadSounds();       //I'm not sure where
     // loopSound("goofy"); //to put these
+    loadSounds();
 
     cout << "Defining Menus" << endl;
     defineMenus();

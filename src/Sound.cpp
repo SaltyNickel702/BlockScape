@@ -1,6 +1,4 @@
 #include "Sound.h"
-#include <SDL.h>
-#include <SDL_mixer.h>
 #include <iostream>
 #include <string>
 #include <map>
@@ -22,8 +20,8 @@ Sound::Sound (string fileName) {
 void Sound::play () {
     Mix_PlayMusic(mixMusic, 1);
 }
-void Sound::play (int loop) {
-    Mix_PlayMusic(mixMusic, loop);
+void Sound::play (int loops) {
+    Mix_PlayMusic(mixMusic, loops);
 }
 void Sound::loop () {
     Mix_PlayMusic(mixMusic, -1);

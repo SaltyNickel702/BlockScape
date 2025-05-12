@@ -15,10 +15,11 @@ class Sound {
         void play (int loops);
         void loop ();
 
+        static void init ();
         static void setVolume (float volume);
 };
 
-// void loadSounds();
+// void loadSounds2();
 // void playSound(std::string sound);
 // void loopSound(std::string sound);
 // void changeVolume(float volume);

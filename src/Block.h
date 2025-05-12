@@ -11,7 +11,7 @@ using namespace std;
 class Block {
     public:
         Block() {};
-        Block(string name, int type) {
+        Block(string name, int type) : breakSound(nullptr), placeSound(nullptr), tranparent(false) {
             displayName = name;
             blockID = type;
         }

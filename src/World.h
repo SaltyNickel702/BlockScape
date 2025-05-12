@@ -39,6 +39,7 @@ namespace World {
     Chunk* getChunkByCC (int cx, int cy); //chunk coords;
     int* getBlock (float x, float y, float z);
     void setBlock (float x, float y, float z, int block);
+    void placeBlock (float x, float y, float z, int block); //same as setblock, use when player is placing things
     
     namespace Settings {
         extern float FOV;

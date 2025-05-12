@@ -18,6 +18,7 @@ Sound::Sound (string fileName) {
 
 }
 void Sound::play () {
+    // cout << "what's good" << endl;
     Mix_PlayMusic(mixMusic, 1);
 }
 void Sound::play (int loops) {
@@ -30,12 +31,23 @@ void Sound::loop () {
 void Sound::setVolume (float volume) {
     Mix_VolumeMusic(MIX_MAX_VOLUME / (100.0 / volume));
 }
+void Sound::init () {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        std::cerr << "SDL_Init error: " << SDL_GetError() << "\n";
+        return;
+    }
+
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "Mix_OpenAudio error: " << Mix_GetError() << "\n";
+        return;
+    }
+}
 
 // int soundSize = 1; 
 // string sounds[1] = {"goofy"}; //List all sounds with their name of files here (convert wav files to mp3 if needed)
 // map<string, Mix_Music*> loadedSounds;
 
-// void loadSounds(){
+// void loadSounds2(){
 //     for(int i = 0;i < soundSize;i++){ //Loads every sound first so there's no delay for them to play (in theory)
 //         string soundPath = "./assets/sounds/" + sounds[i] + ".mp3";
 

@@ -19,6 +19,7 @@ void DefineBlocks() {
     grassBlock.textureSide = 0;
     grassBlock.textureTop = 1;
     grassBlock.textureBottom = 2;
+    grassBlock.breakSound = World::sounds["goofy"];
     World::blockTypes[1] = grassBlock;
 
     Block dirtBlock("Dirt", 2);
@@ -142,6 +143,7 @@ void DefineLogicObjects() {
                             tb->text->cursorVisible = true;
                             tb->text->genMesh();
                         }
+                        Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT] = false; //other wise doesn't update until next tick
                     }
                 } else if (e->hovering) {
                     e->hovering = false;
@@ -357,7 +359,7 @@ void DefineLogicObjects() {
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
-                World::setBlock(bc.x,bc.y,bc.z,0);
+                World::placeBlock(bc.x,bc.y,bc.z,0);
             }
         } 
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_RIGHT]) {
@@ -365,7 +367,7 @@ void DefineLogicObjects() {
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
-                World::setBlock(bc.x,bc.y,bc.z,5);
+                World::placeBlock(bc.x,bc.y,bc.z,5);
             }
         }
     };
@@ -409,7 +411,6 @@ void defineMenus () {
     startBtn->clickable = true;
     startBtn->onClick = [&]() {
         GameState::currentState = GameState::State::LOAD_SELECT;
-        World::sounds["goofy"]->play();
     };
     startBtn->center();
     mainMenu->elements.push_back(startBtn);
@@ -585,6 +586,8 @@ void genTextures () {
 }
 
 void loadSounds () {
+    Sound::init();
+
     Sound* goofySound = new Sound("goofy.mp3");
     World::sounds["goofy"] = goofySound;
 }
@@ -602,25 +605,28 @@ void initSound(){
 }
 
 int main () {
-    //Load Game First
-    //Non- OpenGL things first
-    DefineBlocks();
-    DefineLogicObjects();
-    AddToggleKeybinds();
-
     //Initialize OpenGL
     cout << "Initializing GLFW" << endl;
     Engine::init(1200,800);
 
-    genTextures();
-    genShaders();
+    
 
     //We should create a Class Sound that has initSound and loadSounds as static methods
     //For each instance of a Sound, have methods for looping
     // initSound(); //Important for sound
-    // loadSounds();       //I'm not sure where
+    // loadSounds2();       //I'm not sure where
     // loopSound("goofy"); //to put these
+
+    //Assets
+    genTextures();
+    genShaders();
     loadSounds();
+
+
+    //Define Game Objects
+    DefineBlocks();
+    DefineLogicObjects();
+    AddToggleKeybinds();
 
     cout << "Defining Menus" << endl;
     defineMenus();

@@ -128,14 +128,19 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 		c->genMeshParam();
 		chunkMeshGenQueue.push_back(c->pos);
 	}
-
-	Block* oldBlockT = &blockTypes[oldBlock];
-	if (oldBlockT->breakSound) oldBlockT->breakSound->play();
-	
-	Block* newBlockT = &blockTypes[block];
-	if (newBlockT->placeSound) newBlockT->placeSound->play();
 }
+void World::placeBlock (float fx, float fy, float fz, int block) {
+	int* blckOldID = getBlock(fx,fy,fz);
+	if (blckOldID) {
+		Block* blckOld = &World::blockTypes[*blckOldID];
+		if (blckOld && blckOld->breakSound) blckOld->breakSound->play();
+	}
 
+	Block* blckNew = &World::blockTypes[block];
+	if (blckNew && blckNew->placeSound) blckNew->placeSound->play();
+
+	setBlock(fx,fy,fz,block);
+}
 
 
 //World Management Stuff

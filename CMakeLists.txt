@@ -13,7 +13,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
 
-add_executable(out ${SOURCES}) # add WIN32 to create the windows application w/out console
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows") #stuff before adding executable
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_SOURCE_DIR}/app_icon.rc")
+endif()
+
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_executable(out WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS}) # add WIN32 to create the windows application w/out console
+else()
+    add_executable(out ${SOURCES}) # add WIN32 to create the windows application w/out console
+endif()
+
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/include/"
@@ -46,11 +56,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         "${CMAKE_SOURCE_DIR}/statLib/SDL2"
         "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer"
     )
-    foreach(flag_var
-            CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG)
-        string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-    endforeach()
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/app_icon.rc")
 else()
     target_link_libraries(out
         "-framework CoreFoundation"

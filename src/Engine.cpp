@@ -181,6 +181,21 @@ namespace Engine {
 		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		// #endif
 
+		//Loading window Icon
+		int Iwidth, Iheight, Ichannels;
+		unsigned char* pixels = stbi_load("assets/textures/BlockScapeLogo.png", &Iwidth, &Iheight, &Ichannels, 4);
+
+		if (pixels) {
+			GLFWimage images[1];
+			images[0].width = Iwidth;
+			images[0].height = Iheight;
+			images[0].pixels = pixels;
+			glfwSetWindowIcon(window, 1, images);
+			stbi_image_free(pixels);
+		} else {
+			printf("Failed to load icon image!\n");
+		}
+
 		return 0;
 	}
 

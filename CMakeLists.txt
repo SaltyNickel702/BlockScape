@@ -46,6 +46,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         "${CMAKE_SOURCE_DIR}/statLib/SDL2"
         "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer"
     )
+    foreach(flag_var
+            CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG)
+        string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+    endforeach()
 else()
     target_link_libraries(out
         "-framework CoreFoundation"

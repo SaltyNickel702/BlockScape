@@ -26,7 +26,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (PRODUCTION_BUILD)
         add_executable(BlockScape WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS}) # add WIN32 to create the windows application w/out console
     else()
-        add_executable(out ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS}) # add WIN32 to create the windows application w/out console
+        add_executable(out ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
     endif()
 else()
     add_executable(out ${SOURCES}) # add WIN32 to create the windows application w/out console

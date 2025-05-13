@@ -18,9 +18,10 @@ using namespace std;
 
 //Everything related to BlockScape
 namespace World {
-    void loadNew (int seed); //Load data into chunk files
+    void loadNew (string name, int seed); //Load data into chunk files
     int loadFromSave (string saveFolder); // returns 0 if success, -1 if failure
     void saveGame (string saveFolder);
+    void QuitWorld ();
 
     extern map<int, map<int,Chunk>> chunks;
 

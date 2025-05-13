@@ -144,6 +144,12 @@ void World::placeBlock (float fx, float fy, float fz, int block) {
 
 
 //World Management Stuff
+void World::QuitWorld () {
+	//Clean chunk data from chunks map
+	World::saveGame(saveName);
+}
+
+
 bool loadingChunks = false;
 vector<glm::vec2> World::chunkMeshGenQueue;
 vector<glm::vec2> World::chunkMeshDelQueue;
@@ -249,7 +255,8 @@ void worldSetup () { //called by the loading functions
 	chunkMeshGen->activeStates = vector<GameState::State> {GameState::State::PLAYING,GameState::State::PAUSE};
 }
 
-void World::loadNew (int seed) {
+void World::loadNew (string name,int seed) {
+	World::worldName = name;
 	World::seed = seed;
 	chunkLoader();
 

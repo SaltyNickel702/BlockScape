@@ -452,6 +452,62 @@ void defineMenus () {
     #pragma endregion
 
 
+    //Create new World
+    #pragma region 
+    Menu* newWorldSlct = new Menu();
+
+    Menu->elements.push_back(menuBackground);
+
+    
+    Textbox* worldName = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 - 30);
+    worldName->setHeight(30);
+    worldName->center();
+    newWorldSlct->elements.push_back(worldName);
+
+    Text* worldNamePrompt = new Text(World::fonts["main"], Engine::width/2 - worldName->maxCharacterLength * worldName->width, Engine::height/2 - 30);
+    worldNamePrompt->setText("World Name:");
+    worldNamePrompt->setHeight(30);
+    worldNamePrompt->center();
+    newWorldSlct->elements.push_back(worldNamePrompt);
+
+
+    Textbox* seedBox = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 + 30);
+    seedBox->setHeight(30);
+    seedBox->center();
+    newWorldSlct->elements.push_back(seedBox);
+
+    Text* seedPrompt = new Text(World::fonts["main"], Engine::width/2 - seedBox->maxCharacterLength * seedBox->width, Engine::height/2 + 30);
+    seedPrompt->setText("World Name:");
+    seedPrompt->setHeight(30);
+    seedPrompt->center();
+    newWorldSlct->elements.push_back(seedPrompt);
+
+
+    Text* createWorld = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 + 60);
+    createWorld->setText("Create World");
+    createWorld->setHeight(50);
+    createWorld->center();
+    createWorld->onClick = [&]() {
+        int seed;
+        try { //for stoi
+            int newSeed = stoi(seedBox->text);
+        } catch (const std::invalid_argument& e) {
+            srand(time(0));
+            seed = rand();
+        }
+        GameState::currentState = GameState::State::PLAYING;
+
+            World::loadNew(worldName->text,newSeed);
+    };
+    newWorldSlct->elements.push_back(createWorld);
+
+
+    newWorldSlct->activeStates = vector<GameState::State> {GameState::State::LOAD_NEW};
+    World::menus["loadNew"] = newWorldSlct;
+
+    #pragma endregion
+
+
     //GUI
     #pragma region
     Menu* GUI = new Menu();

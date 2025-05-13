@@ -18,6 +18,7 @@
 #include <ctime>
 #include <fstream>
 #include <filesystem>
+#include  <cstdlib>
 
 //Project Classes
 #include "Shader.h"

@@ -1,8 +1,4 @@
 #define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-#include <SDL2_mixer/SDL_mixer.h> //This and above is important for sound to work
-#include "Sound.h" //Only put this where you need to play sounds (not important here)
-
 #define STB_IMAGE_IMPLEMENTATION 
 #include "Engine.h" //includes all needed includes
 
@@ -488,6 +484,11 @@ void defineMenus () {
     createWorld->setHeight(50);
     createWorld->center();
     createWorld->onClick = [&]() {
+        string fileLocation = "./saves/" + worldName->text;
+        if (filesystem::exists(fileLocation)) {
+            return;
+        }
+
         int seed;
         try { //for stoi
             int newSeed = stoi(seedBox->text);

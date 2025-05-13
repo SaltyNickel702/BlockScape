@@ -18,7 +18,9 @@
 #include <ctime>
 #include <fstream>
 #include <filesystem>
-#include  <cstdlib>
+#include <cstdlib>
+#include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h>
 
 //Project Classes
 #include "Shader.h"

@@ -452,53 +452,57 @@ void defineMenus () {
     #pragma region 
     Menu* newWorldSlct = new Menu();
 
-    Menu->elements.push_back(menuBackground);
+    // newWorldSlct->elements.push_back(menuBackground);
 
     
     Textbox* worldName = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 - 30);
     worldName->setHeight(30);
     worldName->center();
+    worldName->setBackground(*World::textures["Textbox"]);
     newWorldSlct->elements.push_back(worldName);
 
-    Text* worldNamePrompt = new Text(World::fonts["main"], Engine::width/2 - worldName->maxCharacterLength * worldName->width, Engine::height/2 - 30);
+    Text* worldNamePrompt = new Text(World::fonts["main"], worldName->x, worldName->y);
     worldNamePrompt->setText("World Name:");
     worldNamePrompt->setHeight(30);
-    worldNamePrompt->center();
+    worldNamePrompt->setPos(worldNamePrompt->x - worldNamePrompt->text.size()*worldNamePrompt->cW, worldNamePrompt->y);
     newWorldSlct->elements.push_back(worldNamePrompt);
 
 
     Textbox* seedBox = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 + 30);
     seedBox->setHeight(30);
     seedBox->center();
+    seedBox->setBackground(*World::textures["Textbox"]);
     newWorldSlct->elements.push_back(seedBox);
 
-    Text* seedPrompt = new Text(World::fonts["main"], Engine::width/2 - seedBox->maxCharacterLength * seedBox->width, Engine::height/2 + 30);
-    seedPrompt->setText("World Name:");
+    Text* seedPrompt = new Text(World::fonts["main"], seedBox->x, seedBox->y);
+    seedPrompt->setText("Seed:");
     seedPrompt->setHeight(30);
-    seedPrompt->center();
+    seedPrompt->setPos(seedPrompt->x - seedPrompt->text.size()*seedPrompt->cW, seedPrompt->y);
     newWorldSlct->elements.push_back(seedPrompt);
 
 
-    Text* createWorld = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 + 60);
+    Text* createWorld = new Text(World::fonts["main"], Engine::width/2, Engine::height/2 + 70);
+    createWorld->clickable = true;
     createWorld->setText("Create World");
     createWorld->setHeight(50);
     createWorld->center();
     createWorld->onClick = [&]() {
-        string fileLocation = "./saves/" + worldName->text;
+        string fileLocation = "./saves/" + worldName->text->text;
+        cout << fileLocation << endl;
         if (filesystem::exists(fileLocation)) {
             return;
         }
 
-        int seed;
+        srand(time(0));
+        int newSeed = rand();
         try { //for stoi
-            int newSeed = stoi(seedBox->text);
+            // newSeed = stoi(seedBox->text->text);
         } catch (const std::invalid_argument& e) {
-            srand(time(0));
-            seed = rand();
+        } catch (const std::out_of_range& e) {
         }
         GameState::currentState = GameState::State::PLAYING;
 
-            World::loadNew(worldName->text,newSeed);
+        World::loadNew(worldName->text->text,newSeed);
     };
     newWorldSlct->elements.push_back(createWorld);
 

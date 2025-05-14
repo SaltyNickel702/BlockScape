@@ -256,7 +256,8 @@ void worldSetup () { //called by the loading functions
 }
 
 void World::loadNew (string name,int seed) {
-	World::worldName = name;
+	cout << name << " " << seed << endl;
+	World::saveName = name;
 	World::seed = seed;
 	chunkLoader();
 

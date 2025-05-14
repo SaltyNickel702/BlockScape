@@ -495,7 +495,6 @@ void defineMenus () {
         Textbox* seedBox = dynamic_cast<Textbox*>(World::menus["loadNew"]->getByID("seedBox"));
 
         string fileLocation = "./saves/" + worldName->text->text;
-        cout << fileLocation << endl;
         if (filesystem::exists(fileLocation)) {
             return;
         }

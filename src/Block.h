@@ -1,6 +1,6 @@
 #include <map>
 #include <string>
-#include "Sound.h"
+// #include "Sound.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ using namespace std;
 class Block {
     public:
         Block() {};
-        Block(string name, int type) : breakSound(nullptr), placeSound(nullptr), tranparent(false) {
+        Block(string name, int type) : tranparent(false) { //breakSound(nullptr), placeSound(nullptr)
             displayName = name;
             blockID = type;
         }
@@ -24,8 +24,8 @@ class Block {
 
         bool tranparent;
 
-        Sound* breakSound;
-        Sound* placeSound;
+        // Sound* breakSound;
+        // Sound* placeSound;
 };
 
 

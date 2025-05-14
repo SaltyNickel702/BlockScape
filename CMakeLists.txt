@@ -35,35 +35,35 @@ endif()
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/include/"
-    "${CMAKE_SOURCE_DIR}/include/SDL2"
-    "${CMAKE_SOURCE_DIR}/include/SDL2_mixer"
+    # "${CMAKE_SOURCE_DIR}/include/SDL2"
+    # "${CMAKE_SOURCE_DIR}/include/SDL2_mixer"
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(out
         "${CMAKE_SOURCE_DIR}/statLib/libglfw3WIN.a"
         "${CMAKE_SOURCE_DIR}/statLib/libgladWIN.a"
-        "${CMAKE_SOURCE_DIR}/statLib/SDL2/libSDL2.a"
-        "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer/libSDL2_mixer.a"
-        -lwinmm
-        -lkernel32
-        -luser32
-        -lgdi32
-        -lwinspool
-        -lshell32
-        -lole32
-        -loleaut32
-        -luuid
-        -lcomdlg32
-        -ladvapi32
-        -limm32
-        -lsetupapi
-        version  # <-- Add this line
+        # "${CMAKE_SOURCE_DIR}/statLib/SDL2/libSDL2.a"
+        # "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer/libSDL2_mixer.a"
+        # -lwinmm
+        # -lkernel32
+        # -luser32
+        # -lgdi32
+        # -lwinspool
+        # -lshell32
+        # -lole32
+        # -loleaut32
+        # -luuid
+        # -lcomdlg32
+        # -ladvapi32
+        # -limm32
+        # -lsetupapi
+        # version  # <-- Add this line
     )
-    link_directories(
-        "${CMAKE_SOURCE_DIR}/statLib/SDL2"
-        "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer"
-    )
+    # link_directories(
+    #     "${CMAKE_SOURCE_DIR}/statLib/SDL2"
+    #     "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer"
+    # )
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/app_icon.rc")
 else()
     target_link_libraries(out

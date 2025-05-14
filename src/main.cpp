@@ -15,7 +15,7 @@ void DefineBlocks() {
     grassBlock.textureSide = 0;
     grassBlock.textureTop = 1;
     grassBlock.textureBottom = 2;
-    grassBlock.breakSound = World::sounds["goofy"];
+    // grassBlock.breakSound = World::sounds["goofy"];
     World::blockTypes[1] = grassBlock;
 
     Block dirtBlock("Dirt", 2);
@@ -646,24 +646,24 @@ void genTextures () {
 
 }
 
-void loadSounds () {
-    Sound::init();
+// void loadSounds () {
+//     Sound::init();
 
-    Sound* goofySound = new Sound("goofy.mp3");
-    World::sounds["goofy"] = goofySound;
-}
+//     Sound* goofySound = new Sound("goofy.mp3");
+//     World::sounds["goofy"] = goofySound;
+// }
 
-void initSound(){
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        std::cerr << "SDL_Init error: " << SDL_GetError() << "\n";
-        return;
-    }
+// void initSound(){
+//     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+//         std::cerr << "SDL_Init error: " << SDL_GetError() << "\n";
+//         return;
+//     }
 
-    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        std::cerr << "Mix_OpenAudio error: " << Mix_GetError() << "\n";
-        return;
-    }
-}
+//     if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+//         std::cerr << "Mix_OpenAudio error: " << Mix_GetError() << "\n";
+//         return;
+//     }
+// }
 
 int main () {
     //Initialize OpenGL
@@ -681,7 +681,7 @@ int main () {
     //Assets
     genTextures();
     genShaders();
-    loadSounds();
+    // loadSounds();
 
 
     //Define Game Objects

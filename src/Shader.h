@@ -92,7 +92,6 @@ class Shader {
 				cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
 			}
 
-
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
 		};

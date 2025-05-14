@@ -11,7 +11,7 @@ map<string, Shader*> World::shaders;
 map<string, unsigned int*> World::textures;
 map<string, UI::Menu*> World::menus;
 map<string, UI::Font*> World::fonts;
-map<string, Sound*> World::sounds;
+// map<string, Sound*> World::sounds;
 
 vector<LObject*> World::LogicObjects;
 
@@ -130,14 +130,14 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 	}
 }
 void World::placeBlock (float fx, float fy, float fz, int block) {
-	int* blckOldID = getBlock(fx,fy,fz);
-	if (blckOldID) {
-		Block* blckOld = &World::blockTypes[*blckOldID];
-		if (blckOld && blckOld->breakSound) blckOld->breakSound->play();
-	}
+	// int* blckOldID = getBlock(fx,fy,fz);
+	// if (blckOldID) {
+	// 	Block* blckOld = &World::blockTypes[*blckOldID];
+	// 	if (blckOld && blckOld->breakSound) blckOld->breakSound->play();
+	// }
 
-	Block* blckNew = &World::blockTypes[block];
-	if (blckNew && blckNew->placeSound) blckNew->placeSound->play();
+	// Block* blckNew = &World::blockTypes[block];
+	// if (blckNew && blckNew->placeSound) blckNew->placeSound->play();
 
 	setBlock(fx,fy,fz,block);
 }

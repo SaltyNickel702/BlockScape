@@ -19,8 +19,8 @@
 #include <fstream>
 #include <filesystem>
 #include <cstdlib>
-#include <SDL2/SDL.h>
-#include <SDL2_mixer/SDL_mixer.h>
+// #include <SDL2/SDL.h>
+// #include <SDL2_mixer/SDL_mixer.h>
 
 //Project Classes
 #include "Shader.h"
@@ -31,7 +31,7 @@
 #include "Logic.h"
 #include "UI.h"
 #include "GameState.h"
-#include "Sound.h"
+// #include "Sound.h"
 
 
 using namespace std;

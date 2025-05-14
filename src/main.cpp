@@ -524,39 +524,6 @@ void defineMenus () {
 
     #pragma endregion
 
-    /*    //Load Existing Worlds      \/ I'm not sure what any of this is but GitHub is being wack so if you need this here it is \/
-    #pragma region
-
-    Menu* loadExisting = new Menu();
-    int totalSaves = 0;
-    const fs::path savesFolder = "./saves/";
-    for (const auto& entry : fs::directory_iterator(savesFolder)) { //go through all subfolders of saves folder
-        if (fs::is_directory(entry.path())) {
-            string subF = entry.path().filename().string();
-            
-            Text* subFText = new Text(World::fonts["main"], Engine::width/2 - 25*10, 50 + totalSaves*25);
-            subFText->setText(subF);
-            subFText->ID = subF;
-            subFText->setHeight(20);
-            subFText->clickable = true;
-            subFText->onClick = [&](Element* e) {
-                Text* t = dynamic_cast<Text*>(e);
-
-                GameState::currentState = GameState::State::PLAYING;
-                World::loadFromSave(t->text);
-            };
-            loadExisting->elements.push_back(subFText);
-
-
-            totalSaves++;
-        }
-    }
-
-    loadExisting->activeStates = vector<GameState::State> {GameState::State::LOAD_FROM_SAVE};
-    World::menus["loadExistingSelect"] = loadExisting;
-
-    #pragma endregion*/
-
     //GUI
     #pragma region
     Menu* GUI = new Menu();

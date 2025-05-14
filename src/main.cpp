@@ -524,7 +524,7 @@ void defineMenus () {
 
     #pragma endregion
 
-    /*    //Load Existing Worlds      \/ I'm not sure what any of this is but GitHub is being wack so if you need this here it is \/
+    //Load Existing Worlds
     #pragma region
 
     Menu* loadExisting = new Menu();
@@ -555,7 +555,7 @@ void defineMenus () {
     loadExisting->activeStates = vector<GameState::State> {GameState::State::LOAD_FROM_SAVE};
     World::menus["loadExistingSelect"] = loadExisting;
 
-    #pragma endregion*/
+    #pragma endregion
 
     //GUI
     #pragma region

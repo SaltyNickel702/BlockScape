@@ -458,6 +458,7 @@ void defineMenus () {
     Textbox* worldName = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 - 30);
     worldName->setHeight(30);
     worldName->center();
+    worldName->ID = "worldName";
     worldName->setBackground(*World::textures["Textbox"]);
     newWorldSlct->elements.push_back(worldName);
 
@@ -472,6 +473,7 @@ void defineMenus () {
     seedBox->setHeight(30);
     seedBox->center();
     seedBox->setBackground(*World::textures["Textbox"]);
+    seedBox->ID = "seedBox";
     newWorldSlct->elements.push_back(seedBox);
 
     Text* seedPrompt = new Text(World::fonts["main"], seedBox->x, seedBox->y);
@@ -487,6 +489,9 @@ void defineMenus () {
     createWorld->setHeight(50);
     createWorld->center();
     createWorld->onClick = [&]() {
+        Textbox* worldName = dynamic_cast<Textbox*>(World::menus["loadNew"]->getByID("worldName"));
+        Textbox* seedBox = dynamic_cast<Textbox*>(World::menus["loadNew"]->getByID("seedBox"));
+
         string fileLocation = "./saves/" + worldName->text->text;
         cout << fileLocation << endl;
         if (filesystem::exists(fileLocation)) {
@@ -496,7 +501,7 @@ void defineMenus () {
         srand(time(0));
         int newSeed = rand();
         try { //for stoi
-            // newSeed = stoi(seedBox->text->text);
+            newSeed = stoi(seedBox->text->text);
         } catch (const std::invalid_argument& e) {
         } catch (const std::out_of_range& e) {
         }
@@ -545,7 +550,7 @@ void AddToggleKeybinds () { //things like menu opening
             cout << World::Camera.pos.x << " " << World::Camera.pos.y << " " << World::Camera.pos.z << endl;
         }
         if (Engine::keyDownTick[GLFW_KEY_P]) {
-            World::saveGame("newWorld");
+            World::saveGame(World::saveName);
         }
     };
     running->activeStates = vector<GameState::State>{GameState::State::PLAYING};
@@ -557,6 +562,7 @@ void genShaders () {
     Shader* worldShader = new Shader("worldVert.glsl","worldFrag.glsl");
     World::shaders["world"] = worldShader;
     worldShader->uniforms = [&](glm::vec3 pos, glm::vec2 rot) {
+
         glEnable(GL_DEPTH_TEST);
         Shader* worldShader = World::shaders["world"];
         

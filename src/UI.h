@@ -14,7 +14,7 @@
 namespace UI {
 	class Element {
 		public:
-			Element () : mesh(new Model()), clickable(false), hovering(false), x(0), y(0), w(0), h(0), onClick([](){}), onHover([](){}), onLeave([](){}) {};
+			Element () : mesh(new Model()), clickable(false), hovering(false), x(0), y(0), w(0), h(0), onClick([](){}), onHover([](){}), onLeave([](){}), ID("") {};
 
 			float x, y, w, h;
 
@@ -26,6 +26,8 @@ namespace UI {
 			function<void()> onClick; //once on click
 			function<void()> onHover; //once on hover
 			function<void()> onLeave; //once on leave
+
+			std::string ID;
 
 			virtual void setPos (float x, float y);
 			virtual void center ();
@@ -118,6 +120,13 @@ namespace UI {
 			vector<GameState::State> activeStates;
 
 			function<void()> onTick;
+
+			Element* getByID (std::string ID) {
+				for (Element* e : elements) {
+					if (e->ID == ID) return e;
+				}
+				return nullptr;
+			}
 
 			~Menu () {
 				for (Element* e : elements) delete e;

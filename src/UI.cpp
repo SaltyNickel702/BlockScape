@@ -109,7 +109,7 @@ namespace UI {
 
 		int totalVert = 0;
 		for (int i = 0; i < text.size(); i++) {
-			auto it = find(f->chars.begin(), f->chars.end(), tolower(text.at(i)));
+			auto it = find(f->chars.begin(), f->chars.end(), text.at(i));
 			int id;
 			if (it != f->chars.end()) {
 				id = it - f->chars.begin();

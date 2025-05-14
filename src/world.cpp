@@ -198,6 +198,8 @@ void chunkLoader () {
 }
 int* lastPlayerChunk;
 void worldSetup () { //called by the loading functions
+	Engine::allowCursor(false);
+
 	// Chunk Rendering
 	LObject* chunkRender = new LObject(); //declares new object that isn't deleted after function (dynamically allocated)
 	chunkRender->onTick = [&]() {
@@ -256,9 +258,10 @@ void worldSetup () { //called by the loading functions
 }
 
 void World::loadNew (string name,int seed) {
-	cout << name << " " << seed << endl;
 	World::saveName = name;
 	World::seed = seed;
+	World::PlayerData::CurrentMode = World::PlayerData::GameMode::CREATIVE;
+	World::PlayerData::Flying = false;
 	chunkLoader();
 
 	Chunk spawnC = World::chunks[0][0];

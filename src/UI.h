@@ -14,7 +14,7 @@
 namespace UI {
 	class Element {
 		public:
-			Element () : mesh(new Model()), clickable(false), hovering(false), x(0), y(0), w(0), h(0), onClick([](){}), onHover([](){}), onLeave([](){}), ID("") {};
+			Element () : mesh(new Model()), clickable(false), hovering(false), x(0), y(0), w(0), h(0), onClick([](Element* e){}), onHover([](Element* e){}), onLeave([](Element* e){}), ID("") {};
 
 			float x, y, w, h;
 
@@ -23,9 +23,9 @@ namespace UI {
 			bool clickable;
 			bool hovering;
 			virtual bool mouseOver ();
-			function<void()> onClick; //once on click
-			function<void()> onHover; //once on hover
-			function<void()> onLeave; //once on leave
+			function<void(Element*)> onClick; //once on click
+			function<void(Element*)> onHover; //once on hover
+			function<void(Element*)> onLeave; //once on leave
 
 			std::string ID;
 

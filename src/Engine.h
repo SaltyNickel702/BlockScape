@@ -33,7 +33,7 @@
 #include "GameState.h"
 // #include "Sound.h"
 
-
+namespace fs = std::filesystem;
 using namespace std;
 
 //Game engine namespace, not the BlockScape Game

@@ -518,6 +518,37 @@ void defineMenus () {
     #pragma endregion
 
 
+    //Load Existing Worlds
+    #pragma region
+
+    Menu* loadExisting = new Menu();
+    int totalSaves = 0;
+    const fs::path savesFolder = "./saves/";
+    for (const auto& entry : fs::directory_iterator(savesFolder)) { //go through all subfolders of saves folder
+        if (fs::is_directory(entry.path())) {
+            string subF = entry.path().filename();
+            
+            Text* subFText = new Text(World::fonts["main"], Engine::width - 36*7.5, 50 + totalSaves*20);
+            subFText->setText(subF);
+            subFText->setHeight(15);
+            subFText->clickable = true;
+            subFText->onClick = [&]() {
+                GameState::currentState = GameState::State::PLAYING;
+                World::loadFromSave(subFText->text);
+            };
+            loadExisting->elements.push_back(subFText);
+
+
+            totalSaves++;
+        }
+    }
+
+    loadExisting->activeStates = vector<GameState::State> {GameState::State::LOAD_FROM_SAVE};
+    World::menus["loadExistingSelect"] = loadExisting;
+
+    #pragma endregion
+
+
     //GUI
     #pragma region
     Menu* GUI = new Menu();

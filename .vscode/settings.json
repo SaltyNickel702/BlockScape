@@ -99,6 +99,7 @@
 		"chrono": "cpp",
 		"filesystem": "cpp",
 		"forward_list": "cpp",
-		"queue": "cpp"
+		"queue": "cpp",
+		"condition_variable": "cpp"
 	}
 }

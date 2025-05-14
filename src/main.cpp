@@ -129,11 +129,11 @@ void DefineLogicObjects() {
                     hoveringOverButton = true;
                     if (!e->hovering) {
                         e->hovering = true;
-                        e->onHover();
+                        e->onHover(e);
                     }
                     if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
                         clicked = true;
-                        e->onClick();
+                        e->onClick(e);
                         if (tb) {
                             tb->text->editing = true;
                             tb->text->cursorVisible = true;
@@ -143,7 +143,7 @@ void DefineLogicObjects() {
                     }
                 } else if (e->hovering) {
                     e->hovering = false;
-                    e->onLeave();
+                    e->onLeave(e);
                 }
 
                 if (tb && Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT] && !clicked) { //clicked something else
@@ -405,7 +405,7 @@ void defineMenus () {
     
     Image* startBtn = new Image(*World::textures["startButton"],Engine::width/2,Engine::height/3*2,46*10,16*10);
     startBtn->clickable = true;
-    startBtn->onClick = [&]() {
+    startBtn->onClick = [&](Element* e) {
         GameState::currentState = GameState::State::LOAD_SELECT;
     };
     startBtn->center();
@@ -426,7 +426,7 @@ void defineMenus () {
     newWorldBtn->setHeight(50);
     newWorldBtn->center();
     newWorldBtn->clickable = true;
-    newWorldBtn->onClick = [&]() {
+    newWorldBtn->onClick = [&](Element* e) {
         GameState::currentState = GameState::State::LOAD_NEW;
     };
     loadSelect->elements.push_back(newWorldBtn);
@@ -436,10 +436,10 @@ void defineMenus () {
     loadWorldBtn->setHeight(50);
     loadWorldBtn->center();
     loadWorldBtn->clickable = true;
-    loadWorldBtn->onClick = [&]() {
-        // GameState::currentState = GameState::State::LOAD_FROM_SAVE;
-        World::loadFromSave("newWorld");
-        GameState::currentState = GameState::State::PLAYING;
+    loadWorldBtn->onClick = [&](Element* e) {
+        GameState::currentState = GameState::State::LOAD_FROM_SAVE;
+        // World::loadFromSave("newWorld");
+        // GameState::currentState = GameState::State::PLAYING;
     };
     loadSelect->elements.push_back(loadWorldBtn);
 
@@ -455,7 +455,7 @@ void defineMenus () {
     // newWorldSlct->elements.push_back(menuBackground);
 
     
-    Textbox* worldName = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 - 30);
+    Textbox* worldName = new Textbox("",World::fonts["main"], 25, Engine::width/2, Engine::height/2 - 30);
     worldName->setHeight(30);
     worldName->center();
     worldName->ID = "worldName";
@@ -469,7 +469,7 @@ void defineMenus () {
     newWorldSlct->elements.push_back(worldNamePrompt);
 
 
-    Textbox* seedBox = new Textbox("",World::fonts["main"], 36, Engine::width/2, Engine::height/2 + 30);
+    Textbox* seedBox = new Textbox("",World::fonts["main"], 25, Engine::width/2, Engine::height/2 + 30);
     seedBox->setHeight(30);
     seedBox->center();
     seedBox->setBackground(*World::textures["Textbox"]);
@@ -488,7 +488,7 @@ void defineMenus () {
     createWorld->setText("Create World");
     createWorld->setHeight(50);
     createWorld->center();
-    createWorld->onClick = [&]() {
+    createWorld->onClick = [&](Element* e) {
         Textbox* worldName = dynamic_cast<Textbox*>(World::menus["loadNew"]->getByID("worldName"));
         Textbox* seedBox = dynamic_cast<Textbox*>(World::menus["loadNew"]->getByID("seedBox"));
 
@@ -526,15 +526,18 @@ void defineMenus () {
     const fs::path savesFolder = "./saves/";
     for (const auto& entry : fs::directory_iterator(savesFolder)) { //go through all subfolders of saves folder
         if (fs::is_directory(entry.path())) {
-            string subF = entry.path().filename();
+            string subF = entry.path().filename().string();
             
-            Text* subFText = new Text(World::fonts["main"], Engine::width - 36*7.5, 50 + totalSaves*20);
+            Text* subFText = new Text(World::fonts["main"], Engine::width/2 - 25*10, 50 + totalSaves*25);
             subFText->setText(subF);
-            subFText->setHeight(15);
+            subFText->ID = subF;
+            subFText->setHeight(20);
             subFText->clickable = true;
-            subFText->onClick = [&]() {
+            subFText->onClick = [&](Element* e) {
+                Text* t = dynamic_cast<Text*>(e);
+
                 GameState::currentState = GameState::State::PLAYING;
-                World::loadFromSave(subFText->text);
+                World::loadFromSave(t->text);
             };
             loadExisting->elements.push_back(subFText);
 

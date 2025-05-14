@@ -97,9 +97,11 @@ void DefineLogicObjects() {
                         } 
                         for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_GRAVE_ACCENT; i++) {
                             if (Engine::keyDownTick[i]) {
-                                if (find(t->f->chars.begin(),t->f->chars.end(),tolower((char)i)) != t->f->chars.end()) {
+                                char c = (char)(i);
+                                if (!(Engine::keyDown[GLFW_KEY_LEFT_SHIFT] || Engine::keyDown[GLFW_KEY_RIGHT_SHIFT])) c = tolower(c); //GLFW_KEY_<letter> are uppercase keycodes
+                                if (find(t->f->chars.begin(),t->f->chars.end(),c) != t->f->chars.end()) {
                                     if (t->text.size() < tb->maxCharacterLength) {
-                                        t->text.push_back((char)i);
+                                        t->text.push_back(c);
                                         update = true;
                                     }   
                                 }
@@ -681,7 +683,7 @@ void genTextures () {
 
 
     UI::Font* mainFont = new UI::Font("Font.png", 16, 30);
-    mainFont->chars = "abcdefghijklmnopqrstuvwxyz";
+    mainFont->chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     World::fonts["main"] = mainFont;
 
 }

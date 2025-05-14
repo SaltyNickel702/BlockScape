@@ -17,7 +17,8 @@ class Server {
     Server();
     static bool open;
     static int port;
-    static int initServer();
+    int initServer();
+    int sendChunk(char buffer[4095]);
     private:
     static std::mutex myMutex;
     static SocketType serverSocket;
@@ -32,8 +33,11 @@ class Client {
     Client();
     static int port;
     static std::string serverIp;
-    static int connectToServer();
+    int connectToServer();
+    int updateChunk(char buffer[4095]);
+    int sendPos(char buffer[4095]); //Player position
     private:
+    static SocketType clientSocket;
 };
 
 #endif

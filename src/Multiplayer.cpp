@@ -132,14 +132,20 @@ int Server::initServer(){
     return 0;
 }
 
+int Server::sendChunk(char buffer[4095]){
+    return sendToAll('c' + buffer);
+}
+
+// -- CLIENT -- //
+
 Client::Client(){}
 
 int Client::port = 25565;
 string Client::serverIp = "127.0.0.1.108"; //<This assumes client is connecting to a server on the same pc
+SocketType Client::clientSocket = INVALID_SOCKET;
 
 int Client::connectToServer(){
     WSADATA wsaData;
-    SocketType clientSocket;
     struct sockaddr_in serverAddr;
         
     WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -172,4 +178,13 @@ int Client::connectToServer(){
         }
     }
     return 0;
+}
+
+int Client::updateChunk(char buffer[4095]){
+    return send(clientSocket, 'u' + buffer, 4096, 0);
+
+}
+
+int Client::sendPos(char buffer[4095]){
+    return send(clientSocket, 'p' + buffer, 4096, 0);
 }

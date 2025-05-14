@@ -500,12 +500,18 @@ void defineMenus () {
             return;
         }
 
-        srand(time(0));
-        int newSeed = rand();
+        int newSeed;
         try { //for stoi
             newSeed = stoi(seedBox->text->text);
         } catch (const std::invalid_argument& e) {
         } catch (const std::out_of_range& e) {
+        }
+        if (!newSeed) { //if non integer entered into seed textbox, convert contents to char codes, then to integer
+            string codes = "";
+            for (char c : seedBox->text->text) {
+                codes+= to_string((int)c);
+            }
+            newSeed = stoi(codes);
         }
         GameState::currentState = GameState::State::PLAYING;
 

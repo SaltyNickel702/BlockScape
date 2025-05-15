@@ -62,6 +62,7 @@ namespace World::PlayerData {
 
 		return false;
 	}
+	int blockHeld = 1;
 }
 
 float World::Settings::FOV = 72;

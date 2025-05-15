@@ -193,23 +193,25 @@ void DefineLogicObjects() {
         glm::vec3 sideVec = rotMatrix * glm::vec4(1,0,0,1) * glm::vec4(1,-1,1,1);
         glm::vec3 upVec(0,1,0);
         
-        // mode change. VERY TEMPORARY
-        if (Engine::keyDownTick[GLFW_KEY_1]) {
-            CurrentMode = GameMode::SPECTATOR;
-            cout << "Spectator Mode" << endl;
-        } else if (Engine::keyDownTick[GLFW_KEY_2]) {
-            CurrentMode = GameMode::CREATIVE;
-            Flying = true;
-            cout << "Creative Mode" << endl;
-        } else if (Engine::keyDownTick[GLFW_KEY_3]) {
-            CurrentMode = GameMode::SURVIVAL;
-            Flying = false;
-            cout << "Survival Mode" << endl;
+        // mode change. VERY PERMANENT now lol
+        if (Engine::keyDownTick[GLFW_KEY_Q]) {
+            if (CurrentMode == GameMode::SPECTATOR) {
+				CurrentMode = GameMode::CREATIVE;
+				cout << "Creative" << endl;
+			} else {
+				CurrentMode = GameMode::SPECTATOR;
+				cout << "Spectator Mode" << endl;
+			}
+        }
+		if (Engine::keyDownTick[GLFW_KEY_E]) {
+            Flying = !Flying;
+			cout << "Flying Toggled" << endl;
         }
 
         //Movement
-        float speed = 10.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
+        float speed = 7.0*Engine::deltaTick; //multiply speed per second by deltaTick to get speed in last frame
         if (CurrentMode == GameMode::SPECTATOR) {           // spectator movement
+			speed+=3*Engine::deltaTick;
             if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
             if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
             if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
@@ -220,7 +222,7 @@ void DefineLogicObjects() {
         } else {
             if (Flying == true) {           //Creative flying
                 glm::vec3 previousPos = p->pos; // position to check against
-                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=5;//2.5
+                if (Engine::keyDown[GLFW_KEY_LEFT_CONTROL]) speed*=2;//2.5
                 if (Engine::keyDown[GLFW_KEY_W]) p->pos = p->pos + speed * forwardVec;
                 if (Engine::keyDown[GLFW_KEY_S]) p->pos = p->pos - speed * forwardVec;
                 if (Engine::keyDown[GLFW_KEY_A]) p->pos = p->pos + speed * sideVec;
@@ -351,6 +353,12 @@ void DefineLogicObjects() {
             }
         }
 
+
+        //Block Selection;
+        for (int k = GLFW_KEY_1; k <= GLFW_KEY_8; k++) {
+			if (Engine::keyDownTick[k]) World::PlayerData::blockHeld = k - GLFW_KEY_0;
+		}
+
         //Block Placing
         if (Engine::mouseDownTick[GLFW_MOUSE_BUTTON_LEFT]) {
             glm::vec3* bcPtr = World::Camera.raycast(6,.02,false);
@@ -365,7 +373,7 @@ void DefineLogicObjects() {
             if (bcPtr != nullptr) {
                 glm::vec3 bc = *bcPtr;
                 delete bcPtr;
-                World::placeBlock(bc.x,bc.y,bc.z,5);
+                World::placeBlock(bc.x,bc.y,bc.z,World::PlayerData::blockHeld);
             }
         }
     };

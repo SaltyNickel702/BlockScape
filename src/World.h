@@ -61,6 +61,7 @@ namespace World {
         extern glm::vec3 Pdim;
         extern glm::vec3 velocity;
         extern bool onGround;
+        extern int blockHeld;
     }
 
     extern int seed;

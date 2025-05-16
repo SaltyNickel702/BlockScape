@@ -14,7 +14,7 @@ class Chunk {
 
         glm::vec2 pos;
 
-        static int chunkCoordToWorld (int cx, int cz, float x, float y, float z); //chunk x and z, and chunk coords x y z
+        // static int chunkCoordToWorld (int cx, int cz, float x, float y, float z); //chunk x and z, and chunk coords x y z
 
         int blocks[16][128][16]; //xyz
 
@@ -35,10 +35,6 @@ class Chunk {
         vector<float> vertices;
         vector<unsigned int> indices;
         vector<unsigned int> attrib {3,3,2,1,1}; //pos, normal, uv, texture ID, block ID
-
-        ~Chunk () {
-            delete mesh;
-        }
 };
 
 

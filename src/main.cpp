@@ -576,6 +576,38 @@ void defineMenus () {
     GUI->activeStates = vector<GameState::State> {GameState::State::PLAYING, GameState::State::PAUSE};
     World::menus["GUI"] = GUI;
     #pragma endregion
+
+    
+    //Pause Menu
+    #pragma region
+
+    Menu* pauseMenu = new Menu();
+
+    Text* resumeBtn = new Text(World::fonts["main"], Engine::width / 2, Engine::height/2 - 25);
+    resumeBtn->setText("Resume");
+    resumeBtn->setHeight(40);
+    resumeBtn->center();
+    resumeBtn->clickable = true;
+    resumeBtn->onClick = [&](Element* e) {
+        GameState::currentState = GameState::State::PLAYING;
+    };
+    pauseMenu->elements.push_back(resumeBtn);
+
+    Text* quitBtn = new Text(World::fonts["main"], Engine::width / 2, Engine::height/2 + 25);
+    quitBtn->setText("Quit Game");
+    quitBtn->setHeight(40);
+    quitBtn->center();
+    quitBtn->clickable = true;
+    quitBtn->onClick = [&](Element* e) {
+        World::quitWorld();
+        GameState::currentState = GameState::State::MENU;
+    };
+    pauseMenu->elements.push_back(quitBtn);
+
+    pauseMenu->activeStates = vector<GameState::State> {GameState::State::PAUSE};
+    World::menus["pause"] = pauseMenu;
+
+    #pragma endregion
 }
 
 void AddToggleKeybinds () { //things like menu opening

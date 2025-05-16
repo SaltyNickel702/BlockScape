@@ -21,7 +21,7 @@ namespace World {
     void loadNew (string name, int seed); //Load data into chunk files
     int loadFromSave (string saveFolder); // returns 0 if success, -1 if failure
     void saveGame (string saveFolder);
-    void QuitWorld ();
+    void quitWorld ();
 
     extern map<int, map<int,Chunk>> chunks;
 

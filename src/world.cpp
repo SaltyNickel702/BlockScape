@@ -145,9 +145,11 @@ void World::placeBlock (float fx, float fy, float fz, int block) {
 
 
 //World Management Stuff
-void World::QuitWorld () {
+void World::quitWorld () {
+	saveGame(saveName);
+
 	//Clean chunk data from chunks map
-	World::saveGame(saveName);
+	chunks.erase(chunks.begin(), chunks.end());
 }
 
 

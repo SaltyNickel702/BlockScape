@@ -19,7 +19,6 @@ using namespace std;
 class Shader {
 	public:
 		unsigned int ID;
-		int test;
 
 		Shader (const string vertexPath, const string fragmentPath) {
 			string vertexCode;
@@ -101,6 +100,10 @@ class Shader {
 		}
 
 		function<void(glm::vec3 pos, glm::vec2 rot)> uniforms = [](glm::vec3 pos, glm::vec2 rot){};
+
+		~Shader () {
+			glDeleteProgram(ID);
+		}
 };
 
 #endif

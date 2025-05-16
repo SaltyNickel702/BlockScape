@@ -35,6 +35,10 @@ class Chunk {
         vector<float> vertices;
         vector<unsigned int> indices;
         vector<unsigned int> attrib {3,3,2,1,1}; //pos, normal, uv, texture ID, block ID
+
+        ~Chunk () {
+            delete mesh;
+        }
 };
 
 

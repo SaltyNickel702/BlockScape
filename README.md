@@ -34,8 +34,9 @@
 ### Mountains + Snow and Fog in shader: <br>
 ![Mountains](./Refrence/Snow+Fog.png)
 
-### Water Added in Shader: <br>
-![Water](NULL)
+### v0.1.0-alpha Build Demo
+![House](https://github.com/user-attachments/assets/3d72a220-2321-441a-b5ce-4546324364e6)
+
 
 ## External Links
 [Class Diagram Link](https://docs.google.com/drawings/d/1Rja5TI8MIqJgnk-PyeSCaD919eVHrKPN3KJQktHV5DI/edit?usp=sharing)

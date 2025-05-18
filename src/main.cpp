@@ -520,9 +520,9 @@ void defineMenus () {
             }
             newSeed = stoi(codes);
         }
-        GameState::currentState = GameState::State::PLAYING;
-
         World::loadNew(worldName->text->text,newSeed);
+        
+        GameState::currentState = GameState::State::PLAYING;
     };
     newWorldSlct->elements.push_back(createWorld);
 
@@ -550,8 +550,8 @@ void defineMenus () {
             subFText->onClick = [&](Element* e) {
                 Text* t = dynamic_cast<Text*>(e);
 
-                GameState::currentState = GameState::State::PLAYING;
                 World::loadFromSave(t->text);
+                GameState::currentState = GameState::State::PLAYING;
             };
             loadExisting->elements.push_back(subFText);
 
@@ -615,13 +615,30 @@ void AddToggleKeybinds () { //things like menu opening
     global->active = true;
 
     LObject* mainMenu = new LObject();
+    mainMenu->onTick = [&]() {
+        if (Engine::keyDownTick[GLFW_KEY_ESCAPE]) glfwSetWindowShouldClose(Engine::window, true);
+    };
     mainMenu->activeStates = vector<GameState::State>{GameState::State::MENU};
 
     LObject* pauseMenu = new LObject();
+    pauseMenu->onTick = [&]() {
+        if (Engine::keyDownTick[GLFW_KEY_ESCAPE]) {
+            Engine::tickQueue.push_back([&]() {
+                Engine::allowCursor(false);
+                GameState::currentState = GameState::State::PLAYING;
+            });
+        }
+    };
     pauseMenu->activeStates = vector<GameState::State>{GameState::State::PAUSE};
 
     LObject* running = new LObject();
     running->onTick = [&](){
+        if (Engine::keyDownTick[GLFW_KEY_ESCAPE]) {
+            Engine::tickQueue.push_back([&]() {
+                Engine::allowCursor(true);
+                GameState::currentState = GameState::State::PAUSE;
+            });
+        }
         if (Engine::keyDownTick[GLFW_KEY_ENTER]) {
             Engine::allowCursor(!Engine::cursorEnabled);
         }
@@ -633,6 +650,29 @@ void AddToggleKeybinds () { //things like menu opening
         }
     };
     running->activeStates = vector<GameState::State>{GameState::State::PLAYING};
+
+
+    LObject* loadSelect = new LObject();
+    loadSelect->onTick = [&]() {
+        if (Engine::keyDownTick[GLFW_KEY_ESCAPE]) {
+            Engine::tickQueue.push_back([&]() {
+                GameState::currentState = GameState::State::MENU;
+            });
+        }
+    };
+    loadSelect->activeStates = vector<GameState::State>{GameState::State::LOAD_SELECT};
+
+
+    LObject* worldConfig = new LObject(); //Both new world selection and existing world selecting
+    worldConfig->onTick = [&]() {
+        if (Engine::keyDownTick[GLFW_KEY_ESCAPE]) {
+            Engine::tickQueue.push_back([&]() {
+                GameState::currentState = GameState::State::LOAD_SELECT;
+            });
+        }
+    };
+    worldConfig->activeStates = vector<GameState::State>{GameState::State::LOAD_NEW, GameState::State::LOAD_FROM_SAVE};
+
 }
 
 void genShaders () {

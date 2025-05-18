@@ -15,7 +15,7 @@ namespace {
 	glm::vec2 mouseLastPos(0);
 	void processInput(GLFWwindow* window) {
 		//esc key closes app (temporary)
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+		// if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
 
 		//Adding/removing keys to keyDown | If new key is added, add to keyDownTick for one tick
@@ -215,7 +215,7 @@ namespace Engine {
 		glfwSetInputMode(window, GLFW_CURSOR, b ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		if (b) { //enable
 			Engine::cursorPos = glm::vec2(Engine::width/2, Engine::height/2);
-			glfwSetCursorPos(window,400,400);
+			glfwSetCursorPos(window,width/2,height/2);
 		}
 	}
 

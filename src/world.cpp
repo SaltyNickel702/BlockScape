@@ -468,9 +468,10 @@ int World::loadFromSave (string saveFolder) {
 					rot[i] = stof(strs[i]);
 				}
 				World::Player.rot.x = rot[0];
-				World::Player.rot.y = rot[1];
+				// World::Player.rot.y = rot[1];
+				World::Player.rot.y = 0;
 			} catch (const std::invalid_argument& e) { //For stof(), which will error if it doesn't find a perfect float in the string
-			} catch (const std::out_of_range& e) { //For running through all chars in content, and finding more array items than intended
+			} catch (const std::out_of_range& e) { //Also for stof()
 			}
 		} else if (id == "gamemode") {
 			try {

@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
-set(PRODUCTION_BUILD False)
+set(PRODUCTION_BUILD True)
+
+if (PRODUCTION_BUILD)
+    set(EXE_NAME "BlockScape")
+else()
+    set(EXE_NAME "out")
+endif()
 
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc")
@@ -24,12 +30,16 @@ endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (PRODUCTION_BUILD)
-        add_executable(BlockScape WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS}) # add WIN32 to create the windows application w/out console
+        add_executable(${EXE_NAME} WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS}) # add WIN32 to create the windows application w/out console
     else()
-        add_executable(out ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
+        add_executable(${EXE_NAME} ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
     endif()
 else()
-    add_executable(out ${SOURCES}) # add WIN32 to create the windows application w/out console
+    if (PRODUCTION_BUILD)
+        add_executable(${EXE_NAME} ${SOURCES})
+    else()
+        add_executable(${EXE_NAME} ${SOURCES})
+    endif()
 endif()
 
 
@@ -40,7 +50,7 @@ include_directories(
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(out
+    target_link_libraries(${EXE_NAME}
         "${CMAKE_SOURCE_DIR}/statLib/libglfw3WIN.a"
         "${CMAKE_SOURCE_DIR}/statLib/libgladWIN.a"
         ws2_32
@@ -67,12 +77,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # )
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/app_icon.rc")
 else()
-    target_link_libraries(out
+    target_link_libraries(${EXE_NAME}
         "-framework CoreFoundation"
         "-framework IOKit"
         "-framework Cocoa"
     )
-    target_link_libraries(out
+    target_link_libraries(${EXE_NAME}
         "${CMAKE_SOURCE_DIR}/statLib/libglfw3MAC.a"
         "${CMAKE_SOURCE_DIR}/statLib/libgladMAC.a"
     )

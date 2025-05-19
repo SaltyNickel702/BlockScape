@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Engine.h"
+#include "Multiplayer.h"
 #include <cstdint>
 
 int World::seed;
@@ -129,6 +130,9 @@ void World::setBlock (float fx, float fy, float fz, int block) {
 		c->genMeshParam();
 		chunkMeshGenQueue.push_back(c->pos);
 	}
+	if(multiplayer){
+		updateChunk(fx, fy, fz, block);
+	}
 }
 void World::placeBlock (float fx, float fy, float fz, int block) {
 	// int* blckOldID = getBlock(fx,fy,fz);
@@ -170,7 +174,11 @@ void chunkLoader () {
 
 			Chunk* c = World::getChunkByCC(cx,cz);
 			if (c == nullptr) { //chunk not loaded into memory
-				World::chunks[cx][cz] = Chunk::genChunk(cx,cz);
+				if(multiplayer){
+					askForChunk(cx, cz);
+				}else{
+					World::chunks[cx][cz] = Chunk::genChunk(cx,cz);
+				}
 			};
 		}
 	}

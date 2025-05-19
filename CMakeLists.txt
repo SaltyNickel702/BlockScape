@@ -52,13 +52,17 @@ else() #MACOS
 
         # Copy required folders to .app bundle after build
         add_custom_command(TARGET ${EXE_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                "${CMAKE_SOURCE_DIR}/assets/textures/BlockScape.icns"
+                "$<TARGET_BUNDLE_DIR:BlockScape>/Contents/Resources/BlockScape.icns"
+
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${CMAKE_SOURCE_DIR}/assets"
-                "$<TARGET_FILE_DIR:MyApp>/../Resources/assets"
+                "$<TARGET_FILE_DIR:BlockScape>/../Resources/assets"
 
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${CMAKE_SOURCE_DIR}/saves"
-                "$<TARGET_FILE_DIR:MyApp>/../Resources/saves"
+                "$<TARGET_FILE_DIR:BlockScape>/../Resources/saves"
         )
 
     else()

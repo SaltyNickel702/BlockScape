@@ -34,9 +34,33 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     else()
         add_executable(${EXE_NAME} ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
     endif()
-else()
+else() #MACOS
     if (PRODUCTION_BUILD)
-        add_executable(${EXE_NAME} ${SOURCES})
+        # Add icon (macOS uses .icns, so you must convert BlockScape.png to favicon.icns)
+        set(APP_ICON "${CMAKE_SOURCE_DIR}/assets/textures/BlockScape.icns")
+
+        #Bundle into .app format
+        add_executable(${EXE_NAME} MACOSX_BUNDLE ${SOURCES})
+
+        # Bundle properties
+        set_target_properties(${EXE_NAME} PROPERTIES
+            MACOSX_BUNDLE TRUE
+            MACOSX_BUNDLE_BUNDLE_NAME ${EXE_NAME}
+            MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/Info.plist"
+            RESOURCE "${CMAKE_SOURCE_DIR}/assets;${CMAKE_SOURCE_DIR}/saves"
+        )
+
+        # Copy required folders to .app bundle after build
+        add_custom_command(TARGET ${EXE_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/assets"
+                "$<TARGET_FILE_DIR:MyApp>/../Resources/assets"
+
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/saves"
+                "$<TARGET_FILE_DIR:MyApp>/../Resources/saves"
+        )
+
     else()
         add_executable(${EXE_NAME} ${SOURCES})
     endif()

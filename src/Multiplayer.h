@@ -18,12 +18,13 @@ class Server {
     static bool open;
     static int port;
     int initServer();
-    int sendChunk(char buffer[4095]);
+    int sendChunk(SocketType clientSocket, char buffer[]);
     private:
     static std::mutex myMutex;
     static SocketType serverSocket;
     static std::vector<SocketType> clients;
-    static int sendToAll(char buffer[4096]);
+    static int sendToAll(char buffer[]);
+    static int sendToOthers(SocketType clientSocket, char buffer[]);
     static void handleClient(SocketType clientSocket);
     static void acceptClients();
 };
@@ -34,10 +35,14 @@ class Client {
     static int port;
     static std::string serverIp;
     int connectToServer();
-    int updateChunk(char buffer[4095]);
-    int sendPos(char buffer[4095]); //Player position
-    private:
     static SocketType clientSocket;
+    private:
+    void handleData();
 };
+
+bool multiplayer;
+int updateChunk(int x, int y, int z, int blockID);
+int sendPos(int px, int py, int pz); //Player's position
+int askForChunk(int cx, int cz);
 
 #endif

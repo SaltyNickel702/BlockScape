@@ -1,6 +1,7 @@
 #include <FastNoise/FastNoiseLite.h>
 #include "Chunk.h"
 #include "World.h"
+#include "Multiplayer.h"
 
 Chunk::Chunk () : loaded(false), modified(false), blocksLoaded(false), meshReady(false) {
 	mesh = new Model();
@@ -218,7 +219,11 @@ void Chunk::genMeshGL () {
 int* Chunk::getBlock (int x, int y, int z) {
 	return &blocks[x][y][z];
 }
+
 void Chunk::setBlock (int x, int y, int z, int blockID) {
 	int* b = getBlock(x,y,z);
 	*b = blockID;
+	if(multiplayer){
+		updateChunk(x, y, z, blockID);
+	}
 }

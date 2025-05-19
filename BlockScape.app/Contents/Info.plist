@@ -12,6 +12,6 @@
     <key>CFBundleExecutable</key>
     <string>BlockScape</string>
     <key>CFBundleIconFile</key>
-    <string>BlockScape.icns</string>
+    <string>BlockScape</string>
 </dict>
 </plist>

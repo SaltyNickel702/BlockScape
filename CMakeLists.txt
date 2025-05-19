@@ -73,8 +73,6 @@ endif()
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/include/"
-    # "${CMAKE_SOURCE_DIR}/include/SDL2"
-    # "${CMAKE_SOURCE_DIR}/include/SDL2_mixer"
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")

@@ -223,7 +223,7 @@ int* Chunk::getBlock (int x, int y, int z) {
 void Chunk::setBlock (int x, int y, int z, int blockID) {
 	int* b = getBlock(x,y,z);
 	*b = blockID;
-	if(multiplayer){
-		updateChunk(x, y, z, blockID);
-	}
+	// if(multiplayer){
+	// 	updateChunk(x, y, z, blockID);
+	// }
 }

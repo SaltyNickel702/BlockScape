@@ -1,7 +1,7 @@
 #include <FastNoise/FastNoiseLite.h>
 #include "Chunk.h"
 #include "World.h"
-#include "Multiplayer.h"
+// #include "Multiplayer.h"
 
 Chunk::Chunk () : loaded(false), modified(false), blocksLoaded(false), meshReady(false) {
 	mesh = new Model();

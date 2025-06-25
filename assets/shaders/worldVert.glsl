@@ -18,9 +18,14 @@ out float textureID;
 
 void main()
 {
-	vec4 viewPos = view * model * vec4(aPos, 1.0);
+	vec4 worldPos = model * vec4(aPos, 1.0);
+	vec4 viewPos = view * worldPos;
 	if (blockID == 5) {
 		viewPos += vec4(sin(time + viewPos.x),cos(2*time + viewPos.y),sin(time*3 +  + viewPos.z), 0) * 0.03;
+	}
+	float waterLevel = 29+14.0/16.0;
+	if (worldPos.y <= waterLevel) {
+		viewPos += vec4(sin(time + viewPos.x),cos(2*time + viewPos.y),sin(time*3 +  + viewPos.z), 0) * 0.05 * length(viewPos)/10;
 	}
 
 	gl_Position = projection * viewPos;

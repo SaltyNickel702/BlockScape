@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec3 iPos;
 layout (location = 1) in vec3 normIn;
 layout (location = 2) in vec2 texIn;
 layout (location = 3) in float textureIDin;
@@ -18,19 +18,26 @@ out float textureID;
 
 void main()
 {
+	vec3 aPos = iPos;
+
+
+	vec4 wPosR = model * vec4(aPos,1.0);
+	float d = length(view * model * vec4(aPos, 1.0));
+	aPos.y+= pow(d / 10, 2);
+
 	vec4 worldPos = model * vec4(aPos, 1.0);
 	vec4 viewPos = view * worldPos;
 	if (blockID == 5) {
 		viewPos += vec4(sin(time + viewPos.x),cos(2*time + viewPos.y),sin(time*3 +  + viewPos.z), 0) * 0.03;
 	}
 	float waterLevel = 29+14.0/16.0;
-	if (worldPos.y <= waterLevel) {
+	if (wPosR.y <= waterLevel) {
 		viewPos += vec4(sin(time + viewPos.x),cos(2*time + viewPos.y),sin(time*3 +  + viewPos.z), 0) * 0.05 * length(viewPos)/10;
 	}
 
 	gl_Position = projection * viewPos;
 
-	pos = aPos;
+	pos = iPos;
 	UV = texIn;
 	normal = normIn;
 	textureID = textureIDin;

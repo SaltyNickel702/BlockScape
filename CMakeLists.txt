@@ -79,7 +79,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(${EXE_NAME}
         "${CMAKE_SOURCE_DIR}/statLib/libglfw3WIN.a"
         "${CMAKE_SOURCE_DIR}/statLib/libgladWIN.a"
-        ws2_32
+        ws2_32 #networking stuff
         # "${CMAKE_SOURCE_DIR}/statLib/SDL2/libSDL2.a"
         # "${CMAKE_SOURCE_DIR}/statLib/SDL2_mixer/libSDL2_mixer.a"
         # -lwinmm
